@@ -1,0 +1,77 @@
+{% load static %}
+<html>
+  <head>
+    {% if attrs_group == None %}
+    <title>Taxtonomy Attributes Groups</title>
+    {% else %}
+    <title>Taxtonomy Attributes Group</title>
+    {% endif %}
+    <script src="{% static "js/dist/jquery.min.js" %}"></script>
+    <!-- script>
+    {% include 'taxtweb_incl.js' %}
+      //-->
+    <!-- </script -->
+    <link rel="stylesheet" href="{% static "taxonomy/css/taxonomy_help.css" %}">
+  </head>
+<body>
+    <div id="app">
+    {% if attrs_group == None %}
+    <h1>Taxtonomy Attributes Groups</h1>
+    <table class="atom">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Visual<br/>Score</th>
+      </tr>
+      {% for attrs_group in attrs_groups|dictsort:"prog" %}
+      <tr>
+        <td><a href="{{ attrs_group.name }}">{{ attrs_group.name }}</a></td>
+        <td>{{ attrs_group.desc }}</td>
+        <td>{{ attrs_group.prog }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <h1>Taxtonomy Attributes Group</h1>
+    <table class="atom">
+      <tr>
+        <td>
+          Hierarchy
+        </td>
+        <td>
+          <p class="hierarchy0"><a href="../attrs_group/">All Attributes Groups</a></p>
+          <p class="hierarchy1 hierarchy_arrow">(<a href="../attribute/">All Attributes</a>)</p>
+          <p class="hierarchy2 hierarchy_arrow">(<a href="../atoms_group/">all Atoms Groups</a>)</p>
+          <p class="hierarchy3 hierarchy_arrow">(<a href="../atom/">all Atoms</a>)</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="highlight">Name: </td><td class="highlight">{{ attrs_group.name }}</td>
+      </tr>
+      <tr>
+        <td>Description:</td><td>{{ attrs_group.desc }}</td>
+      </tr>
+      <tr>
+        <td>
+          Members:
+        </td>
+        <td>
+          <table class="elements">
+            <tr>
+              <th>Name</th><th>Description</th><th>Visual<br/>Score</th>
+            </tr>
+            {% for el in attrs_group.attribute_set.all|dictsort:"prog" %}
+            <tr>
+              <td><a href="../attribute/{{ el.name }}">{{ el.name }}</a></td>
+              <td>{{ el.desc }}</td>
+              <td>{{ el.prog }}</td>
+            </tr>
+            {% endfor %}
+            </table>
+        </td>
+      </tr>
+    </table>
+    {% endif %}
+    </div>
+  </body>
+</html>

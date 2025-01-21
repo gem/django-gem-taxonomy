@@ -1,0 +1,108 @@
+{% load static %}
+<html>
+  <head>
+    {% if atom == None %}
+    <title>Taxtonomy Atoms</title>
+    {% else %}
+    <title>Taxtonomy Atoms</title>
+    {% endif %}
+    <script src="{% static "js/dist/jquery.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "taxonomy/css/taxonomy_help.css" %}">
+    <!-- script>
+    {% include 'taxtweb_incl.js' %}
+      //-->
+    </script -->
+  </head>
+<body>
+    <div id="app">
+    {% if atom == None %}
+    <h1>Taxtonomy Atoms</h1>
+    <table class="atom">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    {% for atom in atoms %}
+      <tr>
+        <td><a href="{{ atom.name }}">{{ atom.name }}</a></td>
+        <td>{{ atom.desc }}</td>
+      </tr>      
+      {% endfor %}
+      </table>
+    {% else %}
+    <h1>Taxtonomy Atom</h1>
+    <table class="atom">
+      <tr>
+        <td>
+          Hierarchy
+        </td>
+        <td>
+          <p class="hierarchy0"><a href="../attrs_group/{{ atom.group.attr.group.name }}">{{ atom.group.attr.group.desc }}</a>
+            (or <a href="../attrs_group/">all Attributes Group</a>)</p>
+          </p>
+          <p class="hierarchy1 hierarchy_arrow"><a href="../attribute/{{ atom.group.attr.name }}">{{ atom.group.attr.desc }}</a>
+            (or <a href="../attribute/">all Attributes</a>)</p>
+          <p class="hierarchy2 hierarchy_arrow"><a href="../atoms_group/{{ atom.group.name }}">{{ atom.group.desc }}</a>
+            (or <a href="../atoms_group/">all Atoms Groups</a>)</p>
+          <p class="hierarchy3 hierarchy_arrow"><a href="../atom/">(All Atoms)</a></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="highlight">Name: </td><td class="highlight">{{ atom.name }}</td>        
+      </tr>
+      <tr>
+        <td>Description:</td><td>{{ atom.desc }}</td>
+      </tr>
+      <tr>
+        <td>Type:</td><td>{% if atom.type == None %}{'name': 'option'}{% else %}{{ atom.type }}{% endif %}</td>
+      </tr>
+      <tr>
+        <td>
+          Enabled by:
+        </td>
+        <td>
+          {% if atom.deps.all %}
+          <table class="elements">
+            <tr>
+              <th>Name</th><th>Description</th><th>Menu<br/>Score</th>
+            </tr>
+            {% for el in atom.deps.all|dictsort:"prog" %}
+          <tr>
+            <td><a href="./{{ el.name }}">{{ el.name }}</a></td>
+            <td>{{ el.desc }}</td>
+            <td>{{ el.prog }}</td>
+          </tr>
+          {% endfor %}
+          </table>
+          {% else %}
+          Always visible
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Enabling:
+        </td>
+        <td>{% if atom.revdeps.all %}
+          <table class="elements">
+          <tr>
+            <th>Name</th><th>Description</th><th>Menu<br/>Score</th>
+          </tr>
+          {% for el in atom.revdeps.all|dictsort:"prog" %}
+          <tr>
+            <td><a href="./{{ el.name }}">{{ el.name }}</a></td>
+            <td>{{ el.desc }}</td>
+            <td style="text-align: right;">{{ el.prog }}</td>
+          </tr>
+          {% endfor %}
+          </table>
+          {% else %}
+          Is a hierarchy leaf.
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+    {% endif %}
+    </div>
+  </body>
+</html>

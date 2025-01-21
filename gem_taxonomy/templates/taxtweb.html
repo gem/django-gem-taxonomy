@@ -1,0 +1,25 @@
+{% load static %}
+<html>
+  <head>
+    <title>TaxtWEB</title>
+    <script src="{% static "js/dist/jquery.min.js" %}"></script>
+    <script>
+    {% include 'taxtweb_incl.js' %}
+      //-->
+   </script>
+   <script>
+  window.onload = function () {
+    fetch('{{ STATIC_URL }}taxtweb/json/taxonomy_standard4taxtweb.json')
+        .then((response) => response.json())
+        .then(function (json){
+            gem_tax = json;
+            taxtweb_main();
+        });
+}
+</script>
+
+  </head>
+<body>
+    <div id="app"/>
+  </body>
+</html>
