@@ -34,4 +34,4 @@ DJANGO_SETTINGS_MODULE = "tests.test_project.settings"
 pythonpath = ["."]
 
 [tool.setuptools.packages.find]
-exclude = ["out"]
+exclude = ["out", "server"]

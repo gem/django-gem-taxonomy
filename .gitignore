@@ -1,3 +1,5 @@
 __pycache__
 /venv
 /build
+/django_gem_taxonomy.egg-info
+/gem_taxonomy_server.sqlite
