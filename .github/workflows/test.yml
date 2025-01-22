@@ -22,6 +22,8 @@ jobs:
         cache-dependency-path: pyproject.toml
     - name: Keys Ingestion
       run: |
+        mkdir ~/.ssh
+        chmod 700 ~/.ssh
         cat  >> ~/.ssh/config << EOF
 
         Host oq-gem-taxonomy-host
