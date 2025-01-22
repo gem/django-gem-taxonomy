@@ -20,6 +20,33 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: pip
         cache-dependency-path: pyproject.toml
+    - name: Keys Ingestion
+      run: |
+        cat  >> ~/.ssh/config << EOF
+
+        Host oq-gem-taxonomy-host
+        Hostname github.com
+        User git
+        StrictHostKeyChecking no
+        IdentityFile ~/.ssh/id_oq-gem-taxonomy
+        IdentitiesOnly yes
+
+        Host oq-gem-taxonomy-data-host
+        Hostname github.com
+        User git
+        StrictHostKeyChecking no
+        IdentityFile ~/.ssh/id_oq-gem-taxonomy-data
+        IdentitiesOnly yes
+        EOF
+
+        git config --global url."ssh://git@oq-gem-taxonomy-host/gem/oq-gem-taxonomy.git".insteadOf "ssh://git@github.com/gem/oq-gem-taxonomy.git"
+        git config --global url."ssh://git@oq-gem-taxonomy-data-host/gem/oq-gem-taxonomy-data.git".insteadOf "ssh://git@github.com/gem/oq-gem-taxonomy-data.git"
+
+      base64 -d <<< "${{ secrets.OQ_GEM_TAXONOMY_KEY }}" > ~/.ssh/id_oq-gem-taxonomy
+      chmod 600 ~/.ssh/id_oq-gem-taxonomy
+      base64 -d <<< "${{ secrets.OQ_GEM_TAXONOMY_DATA_KEY }}" > ~/.ssh/id_oq-gem-taxonomy-data
+      chmod 600 ~/.ssh/id_oq-gem-taxonomy-data
+
     - name: Install dependencies
       run: |
         pip install '.[test]'
