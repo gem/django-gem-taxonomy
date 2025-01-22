@@ -44,9 +44,9 @@ jobs:
         git config --global url."ssh://git@oq-gem-taxonomy-host/gem/oq-gem-taxonomy.git".insteadOf "ssh://git@github.com/gem/oq-gem-taxonomy.git"
         git config --global url."ssh://git@oq-gem-taxonomy-data-host/gem/oq-gem-taxonomy-data.git".insteadOf "ssh://git@github.com/gem/oq-gem-taxonomy-data.git"
 
-        base64 -d <<< ${{ secrets.OQ_GEM_TAXONOMY_KEY }} > ~/.ssh/id_oq-gem-taxonomy
+        base64 -d <<< "${{ secrets.OQ_GEM_TAXONOMY_KEY }}" > ~/.ssh/id_oq-gem-taxonomy
         chmod 600 ~/.ssh/id_oq-gem-taxonomy
-        base64 -d <<< ${{ secrets.OQ_GEM_TAXONOMY_DATA_KEY }} > ~/.ssh/id_oq-gem-taxonomy-data
+        base64 -d <<< "${{ secrets.OQ_GEM_TAXONOMY_DATA_KEY }}" > ~/.ssh/id_oq-gem-taxonomy-data
         chmod 600 ~/.ssh/id_oq-gem-taxonomy-data
 
     - name: Install dependencies
