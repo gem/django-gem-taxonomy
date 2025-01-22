@@ -104,6 +104,6 @@ class GEMTaxonomyStringValidation(APIView):
             report = gt.validate(taxonomy_string)
         except (ValueError, ParsimParseError,
                 ParsimIncompleteParseError) as exc:
-            return Response({'success': False, 'error': str(exc)},
+            return Response({'success': False, 'message': str(exc)},
                             status=400)
         return Response({**{'success': True}, **report}, status=200)
