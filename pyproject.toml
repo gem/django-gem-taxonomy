@@ -16,8 +16,9 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License"
 ]
 dependencies = [
-    "django",
-#     "oq-gem-taxonomy",
+    "django==5.1.5",
+    "djangorestframework==3.15.1",
+    "openquake.gem-taxonomy @ git+ssh://git@github.com/gem/oq-gem-taxonomy.git@v1.0.0",
 ]
 
 # [project.urls]

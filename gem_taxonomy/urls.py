@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path
-from .views import TaxtWEB, TaxtGraph
+from .views import TaxtWEB, TaxtGraph, GEMTaxonomyStringValidation
 from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
 
 urlpatterns = [
@@ -37,9 +37,12 @@ urlpatterns = [
     path('attribute/<str:attribute>',
          HelpAttribute.as_view(), name='taxonomy_helpattribute'),
 
-    path('',
+    path('taxtweb/',
          TaxtWEB.as_view(), name='taxonomy_taxtweb'),
     path('graph/',
          TaxtGraph.as_view(), name='taxonomy_taxtgraph'),
+
+    path('api/v1/validation/<str:taxonomy_string>',
+         GEMTaxonomyStringValidation.as_view(), name='taxonomy_validation'),
  ]
 # [A-Z0-9]+

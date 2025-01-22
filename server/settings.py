@@ -10,7 +10,7 @@ INSTALLED_APPS = ['gem_taxonomy']
 
 MIDDLEWARE = []
 
-ROOT_URLCONF = "gem_taxonomy.urls"
+ROOT_URLCONF = "server.urls"
 
 DATABASES = {
     "default": {
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
    ]
 
 STATIC_URL = '/static/'
