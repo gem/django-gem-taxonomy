@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('prog', models.IntegerField()),
                 ('title', models.TextField()),
                 ('mutex', models.BooleanField(default=True)),
-                ('attr', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gem_taxonomy.attribute')),
+                ('attr', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_gem_taxonomy.attribute')),
             ],
             options={
                 'unique_together': {('attr', 'prog')},
@@ -43,9 +43,9 @@ class Migration(migrations.Migration):
                 ('type', models.TextField()),
                 ('args', models.JSONField(blank=True, null=True)),
                 ('params', models.JSONField(blank=True, null=True)),
-                ('attr', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='gem_taxonomy.attribute')),
-                ('deps', models.ManyToManyField(related_name='revdeps', to='gem_taxonomy.atom')),
-                ('group', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='gem_taxonomy.atomsgroup')),
+                ('attr', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='django_gem_taxonomy.attribute')),
+                ('deps', models.ManyToManyField(related_name='revdeps', to='django_gem_taxonomy.atom')),
+                ('group', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='django_gem_taxonomy.atomsgroup')),
             ],
             options={
                 'unique_together': {('group', 'prog')},
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('title', models.TextField()),
                 ('desc', models.TextField()),
                 ('prog', models.IntegerField()),
-                ('atom', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='gem_taxonomy.atom')),
+                ('atom', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='django_gem_taxonomy.atom')),
             ],
             options={
                 'unique_together': {('atom', 'name'), ('atom', 'name', 'prog')},

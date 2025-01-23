@@ -6,7 +6,6 @@ SECRET_KEY = "django-insecure-test-key"
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
-INSTALLED_APPS = ['gem_taxonomy']
 
 MIDDLEWARE = []
 
@@ -29,7 +28,7 @@ MIDDLEWARE = [
 
 INSTALLED_APPS = [
     'server.common_files',
-    'gem_taxonomy.apps.GemTaxonomyConfig',
+    'django_gem_taxonomy.apps.GemTaxonomyConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -25,7 +25,7 @@ from django.core.management.base import BaseCommand
 import copy
 import json
 
-from gem_taxonomy.models import Attribute, AtomsGroup, Atom, Param
+from django_gem_taxonomy.models import Attribute, AtomsGroup, Atom, Param
 
 
 class Command(BaseCommand):
@@ -133,14 +133,14 @@ class Command(BaseCommand):
                     prog=param_prog,
                 )
 
-        call_command('dumpdata', 'gem_taxonomy', indent=4,
+        call_command('dumpdata', 'django_gem_taxonomy', indent=4,
                      output='out/taxonomy_standard_dump.json')
 
         tax_dump_in = json.load(open('out/taxonomy_standard_dump.json', 'r'))
 
         tax = {}
         for el in tax_dump_in:
-            model = el['model'].replace('gem_taxonomy.', '')
+            model = el['model'].replace('django_gem_taxonomy.', '')
             if model not in tax:
                 tax[model] = {}
             tax[model][el['pk']] = el['fields']

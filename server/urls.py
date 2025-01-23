@@ -20,5 +20,5 @@
 from django.urls import path, include
 
 urlpatterns = [
-    path('taxonomy/', include('gem_taxonomy.urls')),
+    path('taxonomy/', include('django_gem_taxonomy.urls')),
 ]

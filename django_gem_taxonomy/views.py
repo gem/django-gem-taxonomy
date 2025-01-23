@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from django.views import View
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -86,6 +87,15 @@ class HelpAttribute(View):
 
         return render(request, template, {'attributes': attributes,
                                           'attribute': attribute})
+
+
+class GEMTaxonomyInfo(APIView):
+    def get(self, request):
+        if request.method != 'GET':
+            return Response({'message': 'Not implemented'}, status=405)
+
+        info = GemTaxonomy.info(stdout=os.devnul)
+        return Response(info, status=200)
 
 
 class GEMTaxonomyStringValidation(APIView):
