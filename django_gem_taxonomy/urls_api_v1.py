@@ -17,33 +17,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.urls import path, include
+from django.urls import path
 from .views import (TaxtWEB, TaxtGraph, GEMTaxonomyInfo,
                     GEMTaxonomyStringValidation)
 
 from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
 
 urlpatterns = [
-    path('atom/',
-         HelpAtom.as_view(), name='taxonomy_helpatoms'),
-    path('atom/<str:atom>',
-         HelpAtom.as_view(), name='taxonomy_helpatom'),
-
-    path('atoms_group/',
-         HelpAtomsGroup.as_view(), name='taxonomy_helpatomsgroups'),
-    path('atoms_group/<str:atoms_group>',
-         HelpAtomsGroup.as_view(), name='taxonomy_helpatomsgroup'),
-
-    path('attribute/',
-         HelpAttribute.as_view(), name='taxonomy_helpattributes'),
-    path('attribute/<str:attribute>',
-         HelpAttribute.as_view(), name='taxonomy_helpattribute'),
-
-    path('taxtweb/',
-         TaxtWEB.as_view(), name='taxonomy_taxtweb'),
-    path('graph/',
-         TaxtGraph.as_view(), name='taxonomy_taxtgraph'),
-
-    path('api/v1/', include('django_gem_taxonomy.urls_api_v1')),
+    path('info',
+         GEMTaxonomyInfo.as_view(), name='taxonomy_info'),
+    path('validation/<str:taxonomy_string>',
+         GEMTaxonomyStringValidation.as_view(), name='taxonomy_validation'),
  ]
-# [A-Z0-9]+

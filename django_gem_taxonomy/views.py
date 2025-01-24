@@ -26,7 +26,8 @@ from rest_framework.response import Response
 # from django.conf import settings
 
 from .models import Atom, AtomsGroup, Attribute
-from openquake.gem_taxonomy import GemTaxonomy, __version__
+from .version import __version__
+from openquake.gem_taxonomy import GemTaxonomy
 from parsimonious.exceptions import ParseError as ParsimParseError
 from parsimonious.exceptions import (IncompleteParseError as
                                      ParsimIncompleteParseError)
@@ -94,8 +95,9 @@ class GEMTaxonomyInfo(APIView):
         if request.method != 'GET':
             return Response({'message': 'Not implemented'}, status=405)
 
-        info = GemTaxonomy.info(stdout=os.devnul)
-        return Response(info, status=200)
+        info = GemTaxonomy.info(stdout=open(os.devnull, 'w'))
+        return Response({**{'django_gem_taxonomy_version': __version__},
+                         **info}, status=200)
 
 
 class GEMTaxonomyStringValidation(APIView):
