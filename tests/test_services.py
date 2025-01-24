@@ -26,3 +26,6 @@ class ServiceTestCase(TestCase):
         self.assertEqual(response.data['message'],
                          'Attribute [SSSS]: unknown atom [SSSS].')
         self.assertEqual(response.status_code, 400)
+
+        response = c.get('/taxonomy/api/v1/info')
+        self.assertEqual(response.status_code, 200)
