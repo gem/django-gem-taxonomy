@@ -18,14 +18,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path
-from .views import (TaxtWEB, TaxtGraph, GEMTaxonomyInfo,
-                    GEMTaxonomyStringValidation)
+# from .views import TaxtWEB, TaxtGraph
+from .views import (GEMTaxonomyInfo,
+                    GEMTaxonomyStringValidation,
+                    GEMTaxonomyStringExplanation)
 
-from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
+# from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
 
 urlpatterns = [
     path('info',
          GEMTaxonomyInfo.as_view(), name='taxonomy_info'),
     path('validation/<str:taxonomy_string>',
          GEMTaxonomyStringValidation.as_view(), name='taxonomy_validation'),
+    path('explanation/<str:taxonomy_string>',
+         GEMTaxonomyStringExplanation.as_view(),
+         name='taxonomy_explanation'),
  ]

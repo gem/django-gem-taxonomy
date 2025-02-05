@@ -113,9 +113,35 @@ class GEMTaxonomyStringValidation(APIView):
         gt = GemTaxonomy()
 
         try:
-            report = gt.validate(taxonomy_string)
+            _, report = gt.validate(taxonomy_string)
         except (ValueError, ParsimParseError,
                 ParsimIncompleteParseError) as exc:
             return Response({'success': False, 'message': str(exc)},
                             status=400)
         return Response({**{'success': True}, **report}, status=200)
+
+
+class GEMTaxonomyStringExplanation(APIView):
+    # authentication_classes = [SessionAuthentication]
+
+    def get(self, request, taxonomy_string):
+        """
+        Retrieve information about submitted taxonomy string
+        """
+        if request.method != 'GET':
+            return Response({'message': 'Not implemented'}, status=405)
+
+        fmt = request.query_params.get('fmt', 'json')
+
+        gt = GemTaxonomy()
+
+        try:
+            l_attrs, _ = gt.validate(taxonomy_string)
+        except (ValueError, ParsimParseError,
+                ParsimIncompleteParseError) as exc:
+            return Response({'success': False, 'message': str(exc)},
+                            status=400)
+        explanation = gt.logic_explain(l_attrs, fmt)
+        return Response({**{'success': True},
+                         **{'explanation': explanation}},
+                        status=200)
