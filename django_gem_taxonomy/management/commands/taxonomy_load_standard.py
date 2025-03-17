@@ -78,7 +78,7 @@ class Command(BaseCommand):
                   ' to be visualized as unconstrained atoms'),
             args=None,
             params=None,
-            type='virtual',
+            type=json.dumps({"name": "virtual"}),
             group=None,
             attr=None,
         )
@@ -86,7 +86,7 @@ class Command(BaseCommand):
             atom_name = at_in['name']
             atom_type = (tax_json_in['AtomType'][atom_name]
                          if atom_name in tax_json_in['AtomType']
-                         else {'name': 'option'})
+                         else json.dumps({"name": "option"}))
 
             atom_args = (json.loads(at_in['args'])
                          if at_in['args'] else None)

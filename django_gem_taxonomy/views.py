@@ -95,7 +95,7 @@ class GEMTaxonomyInfo(APIView):
         if request.method != 'GET':
             return Response({'message': 'Not implemented'}, status=405)
 
-        info = GemTaxonomy.info(stdout=open(os.devnull, 'w'))
+        info = GemTaxonomy.info(fmt='dict')
         return Response({**{'django_gem_taxonomy_version': __version__},
                          **info}, status=200)
 

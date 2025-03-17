@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.db import models
-
+import json
 
 class Attribute(models.Model):
     name = models.CharField(max_length=256, primary_key=True)
@@ -61,6 +61,9 @@ class Atom(models.Model):
     deps = models.ManyToManyField('self', symmetrical=False,
                                   related_name='revdeps')
     # is_pseudoid = models.BooleanField()
+
+    def entry_type(self):
+        return json.loads(self.type)
 
 
 class Param(models.Model):

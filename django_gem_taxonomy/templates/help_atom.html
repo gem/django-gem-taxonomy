@@ -1,10 +1,11 @@
 {% load static %}
+
 <html>
   <head>
     {% if atom == None %}
-    <title>Taxtonomy Atoms</title>
+    <title>Taxonomy Atoms</title>
     {% else %}
-    <title>Taxtonomy Atoms</title>
+    <title>Taxonomy Atom</title>
     {% endif %}
     <script src="{% static "js/dist/jquery.min.js" %}"></script>
     <link rel="stylesheet" href="{% static "taxonomy/css/taxonomy_help.css" %}">
@@ -16,45 +17,96 @@
 <body>
     <div id="app">
     {% if atom == None %}
-    <h1>Taxtonomy Atoms</h1>
-    <table class="atom">
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    {% for atom in atoms %}
-      <tr>
-        <td><a href="{{ atom.name }}">{{ atom.name }}</a></td>
-        <td>{{ atom.desc }}</td>
-      </tr>      
-      {% endfor %}
-      </table>
-    {% else %}
-    <h1>Taxtonomy Atom</h1>
+    <h1>Taxonomy Atoms</h1>
     <table class="atom">
       <tr>
         <td>
           Hierarchy
         </td>
         <td>
-          <p class="hierarchy0"><a href="../attrs_group/{{ atom.group.attr.group.name }}">{{ atom.group.attr.group.desc }}</a>
-            (or <a href="../attrs_group/">all Attributes Group</a>)</p>
-          </p>
-          <p class="hierarchy1 hierarchy_arrow"><a href="../attribute/{{ atom.group.attr.name }}">{{ atom.group.attr.desc }}</a>
+          <p class="hierarchy0"><a href="../attribute/">All Attributes</a></p>
+          <p class="hierarchy1 hierarchy_arrow"><a href="../atoms_group/">All Atoms Groups</a></p>
+          <p class="hierarchy2 hierarchy_arrow"><a href="../atom/">All Atoms</a></p>
+        </td>
+      </tr>
+    </table>
+    <br/>
+    <table class="atom">
+      <tr>
+        <th>Name</th>
+        <th>Title</th>
+      </tr>
+    {% for atom in atoms %}
+      <tr>
+        <td><a href="{{ atom.name }}">{{ atom.name }}</a></td>
+        <td>{{ atom.title }}</td>
+      </tr>      
+      {% endfor %}
+      </table>
+    {% else %}
+    <h1>Taxonomy Atom: {{ atom.title }}</h1>
+    <table class="atom">
+      <tr>
+        <td>
+          Hierarchy
+        </td>
+        <td>
+          <p class="hierarchy0"><a href="../attribute/{{ atom.group.attr.name }}">{{ atom.group.attr.title }}</a>
             (or <a href="../attribute/">all Attributes</a>)</p>
-          <p class="hierarchy2 hierarchy_arrow"><a href="../atoms_group/{{ atom.group.name }}">{{ atom.group.desc }}</a>
+          <p class="hierarchy1 hierarchy_arrow"><a href="../atoms_group/{{ atom.group.name }}">{{ atom.group.title }}</a>
             (or <a href="../atoms_group/">all Atoms Groups</a>)</p>
-          <p class="hierarchy3 hierarchy_arrow"><a href="../atom/">(All Atoms)</a></p>
+          <p class="hierarchy2 hierarchy_arrow"><a href="../atom/">All Atoms</a></p>
         </td>
       </tr>
       <tr>
         <td class="highlight">Name: </td><td class="highlight">{{ atom.name }}</td>        
       </tr>
       <tr>
+        <td>Title:</td><td>{{ atom.title }}</td>
+      </tr>
+      {% if atom.desc != '' %}
+      <tr>
         <td>Description:</td><td>{{ atom.desc }}</td>
       </tr>
+      {% endif %}
+      {% if atom.args != None %}
       <tr>
-        <td>Type:</td><td>{% if atom.type == None %}{'name': 'option'}{% else %}{{ atom.type }}{% endif %}</td>
+        <td>Arguments:</td>
+        <td>
+          <table class="atom">
+            {% for key, value in atom.args.items %}
+            <tr>
+              <td>{{ key }}:</td><td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+        </td>
+      </tr>
+      {% endif %}
+      {% if atom.params != None %}
+      <tr>
+        <td>Parameters:</td><td>
+          <table class="atom">
+          {% for key, value in atom.params.items %}
+          <tr>
+            <td>{{ key }}:</td><td>{{ value }}</td>
+          </tr>
+          {% endfor %}
+          </table>
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td>Type:</td>
+        <td>
+          <table class="atom">
+          {% for key, value in atom.entry_type.items %}
+          <tr>
+            <td>{{ key }}:</td><td>{{ value }}</td>
+          </tr>
+          {% endfor %}
+          </table>
+        </td>
       </tr>
       <tr>
         <td>

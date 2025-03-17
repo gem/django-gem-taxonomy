@@ -123,8 +123,7 @@
             "atomsgroups": [
                 "roof_shape",
                 "roof_covering_material",
-                "roof_system_material",
-                "roof_system_type",
+                "roof_type",
                 "roof_connections"
             ]
         },
@@ -147,6 +146,7 @@
             "name": "building_occupancy_class",
             "atoms": [
                 "RES",
+                "NONRES",
                 "COM",
                 "MIX",
                 "IND",
@@ -593,7 +593,7 @@
             "is_persistent": true
         },
         "roof_connections": {
-            "prog": 400,
+            "prog": 300,
             "title": "Roof connections",
             "attr": "roof",
             "mutex": true,
@@ -649,12 +649,12 @@
             ],
             "is_persistent": true
         },
-        "roof_system_material": {
+        "roof_type": {
             "prog": 200,
-            "title": "Roof system material",
+            "title": "Roof type",
             "attr": "roof",
             "mutex": true,
-            "name": "roof_system_material",
+            "name": "roof_type",
             "atoms": [
                 "RM",
                 "RE",
@@ -665,34 +665,6 @@
                 "RO"
             ],
             "is_persistent": true
-        },
-        "roof_system_type": {
-            "prog": 300,
-            "title": "Roof system type",
-            "attr": "roof",
-            "mutex": true,
-            "name": "roof_system_type",
-            "atoms": [
-                "RM1",
-                "RM2",
-                "RM3",
-                "RE1",
-                "RC1",
-                "RC2",
-                "RC3",
-                "RC4",
-                "RME1",
-                "RME2",
-                "RME3",
-                "RWO1",
-                "RWO2",
-                "RWO3",
-                "RWO4",
-                "RWO5",
-                "RFA1",
-                "RFAO"
-            ],
-            "is_persistent": false
         },
         "seismic_code_level": {
             "prog": 100,
@@ -868,15 +840,15 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "ADO",
             "rev_deps": []
         },
         "AGR": {
-            "prog": 3400,
+            "prog": 3600,
             "title": "Agriculture",
             "desc": "",
             "group": "building_occupancy_class",
@@ -885,8 +857,8 @@
             "args": null,
             "params": {
                 "type": "options",
-                "params_max": 1,
-                "params_min": 0
+                "params_min": 0,
+                "params_max": 1
             },
             "deps": [],
             "name": "AGR",
@@ -983,9 +955,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "CB",
             "rev_deps": []
@@ -1001,9 +973,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "CBH",
             "rev_deps": []
@@ -1019,9 +991,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "CBS",
             "rev_deps": []
@@ -1103,8 +1075,8 @@
             "args": null,
             "params": null,
             "deps": [
-                "CU",
                 "CR",
+                "CU",
                 "SRC"
             ],
             "name": "CIP",
@@ -1137,9 +1109,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "CL",
             "rev_deps": []
@@ -1155,9 +1127,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "CLBLH",
             "rev_deps": []
@@ -1173,9 +1145,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "CLBRH",
             "rev_deps": []
@@ -1191,15 +1163,15 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "CLBRS",
             "rev_deps": []
         },
         "COM": {
-            "prog": 1200,
+            "prog": 1400,
             "title": "Commercial and public",
             "desc": "",
             "group": "building_occupancy_class",
@@ -1208,8 +1180,8 @@
             "args": null,
             "params": {
                 "type": "options",
-                "params_max": 1,
-                "params_min": 0
+                "params_min": 0,
+                "params_max": 1
             },
             "deps": [],
             "name": "COM",
@@ -1279,30 +1251,34 @@
         },
         "DCW": {
             "prog": 0,
-            "title": "Float specifying the density or ratio between the area of columns and/or walls and the area of the building plan.\n(DCW <= 1)",
-            "desc": "",
+            "title": "Columns-Wall density",
+            "desc": "Float specifying the density or ratio between the area of columns and/or walls and the area of the building plan.",
             "group": "columns_wall_density",
             "attr": "llrs",
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "max": 1,
-                "min": 0,
                 "type": "float",
-                "max_incl": true,
+                "min": 0,
                 "min_incl": true,
+                "max": 1,
+                "max_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "ratio",
+                    "ratio"
+                ]
             },
             "deps": [
-                "LFM",
-                "LFINF",
-                "LFBR",
-                "LPB",
-                "LWAL",
                 "LDUAL",
+                "LFBR",
+                "LFINF",
                 "LFLS",
-                "LFLSINF"
+                "LFLSINF",
+                "LFM",
+                "LPB",
+                "LWAL"
             ],
             "name": "DCW",
             "rev_deps": []
@@ -1377,7 +1353,7 @@
             ]
         },
         "EDU": {
-            "prog": 4400,
+            "prog": 4600,
             "title": "Education",
             "desc": "",
             "group": "building_occupancy_class",
@@ -1386,8 +1362,8 @@
             "args": null,
             "params": {
                 "type": "options",
-                "params_max": 1,
-                "params_min": 0
+                "params_min": 0,
+                "params_max": 1
             },
             "deps": [],
             "name": "EDU",
@@ -1421,8 +1397,8 @@
             "params": null,
             "deps": [
                 "E",
-                "EU",
-                "ER"
+                "ER",
+                "EU"
             ],
             "name": "ETC",
             "rev_deps": []
@@ -1438,8 +1414,8 @@
             "params": null,
             "deps": [
                 "E",
-                "EU",
-                "ER"
+                "ER",
+                "EU"
             ],
             "name": "ETO",
             "rev_deps": []
@@ -1455,8 +1431,8 @@
             "params": null,
             "deps": [
                 "E",
-                "EU",
-                "ER"
+                "ER",
+                "EU"
             ],
             "name": "ETR",
             "rev_deps": []
@@ -2110,7 +2086,7 @@
             "rev_deps": []
         },
         "GOV": {
-            "prog": 3800,
+            "prog": 4000,
             "title": "Government",
             "desc": "",
             "group": "building_occupancy_class",
@@ -2119,8 +2095,8 @@
             "args": null,
             "params": {
                 "type": "options",
-                "params_max": 1,
-                "params_min": 0
+                "params_min": 0,
+                "params_max": 1
             },
             "deps": [],
             "name": "GOV",
@@ -2128,18 +2104,22 @@
         },
         "H": {
             "prog": 0,
-            "title": "Number of storeys above ground.",
+            "title": "Number of storeys above ground",
             "desc": "H:n, exact number of storeys above ground.\nH:a-b, range of storeys above ground.\nH:<n, n upper limit of number of storeys above ground (with n excluded).\nH:>n, n lower limit of number of storeys above ground (with n excluded).",
             "group": "number_of_storeys",
             "attr": "height",
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "min": 0,
                 "type": "rangeable_int",
+                "min": 0,
                 "min_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "storey",
+                    "storeys"
+                ]
             },
             "deps": [],
             "name": "H",
@@ -2147,18 +2127,22 @@
         },
         "HAPP": {
             "prog": 100,
-            "title": "Approximate number of storeys above ground.",
+            "title": "Approximate number of storeys above ground",
             "desc": "HAPP:n",
             "group": "number_of_storeys",
             "attr": "height",
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "min": 0,
                 "type": "int",
+                "min": 0,
                 "min_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "storey",
+                    "storeys"
+                ]
             },
             "deps": [],
             "name": "HAPP",
@@ -2166,18 +2150,22 @@
         },
         "HB": {
             "prog": 0,
-            "title": "Number of storeys below ground (same as number of basements)",
-            "desc": "HB:n, exact number of storeys below ground.\nHB:a-b, range of storeys below ground.\nHB:<n, n upper limit of number of storeys below ground (with n excluded).\nHB:>n, n lower limit of number of storeys below ground (with n excluded).",
+            "title": "Number of storeys below ground",
+            "desc": "Number of storeys below ground (same as number of basements).\nHB:n, exact number of storeys below ground.\nHB:a-b, range of storeys below ground.\nHB:<n, n upper limit of number of storeys below ground (with n excluded).\nHB:>n, n lower limit of number of storeys below ground (with n excluded).",
             "group": "number_storeys_below",
             "attr": "height",
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "min": 0,
                 "type": "rangeable_int",
+                "min": 0,
                 "min_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "storey",
+                    "storeys"
+                ]
             },
             "deps": [],
             "name": "HB",
@@ -2192,11 +2180,15 @@
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "min": 0,
                 "type": "int",
+                "min": 0,
                 "min_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "storey",
+                    "storeys"
+                ]
             },
             "deps": [],
             "name": "HBAPP",
@@ -2204,27 +2196,31 @@
         },
         "HD": {
             "prog": 0,
-            "title": "q",
-            "desc": "HD:n",
+            "title": "Slope of the ground",
+            "desc": "Slope of the ground (n=float in degrees).\nHD:n",
             "group": "slope_the_ground",
             "attr": "height",
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "max": 90,
-                "min": 0,
                 "type": "float",
-                "max_incl": false,
+                "min": 0,
                 "min_incl": true,
+                "max": 90,
+                "max_incl": false,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "degree",
+                    "degrees"
+                ]
             },
             "deps": [],
             "name": "HD",
             "rev_deps": []
         },
         "HEA": {
-            "prog": 5500,
+            "prog": 5700,
             "title": "Healthcare",
             "desc": "",
             "group": "building_occupancy_class",
@@ -2233,8 +2229,8 @@
             "args": null,
             "params": {
                 "type": "options",
-                "params_max": 1,
-                "params_min": 0
+                "params_min": 0,
+                "params_max": 1
             },
             "deps": [],
             "name": "HEA",
@@ -2249,11 +2245,15 @@
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "min": 0,
                 "type": "rangeable_float",
+                "min": 0,
                 "min_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "meter",
+                    "meters"
+                ]
             },
             "deps": [],
             "name": "HF",
@@ -2268,11 +2268,15 @@
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "min": 0,
                 "type": "float",
+                "min": 0,
                 "min_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "meter",
+                    "meters"
+                ]
             },
             "deps": [],
             "name": "HFAPP",
@@ -2280,18 +2284,22 @@
         },
         "HHI": {
             "prog": 100,
-            "title": "Inter-storey height (average). Float specifying the average floor height in meters. (HHI>= 1)",
-            "desc": "HHI:n",
+            "title": "Inter-storey height (average)",
+            "desc": " Float specifying the average floor height in meters. (HHI>= 1)\nHHI:n",
             "group": "height_structure_m",
             "attr": "height",
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "min": 1,
                 "type": "float",
+                "min": 1,
                 "min_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "meter",
+                    "meters"
+                ]
             },
             "deps": [],
             "name": "HHI",
@@ -2299,18 +2307,22 @@
         },
         "HHT": {
             "prog": 0,
-            "title": "Total height of the structure, measured from the ground floor. Float specifying the height of the structures in meters. (HHT>= 1)",
-            "desc": "HHT:n",
+            "title": "Total height of the structure, measured from the ground floor.",
+            "desc": "Total height of the structure, measured from the ground floor. Float specifying the height of the structures in meters. (HHT>= 1)\nHHT:n",
             "group": "height_structure_m",
             "attr": "height",
             "type": "{'name': 'option'}",
             "args": null,
             "params": {
-                "min": 1,
                 "type": "float",
+                "min": 1,
                 "min_incl": true,
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "meter",
+                    "meters"
+                ]
             },
             "deps": [],
             "name": "HHT",
@@ -2334,7 +2346,7 @@
             "rev_deps": []
         },
         "IND": {
-            "prog": 2700,
+            "prog": 2900,
             "title": "Industrial",
             "desc": "",
             "group": "building_occupancy_class",
@@ -2343,8 +2355,8 @@
             "args": null,
             "params": {
                 "type": "options",
-                "params_max": 1,
-                "params_min": 0
+                "params_min": 0,
+                "params_max": 1
             },
             "deps": [],
             "name": "IND",
@@ -2469,8 +2481,8 @@
             "type": "{'name': 'option'}",
             "args": {
                 "type": "filtered_attribute('llrs', ['LDD'])",
-                "args_max": 2,
                 "args_min": 2,
+                "args_max": 2,
                 "must_be_diff": true
             },
             "params": null,
@@ -2510,13 +2522,25 @@
         },
         "LFC": {
             "prog": 0,
-            "title": "LFC:n, n is the lateral force coefficient in percentage (%)",
-            "desc": "",
+            "title": "Lateral load coefficient",
+            "desc": "LFC:n, n is the lateral force coefficient in percentage (%)",
             "group": "lateral_load_coefficient",
             "attr": "llrs",
             "type": "{'name': 'option'}",
             "args": null,
-            "params": null,
+            "params": {
+                "type": "float",
+                "min": 0.0,
+                "min_incl": true,
+                "max": 100.0,
+                "max_incl": true,
+                "params_min": 1,
+                "params_max": 1,
+                "unit_measure": [
+                    "%",
+                    "%"
+                ]
+            },
             "deps": [],
             "name": "LFC",
             "rev_deps": []
@@ -2530,8 +2554,8 @@
             "type": "{'name': 'option'}",
             "args": {
                 "type": "filtered_attribute('material', ['MDD','HYB'])",
-                "args_max": 1,
-                "args_min": 0
+                "args_min": 0,
+                "args_max": 1
             },
             "params": null,
             "deps": [],
@@ -2564,8 +2588,8 @@
             "type": "{'name': 'option'}",
             "args": {
                 "type": "filtered_attribute('material', ['MDD', 'HYB'])",
-                "args_max": 1,
-                "args_min": 0
+                "args_min": 0,
+                "args_max": 1
             },
             "params": null,
             "deps": [],
@@ -2746,8 +2770,8 @@
             "type": "{'name': 'option'}",
             "args": {
                 "type": "filtered_attribute('material', ['MDD'])",
-                "args_max": 2,
                 "args_min": 2,
+                "args_max": 2,
                 "must_be_diff": true
             },
             "params": null,
@@ -2802,7 +2826,7 @@
             "rev_deps": []
         },
         "MIX": {
-            "prog": 2600,
+            "prog": 2800,
             "title": "Mixed",
             "desc": "",
             "group": "building_occupancy_class",
@@ -2829,9 +2853,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "MO",
             "rev_deps": []
@@ -2847,9 +2871,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "MOC",
             "rev_deps": []
@@ -2865,9 +2889,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "MOCL",
             "rev_deps": []
@@ -2883,9 +2907,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "MOL",
             "rev_deps": []
@@ -2901,9 +2925,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "MOM",
             "rev_deps": []
@@ -2919,9 +2943,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "MON",
             "rev_deps": []
@@ -2993,8 +3017,21 @@
                 "MOCL"
             ]
         },
+        "NONRES": {
+            "prog": 1300,
+            "title": "Not residential",
+            "desc": "",
+            "group": "building_occupancy_class",
+            "attr": "occupancy",
+            "type": "{'name': 'option'}",
+            "args": null,
+            "params": null,
+            "deps": [],
+            "name": "NONRES",
+            "rev_deps": []
+        },
         "OCO": {
-            "prog": 7000,
+            "prog": 7200,
             "title": "Other occupancy type",
             "desc": "",
             "group": "building_occupancy_class",
@@ -3016,8 +3053,8 @@
             "args": null,
             "params": null,
             "deps": [
-                "CU",
                 "CR",
+                "CU",
                 "SRC"
             ],
             "name": "PC",
@@ -3364,81 +3401,20 @@
             "rev_deps": []
         },
         "RC": {
-            "prog": 200,
+            "prog": 600,
             "title": "Concrete",
             "desc": "",
-            "group": "roof_system_material",
+            "group": "roof_type",
             "attr": "roof",
             "type": "{'name': 'option'}",
             "args": null,
-            "params": null,
+            "params": {
+                "type": "options",
+                "params_min": 0,
+                "params_max": 1
+            },
             "deps": [],
             "name": "RC",
-            "rev_deps": [
-                "RC1",
-                "RC2",
-                "RC3",
-                "RC4"
-            ]
-        },
-        "RC1": {
-            "prog": 400,
-            "title": "Cast-in-place beamless reinforced concrete roof",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RC"
-            ],
-            "name": "RC1",
-            "rev_deps": []
-        },
-        "RC2": {
-            "prog": 500,
-            "title": "Cast-in-place  beam-supported reinforced concrete roof",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RC"
-            ],
-            "name": "RC2",
-            "rev_deps": []
-        },
-        "RC3": {
-            "prog": 600,
-            "title": "Precast concrete roof with reinforced concrete topping",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RC"
-            ],
-            "name": "RC3",
-            "rev_deps": []
-        },
-        "RC4": {
-            "prog": 700,
-            "title": "Precast concrete roof without reinforced concrete topping",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RC"
-            ],
-            "name": "RC4",
             "rev_deps": []
         },
         "RCB": {
@@ -3472,33 +3448,20 @@
             "rev_deps": []
         },
         "RE": {
-            "prog": 100,
+            "prog": 400,
             "title": "Earthen",
             "desc": "",
-            "group": "roof_system_material",
+            "group": "roof_type",
             "attr": "roof",
             "type": "{'name': 'option'}",
             "args": null,
-            "params": null,
+            "params": {
+                "type": "options",
+                "params_min": 0,
+                "params_max": 1
+            },
             "deps": [],
             "name": "RE",
-            "rev_deps": [
-                "RE1"
-            ]
-        },
-        "RE1": {
-            "prog": 300,
-            "title": "Vaulted earthen roof",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RE"
-            ],
-            "name": "RE1",
             "rev_deps": []
         },
         "REC": {
@@ -3526,57 +3489,28 @@
             "args": null,
             "params": {
                 "type": "options",
-                "params_max": 1,
-                "params_min": 0
+                "params_min": 0,
+                "params_max": 1
             },
             "deps": [],
             "name": "RES",
             "rev_deps": []
         },
         "RFA": {
-            "prog": 500,
+            "prog": 2100,
             "title": "Fabric",
             "desc": "",
-            "group": "roof_system_material",
+            "group": "roof_type",
             "attr": "roof",
             "type": "{'name': 'option'}",
             "args": null,
-            "params": null,
+            "params": {
+                "type": "options",
+                "params_min": 0,
+                "params_max": 1
+            },
             "deps": [],
             "name": "RFA",
-            "rev_deps": [
-                "RFA1",
-                "RFAO"
-            ]
-        },
-        "RFA1": {
-            "prog": 1600,
-            "title": "Inflatable or tensile membrane roof",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RFA"
-            ],
-            "name": "RFA1",
-            "rev_deps": []
-        },
-        "RFAO": {
-            "prog": 1700,
-            "title": "Fabric, other",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RFA"
-            ],
-            "name": "RFAO",
             "rev_deps": []
         },
         "RIV": {
@@ -3598,124 +3532,34 @@
             "prog": 0,
             "title": "Masonry",
             "desc": "",
-            "group": "roof_system_material",
+            "group": "roof_type",
             "attr": "roof",
             "type": "{'name': 'option'}",
             "args": null,
-            "params": null,
+            "params": {
+                "type": "options",
+                "params_min": 0,
+                "params_max": 1
+            },
             "deps": [],
             "name": "RM",
-            "rev_deps": [
-                "RM1",
-                "RM2",
-                "RM3"
-            ]
-        },
-        "RM1": {
-            "prog": 0,
-            "title": "Vaulted masonry",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RM"
-            ],
-            "name": "RM1",
-            "rev_deps": []
-        },
-        "RM2": {
-            "prog": 100,
-            "title": "Shallow-arched masonry",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RM"
-            ],
-            "name": "RM2",
-            "rev_deps": []
-        },
-        "RM3": {
-            "prog": 200,
-            "title": "Composite masonry and concrete roof system",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RM"
-            ],
-            "name": "RM3",
             "rev_deps": []
         },
         "RME": {
-            "prog": 300,
+            "prog": 1100,
             "title": "Metal or steel",
             "desc": "",
-            "group": "roof_system_material",
+            "group": "roof_type",
             "attr": "roof",
             "type": "{'name': 'option'}",
             "args": null,
-            "params": null,
+            "params": {
+                "type": "options",
+                "params_min": 0,
+                "params_max": 1
+            },
             "deps": [],
             "name": "RME",
-            "rev_deps": [
-                "RME1",
-                "RME2",
-                "RME3"
-            ]
-        },
-        "RME1": {
-            "prog": 800,
-            "title": "Metal or steel beams or trusses supporting light roofing",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RME"
-            ],
-            "name": "RME1",
-            "rev_deps": []
-        },
-        "RME2": {
-            "prog": 900,
-            "title": "Metal or steel beams supporting precast concrete slabs",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RME"
-            ],
-            "name": "RME2",
-            "rev_deps": []
-        },
-        "RME3": {
-            "prog": 1000,
-            "title": "Composite steel deck and concrete slab",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RME"
-            ],
-            "name": "RME3",
             "rev_deps": []
         },
         "RMN": {
@@ -3888,14 +3732,18 @@
             "rev_deps": []
         },
         "RO": {
-            "prog": 600,
+            "prog": 2400,
             "title": "Roof material, other",
             "desc": "",
-            "group": "roof_system_material",
+            "group": "roof_type",
             "attr": "roof",
             "type": "{'name': 'option'}",
             "args": null,
-            "params": null,
+            "params": {
+                "type": "options",
+                "params_min": 0,
+                "params_max": 1
+            },
             "deps": [],
             "name": "RO",
             "rev_deps": []
@@ -4113,97 +3961,20 @@
             "rev_deps": []
         },
         "RWO": {
-            "prog": 400,
+            "prog": 1500,
             "title": "Wood",
             "desc": "",
-            "group": "roof_system_material",
+            "group": "roof_type",
             "attr": "roof",
             "type": "{'name': 'option'}",
             "args": null,
-            "params": null,
+            "params": {
+                "type": "options",
+                "params_min": 0,
+                "params_max": 1
+            },
             "deps": [],
             "name": "RWO",
-            "rev_deps": [
-                "RWO1",
-                "RWO2",
-                "RWO3",
-                "RWO4",
-                "RWO5"
-            ]
-        },
-        "RWO1": {
-            "prog": 1100,
-            "title": "Wooden structurewith light roof covering",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RWO"
-            ],
-            "name": "RWO1",
-            "rev_deps": []
-        },
-        "RWO2": {
-            "prog": 1200,
-            "title": "Wooden beams or trusses with  heavy roof covering",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RWO"
-            ],
-            "name": "RWO2",
-            "rev_deps": []
-        },
-        "RWO3": {
-            "prog": 1300,
-            "title": "Wood-based sheets on rafters or purlins",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RWO"
-            ],
-            "name": "RWO3",
-            "rev_deps": []
-        },
-        "RWO4": {
-            "prog": 1400,
-            "title": "Plywood panels or other light-weight panels for roof",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RWO"
-            ],
-            "name": "RWO4",
-            "rev_deps": []
-        },
-        "RWO5": {
-            "prog": 1500,
-            "title": "Bamboo, straw or thatch roof",
-            "desc": "",
-            "group": "roof_system_type",
-            "attr": "roof",
-            "type": "{'name': 'option'}",
-            "args": null,
-            "params": null,
-            "deps": [
-                "RWO"
-            ],
-            "name": "RWO5",
             "rev_deps": []
         },
         "S": {
@@ -4312,8 +4083,8 @@
             "params": null,
             "deps": [
                 "ST",
-                "STRUB",
-                "STDRE"
+                "STDRE",
+                "STRUB"
             ],
             "name": "SPBA",
             "rev_deps": []
@@ -4329,8 +4100,8 @@
             "params": null,
             "deps": [
                 "ST",
-                "STRUB",
-                "STDRE"
+                "STDRE",
+                "STRUB"
             ],
             "name": "SPGR",
             "rev_deps": []
@@ -4346,8 +4117,8 @@
             "params": null,
             "deps": [
                 "ST",
-                "STRUB",
-                "STDRE"
+                "STDRE",
+                "STRUB"
             ],
             "name": "SPLI",
             "rev_deps": []
@@ -4363,8 +4134,8 @@
             "params": null,
             "deps": [
                 "ST",
-                "STRUB",
-                "STDRE"
+                "STDRE",
+                "STRUB"
             ],
             "name": "SPO",
             "rev_deps": []
@@ -4380,8 +4151,8 @@
             "params": null,
             "deps": [
                 "ST",
-                "STRUB",
-                "STDRE"
+                "STDRE",
+                "STRUB"
             ],
             "name": "SPSA",
             "rev_deps": []
@@ -4397,8 +4168,8 @@
             "params": null,
             "deps": [
                 "ST",
-                "STRUB",
-                "STDRE"
+                "STDRE",
+                "STRUB"
             ],
             "name": "SPSL",
             "rev_deps": []
@@ -4414,8 +4185,8 @@
             "params": null,
             "deps": [
                 "ST",
-                "STRUB",
-                "STDRE"
+                "STDRE",
+                "STRUB"
             ],
             "name": "SPTU",
             "rev_deps": []
@@ -4464,9 +4235,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "ST",
             "rev_deps": [
@@ -4490,9 +4261,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "STDRE",
             "rev_deps": [
@@ -4516,9 +4287,9 @@
             "params": null,
             "deps": [
                 "M",
-                "MUR",
                 "MCF",
-                "MR"
+                "MR",
+                "MUR"
             ],
             "name": "STRUB",
             "rev_deps": [
@@ -4547,7 +4318,7 @@
             "rev_deps": []
         },
         "TRT": {
-            "prog": 6600,
+            "prog": 6800,
             "title": "Transportation",
             "desc": "",
             "group": "building_occupancy_class",
@@ -4556,8 +4327,8 @@
             "args": null,
             "params": {
                 "type": "options",
-                "params_max": 1,
-                "params_min": 0
+                "params_min": 0,
+                "params_max": 1
             },
             "deps": [],
             "name": "TRT",
@@ -4759,15 +4530,19 @@
             "args": null,
             "params": {
                 "type": "rangeable_int",
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "year",
+                    "years"
+                ]
             },
             "deps": [],
             "name": "Y",
             "rev_deps": []
         },
         "YAPP": {
-            "prog": 200,
+            "prog": 100,
             "title": "Approximate date of construction or retrofit",
             "desc": "",
             "group": "construction_completed_year",
@@ -4776,8 +4551,12 @@
             "args": null,
             "params": {
                 "type": "int",
+                "params_min": 1,
                 "params_max": 1,
-                "params_min": 1
+                "unit_measure": [
+                    "year",
+                    "years"
+                ]
             },
             "deps": [],
             "name": "YAPP",
@@ -4925,6 +4704,13 @@
                 "title": "Mobile home",
                 "desc": "",
                 "prog": "1100"
+            },
+            {
+                "atom": "RES",
+                "name": "6",
+                "title": "Indigenous housing",
+                "desc": "",
+                "prog": "1200"
             }
         ],
         "COM": [
@@ -4933,91 +4719,91 @@
                 "name": "1",
                 "title": "Retail trade",
                 "desc": "",
-                "prog": "1300"
+                "prog": "1500"
             },
             {
                 "atom": "COM",
                 "name": "2",
                 "title": "Wholesale trade and storage (warehouse)",
                 "desc": "",
-                "prog": "1400"
+                "prog": "1600"
             },
             {
                 "atom": "COM",
                 "name": "3",
                 "title": "Offices, professional/technical services",
                 "desc": "",
-                "prog": "1500"
+                "prog": "1700"
             },
             {
                 "atom": "COM",
                 "name": "3A",
                 "title": "Financial and insurance activities",
                 "desc": "",
-                "prog": "1600"
+                "prog": "1800"
             },
             {
                 "atom": "COM",
                 "name": "3B",
                 "title": "Personal and Repair Services",
                 "desc": "",
-                "prog": "1700"
+                "prog": "1900"
             },
             {
                 "atom": "COM",
                 "name": "3C",
                 "title": "Hotels and motels",
                 "desc": "",
-                "prog": "1800"
+                "prog": "2000"
             },
             {
                 "atom": "COM",
                 "name": "4",
                 "title": "Covered parking garage",
                 "desc": "",
-                "prog": "1900"
+                "prog": "2100"
             },
             {
                 "atom": "COM",
                 "name": "5",
                 "title": "Entertainment and recreation",
                 "desc": "",
-                "prog": "2000"
+                "prog": "2200"
             },
             {
                 "atom": "COM",
                 "name": "5A",
                 "title": "Entertainment",
                 "desc": "",
-                "prog": "2100"
+                "prog": "2300"
             },
             {
                 "atom": "COM",
                 "name": "5B",
                 "title": "Recreation",
                 "desc": "",
-                "prog": "2200"
+                "prog": "2400"
             },
             {
                 "atom": "COM",
                 "name": "5C",
                 "title": "Religious gathering",
                 "desc": "",
-                "prog": "2300"
+                "prog": "2500"
             },
             {
                 "atom": "COM",
                 "name": "5D",
                 "title": "Arena",
                 "desc": "",
-                "prog": "2400"
+                "prog": "2600"
             },
             {
                 "atom": "COM",
                 "name": "5E",
                 "title": "Cinema, auditoriums or concert hall",
                 "desc": "",
-                "prog": "2500"
+                "prog": "2700"
             }
         ],
         "IND": [
@@ -5026,42 +4812,42 @@
                 "name": "1",
                 "title": "Heavy Industry Factories",
                 "desc": "",
-                "prog": "2800"
+                "prog": "3000"
             },
             {
                 "atom": "IND",
                 "name": "2",
                 "title": "Light Industry Factories",
                 "desc": "",
-                "prog": "2900"
+                "prog": "3100"
             },
             {
                 "atom": "IND",
                 "name": "3",
                 "title": "Food/Drugs/Chemicals Factories",
                 "desc": "",
-                "prog": "3000"
+                "prog": "3200"
             },
             {
                 "atom": "IND",
                 "name": "4",
                 "title": "Metals/Minerals Processing Factories",
                 "desc": "",
-                "prog": "3100"
+                "prog": "3300"
             },
             {
                 "atom": "IND",
                 "name": "5",
                 "title": "High Technology Labs/Factories",
                 "desc": "",
-                "prog": "3200"
+                "prog": "3400"
             },
             {
                 "atom": "IND",
                 "name": "6",
                 "title": "Construction Offices",
                 "desc": "",
-                "prog": "3300"
+                "prog": "3500"
             }
         ],
         "AGR": [
@@ -5070,21 +4856,21 @@
                 "name": "1",
                 "title": "Produce storage",
                 "desc": "",
-                "prog": "3500"
+                "prog": "3700"
             },
             {
                 "atom": "AGR",
                 "name": "2",
                 "title": "Animal shelter",
                 "desc": "",
-                "prog": "3600"
+                "prog": "3800"
             },
             {
                 "atom": "AGR",
                 "name": "3",
                 "title": "Agricultural processing",
                 "desc": "",
-                "prog": "3700"
+                "prog": "3900"
             }
         ],
         "GOV": [
@@ -5093,35 +4879,35 @@
                 "name": "1",
                 "title": "Government, general services",
                 "desc": "",
-                "prog": "3900"
+                "prog": "4100"
             },
             {
                 "atom": "GOV",
                 "name": "2",
                 "title": "Government, emergency response",
                 "desc": "",
-                "prog": "4000"
+                "prog": "4200"
             },
             {
                 "atom": "GOV",
                 "name": "2A",
                 "title": "Government, police station",
                 "desc": "",
-                "prog": "4100"
+                "prog": "4300"
             },
             {
                 "atom": "GOV",
                 "name": "2B",
                 "title": "Government, fire station",
                 "desc": "",
-                "prog": "4200"
+                "prog": "4400"
             },
             {
                 "atom": "GOV",
                 "name": "2C",
                 "title": "Government, emergency operation center",
                 "desc": "",
-                "prog": "4300"
+                "prog": "4500"
             }
         ],
         "EDU": [
@@ -5130,70 +4916,70 @@
                 "name": "1",
                 "title": "Pre-school facility",
                 "desc": "",
-                "prog": "4500"
+                "prog": "4700"
             },
             {
                 "atom": "EDU",
                 "name": "1A",
                 "title": "Day care center",
                 "desc": "",
-                "prog": "4600"
+                "prog": "4800"
             },
             {
                 "atom": "EDU",
                 "name": "1B",
                 "title": "Pre-school / Kindergarten",
                 "desc": "",
-                "prog": "4700"
+                "prog": "4900"
             },
             {
                 "atom": "EDU",
                 "name": "2",
                 "title": "School",
                 "desc": "",
-                "prog": "4800"
+                "prog": "5000"
             },
             {
                 "atom": "EDU",
                 "name": "2A",
                 "title": "Elementary/Primary school",
                 "desc": "",
-                "prog": "4900"
+                "prog": "5100"
             },
             {
                 "atom": "EDU",
                 "name": "2B",
                 "title": "Middle School",
                 "desc": "",
-                "prog": "5000"
+                "prog": "5200"
             },
             {
                 "atom": "EDU",
                 "name": "2C",
                 "title": "High/Secondary School",
                 "desc": "",
-                "prog": "5100"
+                "prog": "5300"
             },
             {
                 "atom": "EDU",
                 "name": "3",
                 "title": "College/university, offices and/or classrooms",
                 "desc": "",
-                "prog": "5200"
+                "prog": "5400"
             },
             {
                 "atom": "EDU",
                 "name": "4",
                 "title": "College/university, research facilities and/or labs",
                 "desc": "",
-                "prog": "5300"
+                "prog": "5500"
             },
             {
                 "atom": "EDU",
                 "name": "5",
                 "title": "Other schools",
                 "desc": "",
-                "prog": "5400"
+                "prog": "5600"
             }
         ],
         "HEA": [
@@ -5202,70 +4988,70 @@
                 "name": "1",
                 "title": "Hospital",
                 "desc": "",
-                "prog": "5600"
+                "prog": "5800"
             },
             {
                 "atom": "HEA",
                 "name": "1A",
                 "title": "Primary Level Hospital",
                 "desc": "",
-                "prog": "5700"
+                "prog": "5900"
             },
             {
                 "atom": "HEA",
                 "name": "B",
                 "title": "Secondary Level Hospital",
                 "desc": "",
-                "prog": "5800"
+                "prog": "6000"
             },
             {
                 "atom": "HEA",
                 "name": "C",
                 "title": "Tertiary Level Hospital",
                 "desc": "",
-                "prog": "5900"
+                "prog": "6100"
             },
             {
                 "atom": "HEA",
                 "name": "2",
                 "title": "Clinic",
                 "desc": "",
-                "prog": "6000"
+                "prog": "6200"
             },
             {
                 "atom": "HEA",
                 "name": "3",
                 "title": "Basic Health Unit",
                 "desc": "",
-                "prog": "6100"
+                "prog": "6300"
             },
             {
                 "atom": "HEA",
                 "name": "4",
                 "title": "Specialty Center",
                 "desc": "",
-                "prog": "6200"
+                "prog": "6400"
             },
             {
                 "atom": "HEA",
                 "name": "5",
                 "title": "Health Post",
                 "desc": "",
-                "prog": "6300"
+                "prog": "6500"
             },
             {
                 "atom": "HEA",
                 "name": "6",
                 "title": "Rehabilitation Center",
                 "desc": "",
-                "prog": "6400"
+                "prog": "6600"
             },
             {
                 "atom": "HEA",
                 "name": "7",
                 "title": "Other healthcare facilities",
                 "desc": "",
-                "prog": "6500"
+                "prog": "6700"
             }
         ],
         "TRT": [
@@ -5274,21 +5060,159 @@
                 "name": "1",
                 "title": "Bus station",
                 "desc": "",
-                "prog": "6700"
+                "prog": "6900"
             },
             {
                 "atom": "TRT",
                 "name": "2",
                 "title": "Railway station",
                 "desc": "",
-                "prog": "6800"
+                "prog": "7000"
             },
             {
                 "atom": "TRT",
                 "name": "3",
                 "title": "Airport",
                 "desc": "",
-                "prog": "6900"
+                "prog": "7100"
+            }
+        ],
+        "RM": [
+            {
+                "atom": "RM",
+                "name": "1",
+                "title": "Vaulted masonry",
+                "desc": "",
+                "prog": "100"
+            },
+            {
+                "atom": "RM",
+                "name": "2",
+                "title": "Shallow-arched masonry",
+                "desc": "",
+                "prog": "200"
+            },
+            {
+                "atom": "RM",
+                "name": "3",
+                "title": "Composite masonry and concrete roof system",
+                "desc": "",
+                "prog": "300"
+            }
+        ],
+        "RE": [
+            {
+                "atom": "RE",
+                "name": "1",
+                "title": "Vaulted earthen roof",
+                "desc": "",
+                "prog": "500"
+            }
+        ],
+        "RC": [
+            {
+                "atom": "RC",
+                "name": "1",
+                "title": "Cast-in-place beamless reinforced concrete roof",
+                "desc": "",
+                "prog": "700"
+            },
+            {
+                "atom": "RC",
+                "name": "2",
+                "title": "Cast-in-place  beam-supported reinforced concrete roof",
+                "desc": "",
+                "prog": "800"
+            },
+            {
+                "atom": "RC",
+                "name": "3",
+                "title": "Precast concrete roof with reinforced concrete topping",
+                "desc": "",
+                "prog": "900"
+            },
+            {
+                "atom": "RC",
+                "name": "4",
+                "title": "Precast concrete roof without reinforced concrete topping",
+                "desc": "",
+                "prog": "1000"
+            }
+        ],
+        "RME": [
+            {
+                "atom": "RME",
+                "name": "1",
+                "title": "Metal or steel beams or trusses supporting light roofing",
+                "desc": "",
+                "prog": "1200"
+            },
+            {
+                "atom": "RME",
+                "name": "2",
+                "title": "Metal or steel beams supporting precast concrete slabs",
+                "desc": "",
+                "prog": "1300"
+            },
+            {
+                "atom": "RME",
+                "name": "3",
+                "title": "Composite steel deck and concrete slab",
+                "desc": "",
+                "prog": "1400"
+            }
+        ],
+        "RWO": [
+            {
+                "atom": "RWO",
+                "name": "1",
+                "title": "Wooden structurewith light roof covering",
+                "desc": "",
+                "prog": "1600"
+            },
+            {
+                "atom": "RWO",
+                "name": "2",
+                "title": "Wooden beams or trusses with  heavy roof covering",
+                "desc": "",
+                "prog": "1700"
+            },
+            {
+                "atom": "RWO",
+                "name": "3",
+                "title": "Wood-based sheets on rafters or purlins",
+                "desc": "",
+                "prog": "1800"
+            },
+            {
+                "atom": "RWO",
+                "name": "4",
+                "title": "Plywood panels or other light-weight panels for roof",
+                "desc": "",
+                "prog": "1900"
+            },
+            {
+                "atom": "RWO",
+                "name": "5",
+                "title": "Bamboo, straw or thatch roof",
+                "desc": "",
+                "prog": "2000"
+            }
+        ],
+        "RFA": [
+            {
+                "atom": "RFA",
+                "name": "1",
+                "title": "Inflatable or tensile membrane roof",
+                "desc": "",
+                "prog": "2200"
+            },
+            {
+                "atom": "RFA",
+                "name": "O",
+                "title": "Fabric, other",
+                "desc": "",
+                "prog": "2300"
             }
         ]
     },

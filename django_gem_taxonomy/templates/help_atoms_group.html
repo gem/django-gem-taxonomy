@@ -2,9 +2,9 @@
 <html>
   <head>
     {% if atoms_group == None %}
-    <title>Taxtonomy Atoms Groups</title>
+    <title>Taxonomy Atoms Groups</title>
     {% else %}
-    <title>Taxtonomy Atoms Group</title>
+    <title>Taxonomy Atoms Group</title>
     {% endif %}
     <script src="{% static "js/dist/jquery.min.js" %}"></script>
     <!-- script>
@@ -16,7 +16,20 @@
 <body>
     <div id="app">
     {% if atoms_group == None %}
-    <h1>Taxtonomy Attributes Groups</h1>
+    <h1>Taxonomy Atoms Groups</h1>
+    <table class="atom">
+      <tr>
+        <td>
+          Hierarchy
+        </td>
+        <td>
+          <p class="hierarchy0"><a href="../attribute/">All Attributes</a></p>
+          <p class="hierarchy1 hierarchy_arrow"><a href="../atoms_group/">All Atoms Groups</a></p>
+          <p class="hierarchy2 hierarchy_arrow"><a href="../atom/">All Atoms</a></p>
+        </td>
+      </tr>
+    </table>
+    <br/>
     <table class="atom">
       <tr>
         <th>Name</th>
@@ -30,26 +43,24 @@
       {% endfor %}
       </table>
     {% else %}
-    <h1>Taxtonomy Attributes Group</h1>
+    <h1>Taxonomy Atoms Group: {{ atoms_group.title }}</h1>
     <table class="atom">
       <tr>
         <td>
           Hierarchy
         </td>
         <td>
-          <p class="hierarchy0"><a href="../attrs_group/{{ atoms_group.attr.group.name }}">{{ atoms_group.attr.group.desc }}</a>
-          or (<a href="../attrs_group/">all Attributes Groups</a>)</p>
-          <p class="hierarchy1 hierarchy_arrow"><a href="../attribute/{{ atoms_group.attr.name }}">{{ atoms_group.attr.desc }}</a>
-          (or <a href="../attribute/">all Attributes</a>)</p>
-          <p class="hierarchy2 hierarchy_arrow">(<a href="../atoms_group/">all Atoms Groups</a>)</p>
-          <p class="hierarchy3 hierarchy_arrow">(<a href="../atom/">all Atoms</a>)</p>
+          <p class="hierarchy0"><a href="../attribute/{{ atoms_group.attr.name }}">{{ atoms_group.attr.title }}</a>
+          (or <a href="../attribute/">All Attributes</a>)</p>
+          <p class="hierarchy1 hierarchy_arrow"><a href="../atoms_group/">All Atoms Groups</a></p>
+          <p class="hierarchy2 hierarchy_arrow"><a href="../atom/">All Atoms</a></p>
         </td>
       </tr>
       <tr>
         <td class="highlight">Name: </td><td class="highlight">{{ atoms_group.name }}</td>
       </tr>
       <tr>
-        <td>Description:</td><td>{{ atoms_group.desc }}</td>
+        <td>Title:</td><td>{{ atoms_group.title }}</td>
       </tr>
       <tr>
         <td>
@@ -58,12 +69,12 @@
         <td>
           <table class="elements">
             <tr>
-              <th>Name</th><th>Description</th><th>Menu<br/>Score</th>
+              <th>Name</th><th>Title</th><th>Menu<br/>Score</th>
             </tr>
             {% for el in atoms_group.atom_set.all|dictsort:"prog" %}
             <tr>
               <td><a href="../atom/{{ el.name }}">{{ el.name }}</a></td>
-              <td>{{ el.desc }}</td>
+              <td>{{ el.title }}</td>
               <td style="text-align: right;">{{ el.prog }}</td>
             </tr>
             {% endfor %}
