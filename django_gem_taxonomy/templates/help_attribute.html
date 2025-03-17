@@ -34,11 +34,13 @@
       <tr>
         <th>Name</th>
         <th>Title</th>
+        <th>Menu Score</th>
       </tr>
-    {% for attribute in attributes %}
+    {% for attribute in attributes|dictsort:"prog" %}
       <tr>
         <td><a href="{{ attribute.name }}">{{ attribute.name }}</a></td>
         <td>{{ attribute.title }}</td>
+        <td>{{ attribute.prog }}</td>
       </tr>
       {% endfor %}
     </table>

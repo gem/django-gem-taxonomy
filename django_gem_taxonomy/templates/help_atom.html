@@ -138,18 +138,33 @@
         <td>{% if atom.revdeps.all %}
           <table class="elements">
           <tr>
-            <th>Name</th><th>Description</th><th>Menu<br/>Score</th>
+            <th>Name</th><th>Title</th><th>Menu<br/>Score</th>
           </tr>
           {% for el in atom.revdeps.all|dictsort:"prog" %}
           <tr>
             <td><a href="./{{ el.name }}">{{ el.name }}</a></td>
-            <td>{{ el.desc }}</td>
+            <td>{{ el.title }}</td>
             <td style="text-align: right;">{{ el.prog }}</td>
           </tr>
           {% endfor %}
           </table>
           {% else %}
+          {%     if atom.params.type == 'options' %}
+          {%         if atom.param_set != None %}
+          <table class="atom">
+            {%             for el in atom.param_set.all|dictsort:"prog" %}
+            <tr><td>
+                {{atom.name}}:{{ el.name }}
+              </td>
+              <td>
+                {{ el.title }}
+              </td>
+          {%             endfor %}
+          </table>
+          {%         endif %}
+          {%     else %}
           Is a hierarchy leaf.
+          {%     endif %}
           {% endif %}
         </td>
       </tr>

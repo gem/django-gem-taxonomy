@@ -33,12 +33,14 @@
     <table class="atom">
       <tr>
         <th>Name</th>
-        <th>Description</th>
+        <th>Title</th>
+        <th>Menu Score</th>
       </tr>
     {% for atoms_group in atoms_groups%}
       <tr>
         <td><a href="{{ atoms_group.name }}">{{ atoms_group.name }}</a></td>
-        <td>{{ atoms_group.desc }}</td>
+        <td>{{ atoms_group.title }}</td>
+        <td>{{ atoms_group.prog }}</td>
       </tr>
       {% endfor %}
       </table>
