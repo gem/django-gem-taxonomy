@@ -1,0 +1,36 @@
+#
+#
+# cp <file>.service in /etc/systemctl/system/
+# systemctl daemon-reload
+# systemctl enable --now <nome>
+# systemctl start <nome>
+#
+#
+# replace <FQDN> with full qualified domain name (e.g. maps.openquake.org)
+
+[Unit]
+Description=Proof of concept of taxonomy v3 web services
+After=network.target
+
+[Service]
+Environment="LOGLEVEL=debug"
+User=1000
+Group=1000
+# WorkingDirectory=/srv/apps/taxonomy-v3.gem.lan/django-gem-taxonomy
+WorkingDirectory=/home/taxonomy/django-gem-taxonomy
+# For development installation that need to be ready after machine restart:
+ExecStart=/home/taxonomy/django-gem-taxonomy/server/run.sh
+# --log-level debug
+# ExecStart=/srv/apps/maps-dev.openquake.org/venv/bin/gunicorn -t 1500 -k sync -b localhost:8000 -w 16 -n maps-dev.openquake.org oqgeoviewer.wsgi:application
+
+# from gunicorn documentation, best to check before to use
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
