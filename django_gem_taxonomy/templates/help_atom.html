@@ -116,12 +116,12 @@
           {% if atom.deps.all %}
           <table class="elements">
             <tr>
-              <th>Name</th><th>Description</th><th>Menu<br/>Score</th>
+              <th>Name</th><th>Title</th><th>Menu<br/>Score</th>
             </tr>
             {% for el in atom.deps.all|dictsort:"prog" %}
           <tr>
             <td><a href="./{{ el.name }}">{{ el.name }}</a></td>
-            <td>{{ el.desc }}</td>
+            <td>{{ el.title }}</td>
             <td>{{ el.prog }}</td>
           </tr>
           {% endfor %}
@@ -154,7 +154,7 @@
           <table class="atom">
             {%             for el in atom.param_set.all|dictsort:"prog" %}
             <tr><td>
-                {{atom.name}}:{{ el.name }}
+                <a href="./{{atom.name}}:{{ el.name }}">{{atom.name}}:{{ el.name }}</a>
               </td>
               <td>
                 {{ el.title }}

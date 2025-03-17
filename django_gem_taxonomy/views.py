@@ -47,16 +47,28 @@ class TaxtGraph(View):
 
 class HelpAtom(View):
     def get(self, request, atom=None):
+        param = None
         template = 'help_atom.html'
 
         if atom is None:
             atoms = Atom.objects.all().order_by('name')
         else:
             atoms = None
-            atom = Atom.objects.get(name=atom)
+            if ':' in atom:
+                parts = atom.split(':')
+                atom_id = parts[0]
+                param_id = parts[1]
+
+                atom = Atom.objects.get(name=atom_id)
+                param = atom.param_set.get(name=param_id)
+                template = 'help_param.html'
+            else:
+                atom = Atom.objects.get(name=atom)
 
         return render(request, template, {'atoms': atoms,
-                                          'atom': atom})
+                                          'atom': atom,
+                                          'param': param,
+                                          })
 
 
 class HelpAtomsGroup(View):
