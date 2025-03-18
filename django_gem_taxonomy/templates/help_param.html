@@ -3,9 +3,9 @@
 <html>
   <head>
     {% if atom == None %}
-    <title>Taxonomy Atoms</title>
+    <title>Taxonomy Structures - Atoms</title>
     {% else %}
-    <title>Taxonomy Atom</title>
+    <title>Taxonomy Structures - Atom</title>
     {% endif %}
     <script src="{% static "js/dist/jquery.min.js" %}"></script>
     <link rel="stylesheet" href="{% static "taxonomy/css/taxonomy_help.css" %}">
@@ -16,7 +16,7 @@
   </head>
 <body>
     <div id="app">
-    <h1>Taxonomy Atom: {{ atom.title }}:{{ param.title}}</h1>
+    <h1>Taxonomy Structures - Atom: {{ atom.title }}. {{ param.title}}</h1>
     <table class="atom">
       <tr>
         <td>

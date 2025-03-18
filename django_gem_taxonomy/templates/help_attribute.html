@@ -2,9 +2,9 @@
 <html>
   <head>
     {% if attribute == None %}
-    <title>Taxonomy Attributes</title>
+    <title>Taxonomy Structures - Attributes</title>
     {% else %}
-    <title>Taxonomy Attribute</title>
+    <title>Taxonomy Structures - Attribute</title>
     {% endif %}
     <script src="{% static "js/dist/jquery.min.js" %}"></script>
     <!-- script>
@@ -16,7 +16,7 @@
 <body>
     <div id="app">
     {% if attribute == None %}
-    <h1>Taxonomy Attributes</h1>
+    <h1>Taxonomy Structures - Attributes</h1>
     <table class="atom">
       <tr>
         <td>
@@ -45,7 +45,7 @@
       {% endfor %}
     </table>
     {% else %}
-    <h1>Taxonomy Attribute: {{ attribute.title }}</h1>
+    <h1>Taxonomy Structures - Attribute: {{ attribute.title }}</h1>
     <table class="atom">
       <tr>
         <td>

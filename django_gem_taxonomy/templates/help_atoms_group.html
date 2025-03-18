@@ -2,9 +2,9 @@
 <html>
   <head>
     {% if atoms_group == None %}
-    <title>Taxonomy Atoms Groups</title>
+    <title>Taxonomy Structures - Atoms Groups</title>
     {% else %}
-    <title>Taxonomy Atoms Group</title>
+    <title>Taxonomy Structures - Atoms Group</title>
     {% endif %}
     <script src="{% static "js/dist/jquery.min.js" %}"></script>
     <!-- script>
@@ -16,7 +16,7 @@
 <body>
     <div id="app">
     {% if atoms_group == None %}
-    <h1>Taxonomy Atoms Groups</h1>
+    <h1>Taxonomy Structures - Atoms Groups</h1>
     <table class="atom">
       <tr>
         <td>
@@ -45,7 +45,7 @@
       {% endfor %}
       </table>
     {% else %}
-    <h1>Taxonomy Atoms Group: {{ atoms_group.title }}</h1>
+    <h1>Taxonomy Structures - Atoms Group: {{ atoms_group.title }}</h1>
     <table class="atom">
       <tr>
         <td>

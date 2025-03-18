@@ -1,0 +1,32 @@
+{% load static %}
+<html>
+  <head>
+    <title>Taxonomy Tools And Services</title>
+    <script src="{% static "js/dist/jquery.min.js" %}"></script>
+    <script src="{% static "taxonomy/js/homepage.js" %}"></script>
+</head>
+<body>
+  <div>
+    <h1>Taxonomy Tools And Services</h1>
+    <h2>Version specifications 3.3</h2>
+  <ul>
+    <li><a href="taxonomy/graph/">Graph</a> - visualization tool to see relation of taxonomy atoms and their description</li>
+    <li><a href="taxonomy/attribute/">Structures</a> - describe each element of taxonomy level, from attributes to parametrized atoms</li>
+    <li><a href="#" onclick="$('div.accordion').css('display', 'none'); $('div[name=\'validate_output\']').empty(); $('input[name=\'validate_input\']').val(''); $('div.acc_val').css('display', ''); return false;">Validation</a> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
+      <div class="accordion acc_val" style="/* display: none;*/"><form onsubmit="validate_string(this); return false;"><p>String to validate: <input name="validate_input" type="text" style="width: 400px;"/> <button>Validate</button></p>
+          <div name="validate_output" style="background-color: #f8f8ff;">
+            </div>
+      </form></div>
+    </li>
+    <li><a href="#" onclick="$('div.accordion').css('display', 'none'); $('div.acc_exp').css('display', ''); return false;">Explanation</a> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
+      <div class="accordion acc_exp" style="display: none;">here we are</div>
+    </li>
+    <li><a href="#" onclick="$('div.accordion').css('display', 'none'); $('div.acc_pkg').css('display', ''); return false;">Python OpenQuake Gem Taxonomy</a> - python package with taxonomy classes and shell commands
+      <div class="accordion acc_pkg" style="display: none;"> here we are</div>
+    </li>
+    
+  </ul>
+
+</div>
+</body>
+</html>
