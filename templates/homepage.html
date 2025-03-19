@@ -6,20 +6,45 @@
     <script src="{% static "taxonomy/js/homepage.js" %}"></script>
 </head>
 <body>
-  <div>
+  <div style="max-width: 800px; margin: auto;">
     <h1>Taxonomy Tools And Services</h1>
     <h2>Version specifications 3.3</h2>
   <ul>
-    <li><a href="taxonomy/graph/">Graph</a> - visualization tool to see relation of taxonomy atoms and their description</li>
-    <li><a href="taxonomy/attribute/">Structures</a> - describe each element of taxonomy level, from attributes to parametrized atoms</li>
-    <li><a href="#" onclick="$('div.accordion').css('display', 'none'); $('div[name=\'validate_output\']').empty(); $('input[name=\'validate_input\']').val(''); $('div.acc_val').css('display', ''); return false;">Validation</a> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
-      <div class="accordion acc_val" style="/* display: none;*/"><form onsubmit="validate_string(this); return false;"><p>String to validate: <input name="validate_input" type="text" style="width: 400px;"/> <button>Validate</button></p>
-          <div name="validate_output" style="background-color: #f8f8ff;">
-            </div>
-      </form></div>
+    <li><a href="taxonomy/graph/" target="_blank">Graph</a> - visualization tool to see relation of taxonomy atoms and their description</li>
+    <li><a href="taxonomy/attribute/" target="_blank">Structures</a> - describe each element of taxonomy level, from attributes to parametrized atoms</li>
+    <li><a href="#" onclick="reset_subareas(); $('div.acc_val').css('display', ''); return false;">Validation</a> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
+      <div class="accordion acc_val" style="display: none;">
+        Taxonomy string could be validate:
+        <ul><li>via network: using a REST-API service at the entry-point: <a target="_blank" href="/taxonomy/api/v1/validation/M"><code>/taxonomy/api/v1/validation</code></a><i><code>/&lt;taxonomy_string&gt;</code></i> (<code>M</code> in this example)</li>
+          <li>via shell: using commands provided by python package <code>oq-gem-taxonomy</code> as simple string parameter or from CSV files; currently private and available for GEM staff only: <a target="_blank" href="https://github.com/gem/oq-gem-taxonomy/"><code>https://github.com/gem/oq-gem-taxonomy/</code></a> (until it is private and available for GEM staff only, than installing normally using pip from pypi site)</li>
+          <li>inside your python code: using classes provided by <a target="_blank" href="https://github.com/gem/oq-gem-taxonomy/"><code>https://github.com/gem/oq-gem-taxonomy/</code></a> (until it is private and available for GEM staff only, than installing normally using <code>pip</code> from pypi site)</li>
+        </ul>
+        <div style="background-color: f0f0ff; padding: 8px; margin: 8px;">
+          <h4 style="margin-top: 0px;">Validation Demo</h4>
+          This example use REST-API service to validate a taxonomy string.
+          <form onsubmit="validate_string(this); return false;"><p>String to validate: <input name="validate_input" type="text" style="width: 400px;"/> <button>Validate</button></p>
+            <div name="validate_output" style="background-color: #e8e8ff; padding: 8px; display: none;"/>
+          </form>
+        </div>
+      </div>
     </li>
-    <li><a href="#" onclick="$('div.accordion').css('display', 'none'); $('div.acc_exp').css('display', ''); return false;">Explanation</a> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
-      <div class="accordion acc_exp" style="display: none;">here we are</div>
+    <li><a href="#" onclick="reset_subareas(); $('div.acc_exp').css('display', ''); return false;">Explanation</a> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
+      <div class="accordion acc_exp" style="/* display: none; */">
+        Taxonomy string could be explained should return different types of outputs: single line, multiple lines or json:
+        <ul><li>via network: using a REST-API service at the entry-point: <a target="_blank" href="/taxonomy/api/v1/explanation/"><code>/taxonomy/api/v1/explanation/</code></a><code>&lt;taxonomy_string&gt;</code>(with optional <code>&amp;fmt=<i>&lt;format&gt;</i></code> parameter)</li>
+          <li>via shell: using commands provided by python package <code>oq-gem-taxonomy</code>, currently private and available for GEM staff only: <a target="_blank" href="https://github.com/gem/oq-gem-taxonomy/"><code>https://github.com/gem/oq-gem-taxonomy/</code></a> (until it is private and available for GEM staff only, than installing normally using pip from pypi site)</li>
+          <li>inside your python code: using classes provided by <a target="_blank" href="https://github.com/gem/oq-gem-taxonomy/"><code>https://github.com/gem/oq-gem-taxonomy/</code></a> (until it is private and available for GEM staff only, than installing normally using <code>pip</code> from pypi site)</li>
+        </ul>
+        <div style="background-color: f0f0ff; padding: 8px; margin: 8px;">
+          <h4 style="margin-top: 0px;">Explanation Demo</h4>
+          This example use REST-API service to explain taxonomy string
+          <form onsubmit="explain_string(this); return false;">
+            <p>String to explain: <input name="explain_input" type="text" style="width: 400px;"/></p>
+            <p>Output Type (FIXME): <input type="radio" name="fmt" value="singletext">Single line | <input type="radio" name="fmt" checked="true" value="multipletext">Multiple line | <input type="radio" name="fmt" value="json">JSON | <button>Explain</button></p>
+          </form>
+          <div name="explain_output" style="background-color: #e8e8ff; padding: 8px; display: none;"/>
+        </div>
+      </div>
     </li>
     <li><a href="#" onclick="$('div.accordion').css('display', 'none'); $('div.acc_pkg').css('display', ''); return false;">Python OpenQuake Gem Taxonomy</a> - python package with taxonomy classes and shell commands
       <div class="accordion acc_pkg" style="display: none;"> here we are</div>
