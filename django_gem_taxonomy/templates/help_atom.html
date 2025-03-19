@@ -4,25 +4,21 @@
     {% if atom == None %}
     <title>Taxonomy Structures - Atoms</title>
     {% else %}
-    <title>Taxonomy Structures - Atom</title>
+    <title>Taxonomy Structures - Atom: {{ atom.title }}</title>
     {% endif %}
     <script src="{% static "js/dist/jquery.min.js" %}"></script>
     <link rel="stylesheet" href="{% static "taxonomy/css/taxonomy_help.css" %}">
-    <!-- script>
-    {% include 'taxtweb_incl.js' %}
-      //-->
-    </script -->
   </head>
 <body>
-    <div id="app">
     {% if atom == None %}
-    <h1>Taxonomy Structures - Atoms</h1>
-    <table class="atom">
+    <div style="text-align: center;">
+      <h1>Taxonomy Structures - Atoms</h1>
+    </div>
+    <div id="app" style="max-width: 800px; margin: auto;">
+      <table class="atom" style="width: 100%;">
       <tr>
-        <td>
-          Hierarchy
-        </td>
-        <td>
+        <td style="border: 0px solid black; background-color: #f0f0ff;">
+          <p style="font-weight: bold;">Hierarchy</p>
           <p class="hierarchy0"><a href="../attribute/">All Attributes</a></p>
           <p class="hierarchy1 hierarchy_arrow"><a href="../atoms_group/">All Atoms Groups</a></p>
           <p class="hierarchy2 hierarchy_arrow"><a href="../atom/">All Atoms</a></p>
@@ -30,7 +26,7 @@
       </tr>
     </table>
     <br/>
-    <table class="atom">
+    <table class="atom" width="100%">
       <tr>
         <th>Name</th>
         <th>Title</th>
@@ -43,13 +39,14 @@
       {% endfor %}
       </table>
     {% else %}
-    <h1>Taxonomy Structures - Atom: {{ atom.title }}</h1>
-    <table class="atom">
+    <div style="text-align: center;">
+      <h1>Taxonomy Structures - Atom: {{ atom.title }}</h1>
+    </div>
+    <div id="app" style="max-width: 800px; margin: auto;">
+      <table class="atom" style="width: 100%;">
       <tr>
-        <td>
-          Hierarchy
-        </td>
-        <td>
+        <td style="border: 0px solid black; background-color: #f0f0ff;">
+          <p style="font-weight: bold;">Hierarchy</p>
           <p class="hierarchy0"><a href="../attribute/{{ atom.group.attr.name }}">{{ atom.group.attr.title }}</a>
             (or <a href="../attribute/">all Attributes</a>)</p>
           <p class="hierarchy1 hierarchy_arrow"><a href="../atoms_group/{{ atom.group.name }}">{{ atom.group.title }}</a>
@@ -57,6 +54,9 @@
           <p class="hierarchy2 hierarchy_arrow"><a href="../atom/">All Atoms</a></p>
         </td>
       </tr>
+      </table>
+      <br>
+      <table class="atom" style="width: 100%">
       <tr>
         <td class="highlight">Name: </td><td class="highlight">{{ atom.name }}</td>        
       </tr>
@@ -72,7 +72,7 @@
       <tr>
         <td>Arguments:</td>
         <td>
-          <table class="atom">
+          <table class="atom" style="margin: auto;">
             {% for key, value in atom.args.items %}
             <tr>
               <td>{{ key }}:</td><td>{{ value }}</td>
@@ -85,7 +85,7 @@
       {% if atom.params != None %}
       <tr>
         <td>Parameters:</td><td>
-          <table class="atom">
+          <table class="atom" style="margin: auto;">
           {% for key, value in atom.params.items %}
           <tr>
             <td>{{ key }}:</td><td>{{ value }}</td>
@@ -98,7 +98,7 @@
       <tr>
         <td>Type:</td>
         <td>
-          <table class="atom">
+          <table class="atom" style="margin: auto;">
           {% for key, value in atom.entry_type.items %}
           <tr>
             <td>{{ key }}:</td><td>{{ value }}</td>
@@ -113,7 +113,7 @@
         </td>
         <td>
           {% if atom.deps.all %}
-          <table class="elements">
+          <table class="elements" style="margin: auto;">
             <tr>
               <th>Name</th><th>Title</th><th>Menu<br/>Score</th>
             </tr>
@@ -135,7 +135,7 @@
           Enabling:
         </td>
         <td>{% if atom.revdeps.all %}
-          <table class="elements">
+          <table class="elements" style="margin: auto;">
           <tr>
             <th>Name</th><th>Title</th><th>Menu<br/>Score</th>
           </tr>
@@ -150,7 +150,7 @@
           {% else %}
           {%     if atom.params.type == 'options' %}
           {%         if atom.param_set != None %}
-          <table class="atom">
+          <table class="atom" style="margin: auto;">
             {%             for el in atom.param_set.all|dictsort:"prog" %}
             <tr><td>
                 <a href="./{{atom.name}}:{{ el.name }}">{{atom.name}}:{{ el.name }}</a>
