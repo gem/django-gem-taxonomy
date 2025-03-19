@@ -28,9 +28,9 @@ from .views import (GEMTaxonomyInfo,
 urlpatterns = [
     path('info',
          GEMTaxonomyInfo.as_view(), name='taxonomy_info'),
-    path('validation/<str:taxonomy_string>',
+    path('validation/<path:taxonomy_string>',
          GEMTaxonomyStringValidation.as_view(), name='taxonomy_validation'),
-    path('explanation/<str:taxonomy_string>',
+    path('explanation/<path:taxonomy_string>',
          GEMTaxonomyStringExplanation.as_view(),
          name='taxonomy_explanation'),
  ]

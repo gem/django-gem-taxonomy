@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import json
 from django.views import View
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -125,7 +126,7 @@ class GEMTaxonomyStringValidation(APIView):
         gt = GemTaxonomy()
 
         try:
-            _, report = gt.validate(taxonomy_string)
+            _, _, report = gt.validate(taxonomy_string)
         except (ValueError, ParsimParseError,
                 ParsimIncompleteParseError) as exc:
             return Response({'success': False, 'message': str(exc)},
@@ -148,12 +149,23 @@ class GEMTaxonomyStringExplanation(APIView):
         gt = GemTaxonomy()
 
         try:
-            l_attrs, _ = gt.validate(taxonomy_string)
+            fmt, expl = gt.explain(taxonomy_string, fmt=fmt)
         except (ValueError, ParsimParseError,
                 ParsimIncompleteParseError) as exc:
             return Response({'success': False, 'message': str(exc)},
                             status=400)
-        explanation = gt.logic_explain(l_attrs, fmt)
-        return Response({**{'success': True},
-                         **{'explanation': explanation}},
-                        status=200)
+
+        if fmt in [GemTaxonomy.EXPL_OUT_TYPE.SINGLELINE,
+                   GemTaxonomy.EXPL_OUT_TYPE.MULTILINE]:
+            return Response({**{'success': True},
+                             **{'explanation': expl}},
+                            status=200)
+        elif fmt in [GemTaxonomy.EXPL_OUT_TYPE.JSON]:
+            return Response({**{'success': True},
+                             **{'explanation': json.dumps(expl)}},
+                            status=200)
+        else:
+            return Response({
+                'success': False,
+                'message': 'Unknown explain format %d' % fmt},
+                            status=400)
