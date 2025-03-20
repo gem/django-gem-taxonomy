@@ -4,6 +4,19 @@
     <title>Taxonomy Tools And Services</title>
     <script src="{% static "js/dist/jquery.min.js" %}"></script>
     <script src="{% static "taxonomy/js/homepage.js" %}"></script>
+    <style>
+      a.after_tag {
+      display: none;
+      }
+
+      div.chap_tag {
+      display: inline-block;
+      }
+
+      div.chap_tag:hover > a.after_tag {
+      display: initial;
+      }
+      </style>
 </head>
 <body>
   <div style="max-width: 800px; margin: auto;">
@@ -12,44 +25,63 @@
   <ul>
     <li><a href="taxonomy/graph/" target="_blank">Graph</a> - visualization tool to see relation of taxonomy atoms and their description</li>
     <li><a href="taxonomy/attribute/" target="_blank">Structures</a> - describe each element of taxonomy level, from attributes to parametrized atoms</li>
-    <li><a href="#" onclick="reset_subareas(); $('div.acc_val').css('display', ''); return false;">Validation</a> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
+    <li><a href="taxonomy/api/v1/info" target="_blank">Info</a> - collects current versions of each part of the taxonomy tools infrastructure</li>
+    <li>
+      <div class="chap_tag" ><a href="#" onclick="reset_subareas(); $('div.acc_val').css('display', ''); return false;">Validation</a> <a class="after_tag" href="#val" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
       <div class="accordion acc_val" style="display: none;">
         Taxonomy string could be validate:
         <ul><li>via network: using a REST-API service at the entry-point: <a target="_blank" href="/taxonomy/api/v1/validation/M"><code>/taxonomy/api/v1/validation</code></a><i><code>/&lt;taxonomy_string&gt;</code></i> (<code>M</code> in this example)</li>
           <li>via shell: using commands provided by python package <code>oq-gem-taxonomy</code> as simple string parameter or from CSV files; currently private and available for GEM staff only: <a target="_blank" href="https://github.com/gem/oq-gem-taxonomy/"><code>https://github.com/gem/oq-gem-taxonomy/</code></a> (until it is private and available for GEM staff only, than installing normally using pip from pypi site)</li>
           <li>inside your python code: using classes provided by <a target="_blank" href="https://github.com/gem/oq-gem-taxonomy/"><code>https://github.com/gem/oq-gem-taxonomy/</code></a> (until it is private and available for GEM staff only, than installing normally using <code>pip</code> from pypi site)</li>
         </ul>
-        <div style="background-color: f0f0ff; padding: 8px; margin: 8px;">
+        <div style="border: 1px solid #d0d0ff; background-color: f0f0ff; padding: 8px; margin: 8px;">
           <h4 style="margin-top: 0px;">Validation Demo</h4>
           This example use REST-API service to validate a taxonomy string.
           <form onsubmit="validate_string(this); return false;"><p>String to validate: <input name="validate_input" type="text" style="width: 400px;"/> <button>Validate</button></p>
-            <div name="validate_output" style="background-color: #e8e8ff; padding: 8px; display: none;"/>
+            <div name="validate_output" style="border: 1px solid #c0c0ff; background-color: #e8e8ff; padding: 8px; display: none;"/>
           </form>
         </div>
       </div>
     </li>
-    <li><a href="#" onclick="reset_subareas(); $('div.acc_exp').css('display', ''); return false;">Explanation</a> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
-      <div class="accordion acc_exp" style="/* display: none; */">
+    <li><div class="chap_tag"><a href="#" onclick="reset_subareas(); $('div.acc_exp').css('display', ''); return false;">Explanation</a> <a class="after_tag" href="#exp" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
+      <div class="accordion acc_exp" style="display: none;">
         Taxonomy string could be explained should return different types of outputs: single line, multiple lines or json:
         <ul><li>via network: using a REST-API service at the entry-point: <a target="_blank" href="/taxonomy/api/v1/explanation/"><code>/taxonomy/api/v1/explanation/</code></a><code>&lt;taxonomy_string&gt;</code>(with optional <code>&amp;fmt=<i>&lt;format&gt;</i></code> parameter)</li>
           <li>via shell: using commands provided by python package <code>oq-gem-taxonomy</code>, currently private and available for GEM staff only: <a target="_blank" href="https://github.com/gem/oq-gem-taxonomy/"><code>https://github.com/gem/oq-gem-taxonomy/</code></a> (until it is private and available for GEM staff only, than installing normally using pip from pypi site)</li>
           <li>inside your python code: using classes provided by <a target="_blank" href="https://github.com/gem/oq-gem-taxonomy/"><code>https://github.com/gem/oq-gem-taxonomy/</code></a> (until it is private and available for GEM staff only, than installing normally using <code>pip</code> from pypi site)</li>
         </ul>
-        <div style="background-color: f0f0ff; padding: 8px; margin: 8px;">
+        <div style="border: 1px solid #d0d0ff; background-color: f0f0ff; padding: 8px; margin: 8px;">
           <h4 style="margin-top: 0px;">Explanation Demo</h4>
-          This example use REST-API service to explain taxonomy string
+          This example use REST-API service to explain taxonomy string (these are examples:<br/>"<code>M</code>", "<code>S+H:4-8</code>" or more complex "<code>EU+ETR/LWAL+CDN/H:1/RES/BPD/RSH3+RMT1+RWO</code>"):
           <form onsubmit="explain_string(this); return false;">
             <p>String to explain: <input name="explain_input" type="text" style="width: 400px;"/></p>
-            <p>Output Type (FIXME): <input type="radio" name="fmt" value="singletext">Single line | <input type="radio" name="fmt" checked="true" value="multipletext">Multiple line | <input type="radio" name="fmt" value="json">JSON | <button>Explain</button></p>
+            <p>Output Type: <input type="radio" name="fmt" value="textsingleline">Single line | <input type="radio" name="fmt" checked="true" value="textmultiline">Multiple line | <input type="radio" name="fmt" value="json">JSON | <button>Explain</button></p>
           </form>
-          <div name="explain_output" style="background-color: #e8e8ff; padding: 8px; display: none;"/>
+          <div name="explain_output" style="border: 1px solid #c0c0ff; background-color: #e8e8ff; padding: 8px; display: none;"/>
         </div>
       </div>
     </li>
-    <li><a href="#" onclick="$('div.accordion').css('display', 'none'); $('div.acc_pkg').css('display', ''); return false;">Python OpenQuake Gem Taxonomy</a> - python package with taxonomy classes and shell commands
-      <div class="accordion acc_pkg" style="display: none;"> here we are</div>
+      <li><div class="chap_tag"><a href="#" onclick="reset_subareas(); $('div.acc_pkg').css('display', ''); return false;">Python OpenQuake Gem Taxonomy</a> <a class="after_tag" href="#pkg" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - python package with taxonomy classes and shell commands
+      <div class="accordion acc_pkg" style="display: none; padding: 8px;">
+        This package provide (currently) one class:
+        <ul>
+          <li><code>class GemTaxonomy</code><br>
+            with public methods:
+                <ul>
+                  <li><code>validate(tax_string)</code>: validate a taxonomy string</li>
+                  <li><code>explain(tax_string, format)</code>: explain (or translate) to different formats a taxonomy string</li>
+                </ul>
+          </li>
+        </ul>
+        and some tool:
+        <ul>
+          <li><code>gem-taxonomy-validate</code>: validate taxonomy string passed as parameter</li>
+          <li><code>gem-taxonomy-csv-validate</code>: validate taxonomy strings from a csv file (or a list of them) with a lot options to replace values if needed, it is used extensively for CI pipelines</li>
+          <li><code>gem-taxonomy-csv-explain</code>: explain (or convert) taxonomy strings to different formats</li>
+          <li><code>gem-taxonomy-info</code>: retrieves information about the taxonomy package and related packages</li>
+        </ul>
+      </div>
     </li>
-    
   </ul>
 
 </div>

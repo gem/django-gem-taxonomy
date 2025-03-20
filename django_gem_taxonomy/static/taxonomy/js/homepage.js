@@ -21,17 +21,25 @@ function validate_string(obj)
 
 function explain_string(obj)
 {
-    tax_in = $($(obj).find('input[name="explain_input"]')[0]).val();
+    var tax_in = $($(obj).find('input[name="explain_input"]')[0]).val();
+    var format_in = $($(obj).find('input[name="fmt"]:checked')[0]).val();
+
     $.ajax({
         url: "taxonomy/api/v1/explanation/" + tax_in,
-        data: {fmt:'textmultiline'}
+        data: {fmt:format_in},
     }).done(function(data) {
         $('div[name="explain_output"]').css('display', '');
         $('div[name="explain_output"]').empty();
 
         if (data['success'] == true) {
-            var n_lines = data['explanation'].split(/\r\n|\r|\n/).length;
-            $('div[name="explain_output"]').append('<p style="font-weight: bold;">Result: <span style="color: green;">&#x2B24;</span></p>').append($('<textarea style="width: 100%;" rows="' + n_lines + '"/>').val(data['explanation']));
+            if (format_in == 'json') {
+                var ppout = JSON.stringify(JSON.parse(data['explanation']),null,4);
+            }
+            else {
+                var ppout = data['explanation'];
+            }
+            var n_lines = ppout.split(/\r\n|\r|\n/).length;
+            $('div[name="explain_output"]').append('<p style="font-weight: bold;">Result: <span style="color: green;">&#x2B24;</span></p>').append($('<textarea style="width: 100%;" rows="' + n_lines + '"/>').val(ppout));
         }
     }).fail(function(data) {
         $('div[name="explain_output"]').css('display', '');
@@ -53,4 +61,13 @@ function reset_subareas()
 
 }
 
-// $('input[name=\'validate_input\']).val(\'\')
+
+window.addEventListener('load', function () {
+    var hash = window.location.hash.slice(1);
+
+    var valid_hashes = ['val', 'exp', 'pkg'];
+    if (valid_hashes.indexOf(hash) > -1) {
+        $('div.acc_' + hash).css('display', 'inline-block');
+        }
+    }
+);
