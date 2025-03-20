@@ -27,7 +27,7 @@
     <li><a href="taxonomy/attribute/" target="_blank">Structures</a> - describe each element of taxonomy level, from attributes to parametrized atoms</li>
     <li><a href="taxonomy/api/v1/info" target="_blank">Info</a> - collects current versions of each part of the taxonomy tools infrastructure</li>
     <li>
-      <div class="chap_tag" ><a href="#" onclick="reset_subareas(); $('div.acc_val').css('display', ''); return false;">Validation</a> <a class="after_tag" href="#val" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
+      <div class="chap_tag" ><a href="#" onclick="reset_subareas(); $('div.acc_val').css('display', '');  event.preventDefault(); return false;">Validation</a> <a class="after_tag" href="#val" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
       <div class="accordion acc_val" style="display: none;">
         Taxonomy string could be validate:
         <ul><li>via network: using a REST-API service at the entry-point: <a target="_blank" href="/taxonomy/api/v1/validation/M"><code>/taxonomy/api/v1/validation</code></a><i><code>/&lt;taxonomy_string&gt;</code></i> (<code>M</code> in this example)</li>
@@ -52,7 +52,7 @@
         </ul>
         <div style="border: 1px solid #d0d0ff; background-color: f0f0ff; padding: 8px; margin: 8px;">
           <h4 style="margin-top: 0px;">Explanation Demo</h4>
-          This example use REST-API service to explain taxonomy string (these are examples:<br/>"<code>M</code>", "<code>S/H:4-8</code>" or more complex "<code>EU+ETR/LWAL+CDN/H:1/RES/BPD/RSH3+RMT1+RWO</code>"):
+          This example use REST-API service to explain taxonomy string (these are examples:<br/>"<a href="#" onclick="$('input[name=\'explain_input\']').val('M'); event.preventDefault(); return false;"><code>M</code></a>", "<a href="#" onclick="$('input[name=\'explain_input\']').val('S/H:4-8'); event.preventDefault(); return false;"><code>S/H:4-8</code></a>" or more complex "<a href="#" onclick="$('input[name=\'explain_input\']').val('EU+ETR/LWAL+CDN/H:1/RES/BPD/RSH3+RMT1+RWO'); event.preventDefault();"><code>EU+ETR/LWAL+CDN/H:1/RES/BPD/RSH3+RMT1+RWO</code></a>"):
           <form onsubmit="explain_string(this); return false;">
             <p>String to explain: <input name="explain_input" type="text" style="width: 400px;"/></p>
             <p>Output Type: <input type="radio" name="fmt" value="textsingleline">Single line | <input type="radio" name="fmt" checked="true" value="textmultiline">Multiple line | <input type="radio" name="fmt" value="json">JSON | <button>Explain</button></p>
@@ -61,7 +61,7 @@
         </div>
       </div>
     </li>
-      <li><div class="chap_tag"><a href="#" onclick="reset_subareas(); $('div.acc_pkg').css('display', ''); return false;">Python OpenQuake Gem Taxonomy</a> <a class="after_tag" href="#pkg" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - python package with taxonomy classes and shell commands
+      <li><div class="chap_tag"><a href="#" onclick="reset_subareas(); $('div.acc_pkg').css('display', '');  event.preventDefault(); return false;">Python OpenQuake Gem Taxonomy</a> <a class="after_tag" href="#pkg" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - python package with taxonomy classes and shell commands
       <div class="accordion acc_pkg" style="display: none; padding: 8px;">
         This package provide (currently) one class:
         <ul>
