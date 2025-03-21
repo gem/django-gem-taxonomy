@@ -24,10 +24,63 @@
     <h2>Version specifications 3.3</h2>
     This is the homepage of the taxonomy django application including REST API services, web applications, on-line demos and  python package description.<br>
     Code repository is hosted here <a href="https://github.com/gem/django-gem-taxonomy/">https://github.com/gem/django-gem-taxonomy/</a>; currently is private and visible to GEM staff only.<br>
-    Feel free to add issues for bug report and suggestions.
+    Feel free to add issues for bug report or suggestions.
    
-  <ul>
-    <li><a href="taxonomy/graph/" target="_blank">Graph</a> - visualization tool to see relation of taxonomy atoms and their description</li>
+    <ul>
+      <li>
+        <div class="chap_tag" ><a href="#" onclick="reset_subareas(); $('div.acc_orm').css('display', '');  event.preventDefault(); return false;">Django ORM model</a> <a class="after_tag" href="#orm" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a>
+        </div> - a complete rapresentation of taxonomy 3.3 specification.
+        <div class="accordion acc_orm" style="display: none;">
+          Currently populated using <a target="_blank" href="https://github.com/gem/gem_taxonomy/blob/master/specs/Taxonomy_tables_v3.3.xlsx">the taxonomy specs version 3.3 excel file</a> that is the reference, in future it can became the reference itself integrating also documentation.<br>
+          Below an extract of <a target="_blank" href="https://github.com/gem/django-gem-taxonomy/blob/main/django_gem_taxonomy/models.py">models.py</a> where the model is defined, stored on github.
+          <p><textarea cols=80 rows=44>
+class Attribute(models.Model):
+    name = models.CharField(max_length=256, primary_key=True)
+    prog = models.IntegerField()
+    title = models.TextField()
+
+
+class AtomsGroup(models.Model):
+    class Meta:
+        unique_together = [['attr', 'prog']]
+
+    name = models.CharField(max_length=256, primary_key=True)
+    prog = models.IntegerField()
+    title = models.TextField()
+    attr = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+    # mutex identify if it is possible or not dropdown multi-selection
+    mutex = models.BooleanField(default=True)
+
+
+class Atom(models.Model):
+    class Meta:
+        unique_together = [['group', 'prog']]
+
+    name = models.CharField(max_length=32, primary_key=True)
+    prog = models.IntegerField()
+    title = models.TextField()
+    desc = models.TextField()
+    group = models.ForeignKey(AtomsGroup, on_delete=models.CASCADE, null=True)
+    attr = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
+    type = models.TextField()
+    args = models.JSONField(blank=True, null=True)
+    params = models.JSONField(blank=True, null=True)
+    deps = models.ManyToManyField('self', symmetrical=False,
+                                  related_name='revdeps')
+
+class Param(models.Model):
+    class Meta:
+        unique_together = [['atom', 'name'], ['atom', 'name', 'prog']]
+
+    atom = models.ForeignKey(Atom, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=32)
+    title = models.TextField()
+    desc = models.TextField()
+    prog = models.IntegerField()
+          </textarea></p>
+        </div>
+      </li>
+      <li><a href="taxonomy/graph/" target="_blank">Graph</a> - visualization tool to see relation of taxonomy atoms and their description</li>
     <li><a href="taxonomy/attribute/" target="_blank">Structures</a> - describe each element of taxonomy level, from attributes to parametrized atoms</li>
     <li><a href="taxonomy/api/v1/info" target="_blank">Info</a> - collects current versions of each part of the taxonomy tools infrastructure</li>
     <li>

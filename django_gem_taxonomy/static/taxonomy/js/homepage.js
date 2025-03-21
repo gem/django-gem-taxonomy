@@ -65,7 +65,7 @@ function reset_subareas()
 window.addEventListener('load', function () {
     var hash = window.location.hash.slice(1);
 
-    var valid_hashes = ['val', 'exp', 'pkg'];
+    var valid_hashes = ['orm', 'val', 'exp', 'pkg'];
     if (valid_hashes.indexOf(hash) > -1) {
         $('div.acc_' + hash).css('display', 'inline-block');
         }
