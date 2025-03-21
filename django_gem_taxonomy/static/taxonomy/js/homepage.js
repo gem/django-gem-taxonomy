@@ -61,6 +61,26 @@ function reset_subareas()
 
 }
 
+function manage_hp_accordion(item_name, fire_reload)
+{
+    var cur_disp = $('div.acc_' + item_name).css('display');
+
+    reset_subareas();
+    if (cur_disp == 'none') {
+        $('div.acc_' + item_name).css('display', 'initial');
+    }
+    else {
+        console.log("here2" + item_name);
+        $('div.acc_' + item_name).css('display', 'none');
+    }
+
+    if (fire_reload)
+        return true;
+    else {
+        event.preventDefault();
+        return false;
+    }
+}
 
 window.addEventListener('load', function () {
     var hash = window.location.hash.slice(1);

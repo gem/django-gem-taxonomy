@@ -28,11 +28,11 @@
    
     <ul>
       <li>
-        <div class="chap_tag" ><a href="#" onclick="reset_subareas(); $('div.acc_orm').css('display', '');  event.preventDefault(); return false;">Django ORM model</a> <a class="after_tag" href="#orm" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a>
+        <div class="chap_tag" ><a href="#" onclick="return manage_hp_accordion('orm', false);">Django ORM model</a> <a class="after_tag" href="#orm" onclick="return manage_hp_accordion('orm', true);">§</a>
         </div> - a complete rapresentation of taxonomy 3.3 specification.
         <div class="accordion acc_orm" style="display: none;">
-          Currently populated using <a target="_blank" href="https://github.com/gem/gem_taxonomy/blob/master/specs/Taxonomy_tables_v3.3.xlsx">the taxonomy specs version 3.3 excel file</a> that is the reference, in future it can became the reference itself integrating also documentation.<br>
-          Below an extract of <a target="_blank" href="https://github.com/gem/django-gem-taxonomy/blob/main/django_gem_taxonomy/models.py">models.py</a> where the model is defined, stored on github.
+          <p>Currently populated using <a target="_blank" href="https://github.com/gem/gem_taxonomy/blob/master/specs/Taxonomy_tables_v3.3.xlsx">taxonomy specs version 3.3 excel file</a> (that is reference), in future it can became the reference itself integrating also documentation.<br>
+          Below an extract of <a target="_blank" href="https://github.com/gem/django-gem-taxonomy/blob/main/django_gem_taxonomy/models.py">models.py</a> where the model is defined, stored on github.</p>
           <p><textarea cols=80 rows=44>
 class Attribute(models.Model):
     name = models.CharField(max_length=256, primary_key=True)
@@ -84,7 +84,7 @@ class Param(models.Model):
     <li><a href="taxonomy/attribute/" target="_blank">Structures</a> - describe each element of taxonomy level, from attributes to parametrized atoms</li>
     <li><a href="taxonomy/api/v1/info" target="_blank">Info</a> - collects current versions of each part of the taxonomy tools infrastructure</li>
     <li>
-      <div class="chap_tag" ><a href="#" onclick="reset_subareas(); $('div.acc_val').css('display', '');  event.preventDefault(); return false;">Validation</a> <a class="after_tag" href="#val" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
+      <div class="chap_tag" ><a href="#" onclick="return manage_hp_accordion('val', false);">Validation</a> <a class="after_tag" href="#val" onclick="return manage_hp_accordion('val', false);">§</a></div> - taxonomy string validation, if it is correct and not canonical it return the canonical version too
       <div class="accordion acc_val" style="display: none;">
         Taxonomy string could be validate:
         <ul><li>via network: using a REST-API service at the entry-point: <a target="_blank" href="/taxonomy/api/v1/validation/M"><code>/taxonomy/api/v1/validation</code></a><i><code>/&lt;taxonomy_string&gt;</code></i> (<code>M</code> in this example)</li>
@@ -100,7 +100,7 @@ class Param(models.Model):
         </div>
       </div>
     </li>
-    <li><div class="chap_tag"><a href="#" onclick="reset_subareas(); $('div.acc_exp').css('display', ''); return false;">Explanation</a> <a class="after_tag" href="#exp" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
+    <li><div class="chap_tag"><a href="#" onclick="return manage_hp_accordion('exp', false);">Explanation</a> <a class="after_tag" href="#exp" onclick="return manage_hp_accordion('orm', true);">§</a></div> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
       <div class="accordion acc_exp" style="display: none;">
         Taxonomy string could be explained should return different types of outputs: single line, multiple lines or json:
         <ul><li>via network: using a REST-API service at the entry-point: <a target="_blank" href="/taxonomy/api/v1/explanation/"><code>/taxonomy/api/v1/explanation/</code></a><code>&lt;taxonomy_string&gt;</code>(with optional <code>&amp;fmt=<i>&lt;format&gt;</i></code> parameter)</li>
@@ -118,7 +118,7 @@ class Param(models.Model):
         </div>
       </div>
     </li>
-      <li><div class="chap_tag"><a href="#" onclick="reset_subareas(); $('div.acc_pkg').css('display', '');  event.preventDefault(); return false;">Python OpenQuake Gem Taxonomy</a> <a class="after_tag" href="#pkg" onclick="$(this).prev()[0].onclick($(this).prev()[0]);">§</a></div> - python package with taxonomy classes and shell commands
+      <li><div class="chap_tag"><a href="#" onclick="return manage_hp_accordion('pkg', false);">Python OpenQuake Gem Taxonomy</a> <a class="after_tag" href="#pkg" onclick="return manage_hp_accordion('orm', true);">§</a></div> - python package with taxonomy classes and shell commands
       <div class="accordion acc_pkg" style="display: none; padding: 8px;">
         This package provide (currently) one class:
         <ul>
