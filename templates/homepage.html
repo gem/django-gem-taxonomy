@@ -100,7 +100,7 @@ class Param(models.Model):
         </div>
       </div>
     </li>
-    <li><div class="chap_tag"><a href="#" onclick="return manage_hp_accordion('exp', false);">Explanation</a> <a class="after_tag" href="#exp" onclick="return manage_hp_accordion('orm', true);">§</a></div> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
+    <li><div class="chap_tag"><a href="#" onclick="return manage_hp_accordion('exp', false);">Explanation</a> <a class="after_tag" href="#exp" onclick="return manage_hp_accordion('exp', true);">§</a></div> - taxonomy string explanation, if it is correct and not canonical it return the canonical version too
       <div class="accordion acc_exp" style="display: none;">
         Taxonomy string could be explained should return different types of outputs: single line, multiple lines or json:
         <ul><li>via network: using a REST-API service at the entry-point: <a target="_blank" href="/taxonomy/api/v1/explanation/"><code>/taxonomy/api/v1/explanation/</code></a><code>&lt;taxonomy_string&gt;</code>(with optional <code>&amp;fmt=<i>&lt;format&gt;</i></code> parameter)</li>
@@ -118,7 +118,7 @@ class Param(models.Model):
         </div>
       </div>
     </li>
-      <li><div class="chap_tag"><a href="#" onclick="return manage_hp_accordion('pkg', false);">Python OpenQuake Gem Taxonomy</a> <a class="after_tag" href="#pkg" onclick="return manage_hp_accordion('orm', true);">§</a></div> - python package with taxonomy classes and shell commands
+      <li><div class="chap_tag"><a href="#" onclick="return manage_hp_accordion('pkg', false);">Python OpenQuake Gem Taxonomy</a> <a class="after_tag" href="#pkg" onclick="return manage_hp_accordion('pkg', true);">§</a></div> - python package with taxonomy classes and shell commands
       <div class="accordion acc_pkg" style="display: none; padding: 8px;">
         This package provide (currently) one class:
         <ul>
