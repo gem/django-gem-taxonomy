@@ -70,7 +70,6 @@ function manage_hp_accordion(item_name, fire_reload)
         $('div.acc_' + item_name).css('display', 'initial');
     }
     else {
-        console.log("here2" + item_name);
         $('div.acc_' + item_name).css('display', 'none');
     }
 
@@ -85,9 +84,10 @@ function manage_hp_accordion(item_name, fire_reload)
 window.addEventListener('load', function () {
     var hash = window.location.hash.slice(1);
 
-    var valid_hashes = ['orm', 'val', 'exp', 'pkg'];
+    var valid_hashes = ['orm', 'ser', 'pkg'];
     if (valid_hashes.indexOf(hash) > -1) {
-        $('div.acc_' + hash).css('display', 'inline-block');
+        reset_subareas()
+        $('div.acc_' + hash).css('display', 'initial');
         }
     }
 );
