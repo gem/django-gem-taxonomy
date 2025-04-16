@@ -19,8 +19,7 @@
 
 from django.urls import path, include
 from django.views.generic import TemplateView
-from .views import (TaxtWEB, TaxtGraph, GEMTaxonomyInfo,
-                    GEMTaxonomyStringValidation)
+from .views import TaxGraph
 
 from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
 
@@ -44,10 +43,8 @@ urlpatterns = [
     path('attribute/<str:attribute>',
          HelpAttribute.as_view(), name='taxonomy_helpattribute'),
 
-    path('taxtweb/',
-         TaxtWEB.as_view(), name='taxonomy_taxtweb'),
     path('graph/',
-         TaxtGraph.as_view(), name='taxonomy_taxtgraph'),
+         TaxGraph.as_view(), name='taxonomy_taxgraph'),
 
     path('api/v1/', include('django_gem_taxonomy.urls_api_v1')),
  ]

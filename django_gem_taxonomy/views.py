@@ -2,7 +2,7 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 #
 # django_gem_taxonomy
-# Copyright (C) 2025 GEM Foundation
+# Copyright (C) 2024-2025 GEM Foundation
 #
 # django_gem_taxonomy is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -40,9 +40,9 @@ class TaxtWEB(View):
         return render(request, template, {})
 
 
-class TaxtGraph(View):
+class TaxGraph(View):
     def get(self, request):
-        template = 'taxtgraph.html'
+        template = 'taxgraph/taxgraph.html'
         return render(request, template, {})
 
 
