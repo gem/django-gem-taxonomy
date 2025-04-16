@@ -2,7 +2,7 @@ function validate_string(obj)
 {
     tax_in = $($(obj).find('input[name="validate_input"]')[0]).val();
     $.ajax({
-        url: "taxonomy/api/v1/validation/" + tax_in
+        url: "api/v1/validation/" + tax_in
     }).done(function(data) {
         $('div[name="validate_output"]').css('display', '');
         $('div[name="validate_output"]').empty();
@@ -22,10 +22,10 @@ function validate_string(obj)
 function explain_string(obj)
 {
     var tax_in = $($(obj).find('input[name="explain_input"]')[0]).val();
-    var format_in = $($(obj).find('input[name="fmt"]:checked')[0]).val();
-
+    // var format_in = $($(obj).find('input[name="fmt"]:checked')[0]).val();
+    var format_in = 'textmultiline';
     $.ajax({
-        url: "taxonomy/api/v1/explanation/" + tax_in,
+        url: "api/v1/explanation/" + tax_in,
         data: {fmt:format_in},
     }).done(function(data) {
         $('div[name="explain_output"]').css('display', '');
@@ -39,12 +39,13 @@ function explain_string(obj)
                 var ppout = data['explanation'];
             }
             var n_lines = ppout.split(/\r\n|\r|\n/).length;
-            $('div[name="explain_output"]').append('<p style="font-weight: bold;">Result: <span style="color: green;">&#x2B24;</span></p>').append($('<textarea style="width: 100%;" rows="' + n_lines + '"/>').val(ppout));
+            $('div[name="explain_output"]').append('<p style="font-weight: bold; padding: 16px 8px 4px 8px;">Result: <span style="color: green;">&#x2B24;</span></p>').append($('<textarea style="font-size: 18px; padding: 8px; resize: none; width: 90%; margin: 8px 5% 16px 5%;"  rows="' + n_lines + '"/>').val(ppout));
         }
-    }).fail(function(data) {
+    }).fail(function(jqXHR) {
+        data = JSON.parse(jqXHR.responseText);
         $('div[name="explain_output"]').css('display', '');
         $('div[name="explain_output"]').empty();
-        $('div[name="explain_output"]').append('<p style="font-weight: bold;">Result: <span style="color: red;">&#x2B24;</span></p><p>Input: ' + tax_in + '</p><p>Explain: Failed</p><p>Message: ' + data.responseJSON['message'] + '</p>');
+        $('div[name="explain_output"]').append('<p style="font-weight: bold; padding: 16px 8px 4px 8px;">Result: <span style="color: red;">&#x2B24;</span></p><textarea style="font-size: 18px; padding: 8px; resize: none; width: 90%; margin: 8px 5% 16px 5%;" rows="' + 3 + '">Explain: Failed\n' + data['message'] + '</textarea>');
     })
 }
 

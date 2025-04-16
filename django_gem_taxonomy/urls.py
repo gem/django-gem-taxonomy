@@ -18,12 +18,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path, include
+from django.views.generic import TemplateView
 from .views import (TaxtWEB, TaxtGraph, GEMTaxonomyInfo,
                     GEMTaxonomyStringValidation)
 
 from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
 
+app_name = 'taxonomy'
+
 urlpatterns = [
+    path('', TemplateView.as_view(template_name='homepage/homepage.html'),
+         name='home'),
     path('atom/',
          HelpAtom.as_view(), name='taxonomy_helpatoms'),
     path('atom/<str:atom>',
