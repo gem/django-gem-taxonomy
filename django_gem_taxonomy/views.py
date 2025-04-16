@@ -149,7 +149,7 @@ class GEMTaxonomyStringExplanation(APIView):
         gt = GemTaxonomy()
 
         try:
-            fmt, expl = gt.explain(taxonomy_string, fmt=fmt)
+            fmt, expl, val_reply = gt.explain(taxonomy_string, fmt=fmt)
         except (ValueError, ParsimParseError,
                 ParsimIncompleteParseError) as exc:
             return Response({'success': False, 'message': str(exc)},
@@ -158,11 +158,13 @@ class GEMTaxonomyStringExplanation(APIView):
         if fmt in [GemTaxonomy.EXPL_OUT_TYPE.SINGLELINE,
                    GemTaxonomy.EXPL_OUT_TYPE.MULTILINE]:
             return Response({**{'success': True},
-                             **{'explanation': expl}},
+                             **{'explanation': expl},
+                             **val_reply},
                             status=200)
         elif fmt in [GemTaxonomy.EXPL_OUT_TYPE.JSON]:
             return Response({**{'success': True},
-                             **{'explanation': json.dumps(expl)}},
+                             **{'explanation': json.dumps(expl)},
+                             **val_reply},
                             status=200)
         else:
             return Response({
