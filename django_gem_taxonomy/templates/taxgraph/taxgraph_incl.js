@@ -587,6 +587,7 @@ function taxtgraph_compress_all() {
     $('body').find('input[name="atom"]').val('');
     $('a[name="atom-search-link"]').attr(
         'href', window.location.protocol + '//' + window.location.host + window.location.pathname);
+    $('a[name="atom-search-link"]').css('display', 'none');
 }
 
 function taxtgraph_uncompress_all() {
@@ -653,6 +654,7 @@ function taxtgraph_highlightatom(atom_name) {
     $('a[name="atom-search-link"]').attr('href',
                                          window.location.protocol + '//' + window.location.host + window.location.pathname +
                                          query);
+    $('a[name="atom-search-link"]').css('display', 'inline-block');
     $('input[name="atom"]').val(atom_name);
 }
 
