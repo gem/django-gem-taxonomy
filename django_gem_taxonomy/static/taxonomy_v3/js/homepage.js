@@ -62,7 +62,7 @@ function explain_string(obj)
         $rep = $('div[name="explain_output"]');
         $rep.append('<p style="font-weight: bold; margin-left: 16px; margin-top: 8px;"><span style="color: red;">&cross;</span> Not correct taxonomy string.</p>');
         // '<p style="font-weight: bold; padding: 16px 8px 4px 8px;">Result: <span style="color: red;">&#x2B24;</span></p>
-        $rep.append('<textarea style="font-size: 18px; /* padding: 8px; */ resize: none; width: 90%; margin: 8px 5% 16px 5%;" rows="' + 3 + '">' + data['message'] + '</textarea>');
+        $rep.append('<textarea style="font-size: 18px; /* padding: 8px; */ resize: none; width: 90%; margin: 8px 5% 16px 5%;" rows="' + 8 + '">' + data['message'] + '</textarea>');
     })
 }
 
