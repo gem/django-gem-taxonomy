@@ -21,27 +21,28 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from .views import TaxGraph
 
-from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
+from .views import StructureAtom, StructureAtomsGroup, StructureAttribute
 
 app_name = 'taxonomy'
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='homepage/homepage.html'),
          name='home'),
-    path('atom/',
-         HelpAtom.as_view(), name='taxonomy_helpatoms'),
-    path('atom/<str:atom>',
-         HelpAtom.as_view(), name='taxonomy_helpatom'),
 
-    path('atoms_group/',
-         HelpAtomsGroup.as_view(), name='taxonomy_helpatomsgroups'),
-    path('atoms_group/<str:atoms_group>',
-         HelpAtomsGroup.as_view(), name='taxonomy_helpatomsgroup'),
+    path('structure/attribute/',
+         StructureAttribute.as_view(), name='taxonomy_struct_attributes'),
+    path('structure/atom/',
+         StructureAtom.as_view(), name='taxonomy_struct_atoms'),
+    path('structure/atom/<str:atom>',
+         StructureAtom.as_view(), name='taxonomy_struct_atom'),
 
-    path('attribute/',
-         HelpAttribute.as_view(), name='taxonomy_helpattributes'),
-    path('attribute/<str:attribute>',
-         HelpAttribute.as_view(), name='taxonomy_helpattribute'),
+    path('structure/atoms_group/',
+         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroups'),
+    path('structure/atoms_group/<str:atoms_group>',
+         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroup'),
+
+    path('structure/attribute/<str:attribute>',
+         StructureAttribute.as_view(), name='taxonomy_struct_attribute'),
 
     path('graph/',
          TaxGraph.as_view(), name='taxonomy_taxgraph'),

@@ -46,10 +46,10 @@ class TaxGraph(View):
         return render(request, template, {})
 
 
-class HelpAtom(View):
+class StructureAtom(View):
     def get(self, request, atom=None):
         param = None
-        template = 'help_atom.html'
+        template = 'structure/atom.html'
 
         if atom is None:
             atoms = Atom.objects.all().order_by('name')
@@ -62,7 +62,7 @@ class HelpAtom(View):
 
                 atom = Atom.objects.get(name=atom_id)
                 param = atom.param_set.get(name=param_id)
-                template = 'help_param.html'
+                template = 'structure/param.html'
             else:
                 atom = Atom.objects.get(name=atom)
 
@@ -72,9 +72,9 @@ class HelpAtom(View):
                                           })
 
 
-class HelpAtomsGroup(View):
+class StructureAtomsGroup(View):
     def get(self, request, atoms_group=None):
-        template = 'help_atoms_group.html'
+        template = 'structure/atoms_group.html'
 
         if atoms_group is None:
             atoms_groups = AtomsGroup.objects.all().order_by('prog')
@@ -88,9 +88,9 @@ class HelpAtomsGroup(View):
                                           'atoms_group': atoms_group})
 
 
-class HelpAttribute(View):
+class StructureAttribute(View):
     def get(self, request, attribute=None):
-        template = 'help_attribute.html'
+        template = 'structure/attribute.html'
 
         if attribute is None:
             attributes = Attribute.objects.all().order_by('name')
