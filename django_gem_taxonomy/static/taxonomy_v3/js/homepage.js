@@ -44,13 +44,12 @@ function explain_string(obj)
             }
             var n_lines = ppout.split(/\r\n|\r|\n/).length;
             var $rep = $('div[name="explain_output"]');
-                // .append('<p style="font-weight: bold; padding: 16px 8px 4px 8px;">Result: <span style="color: ' + tralight_col + ';">&#x2B24;</span></p>');
             $rep.append('<p style="font-weight: bold; margin-left: 16px; margin-top: 8px;"><span style="color: green;">&check;</span> Correct taxonomy string.</p>');
             if (data['is_canonical']) {
                 $rep.append('<p style="font-weight: bold; margin-left: 16px;"><span style="color: green;">&check;</span> Canonical order.</p>');
             }
             else {
-                $rep.append('<p style="font-weight: bold; margin-left: 16px;"><span style="color: orange;">&cross;</span> Not canonical order, it is: <span style="background-color: white; color: black; padding: 4px;">' + data['canonical'] + '</span></p>');
+                $rep.append('<p style="font-weight: bold; margin-left: 16px;"><span style="color: orange;">&cross;</span> Not canonical order, that is: <span style="background-color: white; color: black; padding: 4px;">' + data['canonical'] + '</span></p>');
             }
 
             $rep.append($('<textarea style="font-size: 18px; padding: 8px; resize: none; width: 90%; margin: 8px 5% 16px 5%;"  rows="' + n_lines + '"/>').val(ppout));
@@ -61,7 +60,6 @@ function explain_string(obj)
         $('div[name="explain_output"]').empty();
         $rep = $('div[name="explain_output"]');
         $rep.append('<p style="font-weight: bold; margin-left: 16px; margin-top: 8px;"><span style="color: red;">&cross;</span> Not correct taxonomy string.</p>');
-        // '<p style="font-weight: bold; padding: 16px 8px 4px 8px;">Result: <span style="color: red;">&#x2B24;</span></p>
         $rep.append('<textarea style="font-size: 18px; /* padding: 8px; */ resize: none; width: 90%; margin: 8px 5% 16px 5%;" rows="' + 8 + '">' + data['message'] + '</textarea>');
     })
 }
