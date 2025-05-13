@@ -18,31 +18,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path, include
-from .views import (TaxtWEB, TaxtGraph, GEMTaxonomyInfo,
-                    GEMTaxonomyStringValidation)
+from django.views.generic import TemplateView
+from .views import TaxGraph
 
-from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
+from .views import StructureAtom, StructureAtomsGroup, StructureAttribute
+
+app_name = 'taxonomy'
 
 urlpatterns = [
-    path('atom/',
-         HelpAtom.as_view(), name='taxonomy_helpatoms'),
-    path('atom/<str:atom>',
-         HelpAtom.as_view(), name='taxonomy_helpatom'),
+    path('', TemplateView.as_view(template_name='homepage/homepage.html'),
+         name='home'),
 
-    path('atoms_group/',
-         HelpAtomsGroup.as_view(), name='taxonomy_helpatomsgroups'),
-    path('atoms_group/<str:atoms_group>',
-         HelpAtomsGroup.as_view(), name='taxonomy_helpatomsgroup'),
+    path('structure/attribute/',
+         StructureAttribute.as_view(), name='taxonomy_struct_attributes'),
+    path('structure/atom/',
+         StructureAtom.as_view(), name='taxonomy_struct_atoms'),
+    path('structure/atom/<str:atom>',
+         StructureAtom.as_view(), name='taxonomy_struct_atom'),
 
-    path('attribute/',
-         HelpAttribute.as_view(), name='taxonomy_helpattributes'),
-    path('attribute/<str:attribute>',
-         HelpAttribute.as_view(), name='taxonomy_helpattribute'),
+    path('structure/atoms_group/',
+         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroups'),
+    path('structure/atoms_group/<str:atoms_group>',
+         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroup'),
 
-    path('taxtweb/',
-         TaxtWEB.as_view(), name='taxonomy_taxtweb'),
+    path('structure/attribute/<str:attribute>',
+         StructureAttribute.as_view(), name='taxonomy_struct_attribute'),
+
     path('graph/',
-         TaxtGraph.as_view(), name='taxonomy_taxtgraph'),
+         TaxGraph.as_view(), name='taxonomy_taxgraph'),
 
     path('api/v1/', include('django_gem_taxonomy.urls_api_v1')),
  ]
