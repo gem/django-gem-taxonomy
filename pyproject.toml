@@ -18,7 +18,7 @@ classifiers = [
 dependencies = [
     "django<5,>=4.2",
     "djangorestframework==3.15.1",
-    "openquake.gem-taxonomy @ git+ssh://git@github.com/gem/oq-gem-taxonomy.git",
+    "openquake.gem-taxonomy @ git+https://github.com/gem/oq-gem-taxonomy.git@v1.11.0",
 ]
 
 # [project.urls]
