@@ -36,6 +36,8 @@ pythonpath = ["."]
 
 [tool.setuptools.packages.find]
 exclude = ["out", "server"]
+namespaces = true
+where = ["."]
 
 [tool.setuptools.dynamic]
 version = {attr = "django_gem_taxonomy.version.__version__"}
