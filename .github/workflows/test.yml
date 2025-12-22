@@ -22,7 +22,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        apt intall python-setuptools
+        apt-get intall python-setuptools
         pip install '.[test]'
     - name: Run tests
       run: |
