@@ -29,6 +29,8 @@ jobs:
         pip install -U pip
 
         if [ "$BRANCH_NAME" != "main" ]; then
+          # django-gem-taxonomy doesn't depend directly from oq-gem-taxonomy-data so to mantain all consistent we
+          #   must install ...-data package independently and before oq-gem-taxonomy dependencies resolution
           if [ "$(git ls-remote --heads https://github.com/gem/oq-gem-taxonomy-data.git "refs/heads/${BRANCH_NAME}")" != "" ]; then
             pip install "openquake.gem-taxonomy-data@git+https://github.com/gem/oq-gem-taxonomy-data.git@${BRANCH_NAME}"
          fi
