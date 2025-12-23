@@ -1,4 +1,4 @@
-name: Test Django App
+name: Test Django Package
 
 env:
  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
