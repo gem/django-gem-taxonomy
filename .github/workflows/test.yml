@@ -1,5 +1,8 @@
 name: Test Django App
 
+env:
+ BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
 on: [push, pull_request]
 
 permissions:
@@ -10,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -23,6 +26,20 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install python3-setuptools
+        pip install -U pip
+
+        if [ "$BRANCH_NAME" != "main" ]; then
+          if [ "$(git ls-remote --heads https://github.com/gem/oq-gem-taxonomy-data.git "refs/heads/${BRANCH_NAME}")" != "" ]; then
+            pip install "openquake.gem-taxonomy-data@git+https://github.com/gem/oq-gem-taxonomy-data.git@${BRANCH_NAME}"
+         fi
+         if [ "$(git ls-remote --heads https://github.com/gem/oq-gem-taxonomy.git "refs/heads/${BRANCH_NAME}")" != "" ]; then
+            sed -i "s|'openquake.gem-taxonomy .*|'openquake.gem-taxonomy @ git+https://github.com/gem/oq-gem-taxonomy.git@${BRANCH_NAME}',|g" pyproject.toml
+                echo "=== modified pyproject.toml ==="
+                cat pyproject.toml
+                echo "=== end ==="
+            fi
+        fi
+
         pip install '.[test]'
     - name: Run tests
       run: |
