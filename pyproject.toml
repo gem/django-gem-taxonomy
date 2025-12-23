@@ -1,43 +1,43 @@
 [build-system]
-requires = ["setuptools >= 61.0"]
-build-backend = "setuptools.build_meta"
+requires = ['setuptools >= 61.0']
+build-backend = 'setuptools.build_meta'
 
 [project]
-name = "django-gem-taxonomy"
-dynamic = ["version"]
-description = "Django Gem Taxonomy - apps and web services that are part of the GEM Taxonomy suite"
-readme = "README.md"
+name = 'django-gem-taxonomy'
+dynamic = ['version']
+description = 'Django Gem Taxonomy - apps and web services that are part of the GEM Taxonomy suite'
+readme = 'README.md'
 authors = [
-  {"name" = "Matteo Nastasi", "email" = "nastasi@openquake.org"},
+  {'name' = 'Matteo Nastasi', 'email' = 'nastasi@openquake.org'},
 ]
-license = {file = "LICENSE"}
-keywords = ["GEM", "taxonomy", "standard", "openquake", "webservice", "taxtgraph"]
+license = {file = 'LICENSE'}
+keywords = ['GEM', 'taxonomy', 'standard', 'openquake', 'webservice', 'taxtgraph']
 classifiers = [
-    "License :: OSI Approved :: Apache Software License"
+    'License :: OSI Approved :: Apache Software License'
 ]
 dependencies = [
-    "django~=4.2",
-    "djangorestframework~=3.15",
-    "openquake.gem-taxonomy~=1.11",
+    'django ~= 4.2',
+    'djangorestframework ~= 3.15',
+    'openquake.gem-taxonomy ~= 1.11',
 ]
 
 # [project.urls]
-# Homepage = "https://github.com/simonw/django-plugin-django-header"
-# Changelog = "https://github.com/simonw/django-plugin-django-header/releases"
-# Issues = "https://github.com/simonw/django-plugin-django-header/issues"
-# CI = "https://github.com/simonw/django-plugin-django-header/actions"
+# Homepage = 'https://github.com/simonw/django-plugin-django-header'
+# Changelog = 'https://github.com/simonw/django-plugin-django-header/releases'
+# Issues = 'https://github.com/simonw/django-plugin-django-header/issues'
+# CI = 'https://github.com/simonw/django-plugin-django-header/actions'
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-django"]
+test = ['pytest', 'pytest-django']
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "tests.test_project.settings"
-pythonpath = ["."]
+DJANGO_SETTINGS_MODULE = 'tests.test_project.settings'
+pythonpath = ['.']
 
 [tool.setuptools.packages.find]
-exclude = ["out", "server"]
+exclude = ['out', 'server']
 namespaces = true
-where = ["."]
+where = ['.']
 
 [tool.setuptools.dynamic]
-version = {attr = "django_gem_taxonomy.version.__version__"}
+version = {attr = 'django_gem_taxonomy.version.__version__'}
