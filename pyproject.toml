@@ -35,9 +35,13 @@ DJANGO_SETTINGS_MODULE = 'tests.test_project.settings'
 pythonpath = ['.']
 
 [tool.setuptools.packages.find]
-exclude = ['out', 'server']
+exclude = ['out*', 'server*', 'build*']
+include = ['django_gem_taxonomy*']
 namespaces = true
 where = ['.']
+
+[tool.setuptools.package-data]
+"django_gem_taxonomy" = ["templates/*", "static/*", "templates/**/*", "static/**/*"]
 
 [tool.setuptools.dynamic]
 version = {attr = 'django_gem_taxonomy.version.__version__'}

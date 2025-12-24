@@ -42,14 +42,14 @@ class TaxtWEB(View):
 
 class TaxGraph(View):
     def get(self, request):
-        template = 'taxgraph/taxgraph.html'
+        template = 'django-gem-taxonomy/taxgraph/taxgraph.html'
         return render(request, template, {})
 
 
 class StructureAtom(View):
     def get(self, request, atom=None):
         param = None
-        template = 'structure/atom.html'
+        template = 'django-gem-taxonomy/structure/atom.html'
 
         if atom is None:
             atoms = Atom.objects.all().order_by('name')
@@ -62,7 +62,7 @@ class StructureAtom(View):
 
                 atom = Atom.objects.get(name=atom_id)
                 param = atom.param_set.get(name=param_id)
-                template = 'structure/param.html'
+                template = 'django-gem-taxonomy/structure/param.html'
             else:
                 atom = Atom.objects.get(name=atom)
 
@@ -74,7 +74,7 @@ class StructureAtom(View):
 
 class StructureAtomsGroup(View):
     def get(self, request, atoms_group=None):
-        template = 'structure/atoms_group.html'
+        template = 'django-gem-taxonomy/structure/atoms_group.html'
 
         if atoms_group is None:
             atoms_groups = AtomsGroup.objects.all().order_by('prog')
@@ -90,7 +90,7 @@ class StructureAtomsGroup(View):
 
 class StructureAttribute(View):
     def get(self, request, attribute=None):
-        template = 'structure/attribute.html'
+        template = 'django-gem-taxonomy/structure/attribute.html'
 
         if attribute is None:
             attributes = Attribute.objects.all().order_by('name')

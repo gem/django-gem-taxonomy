@@ -26,7 +26,7 @@ from .views import StructureAtom, StructureAtomsGroup, StructureAttribute
 app_name = 'taxonomy'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='homepage/homepage.html'),
+    path('', TemplateView.as_view(template_name='django-gem-taxonomy/homepage/homepage.html'),
          name='home'),
 
     path('structure/attribute/',
