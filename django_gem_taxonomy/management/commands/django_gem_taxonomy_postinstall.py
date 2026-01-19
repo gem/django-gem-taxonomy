@@ -20,20 +20,9 @@
 # import subprocess
 # from django.conf import settings
 import os
-from django.core.management import call_command, get_commands
+from django.core.management import call_command
 from openquake import gem_taxonomy_data
-; 
-
-
-
-commands = get_commands()
-
-from pprint import pprint
 from django.core.management.base import BaseCommand
-import copy
-import json
-
-from django_gem_taxonomy.models import Attribute, AtomsGroup, Atom, Param
 
 
 class Command(BaseCommand):
@@ -43,5 +32,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         data_path = os.path.join(os.path.dirname(gem_taxonomy_data.__file__), 'data')
         data_file = os.listdir(data_path)[-1]
-
-        call_command('taxonomy_load_standard', data_file)
+        print("Data_file: [%s]" % data_file)
+        call_command('migrate', 'django_gem_taxonomy', 'zero')
+        call_command('migrate', 'django_gem_taxonomy')
+        call_command('taxonomy_load_standard', "--no-dump", os.path.join(data_path, data_file))
