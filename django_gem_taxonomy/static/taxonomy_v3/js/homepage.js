@@ -22,11 +22,12 @@ function validate_string(obj)
 function explain_string(obj)
 {
     var tax_in = $($(obj).find('input[name="explain_input"]')[0]).val();
+    var version_in = $($(obj).find('select[name="version"]')[0]).val();
     // var format_in = $($(obj).find('input[name="fmt"]:checked')[0]).val();
     var format_in = 'textmultiline';
     $.ajax({
         url: "api/v1/explanation/" + tax_in,
-        data: {fmt:format_in},
+        data: {version: version_in, fmt:format_in},
     }).done(function(data) {
         $('div[name="explain_output"]').css('display', '');
         $('div[name="explain_output"]').empty();
@@ -44,7 +45,7 @@ function explain_string(obj)
             }
             var n_lines = ppout.split(/\r\n|\r|\n/).length;
             var $rep = $('div[name="explain_output"]');
-            $rep.append('<p style="font-weight: bold; margin-left: 16px; margin-top: 8px;"><span style="color: green;">&check;</span> Correct taxonomy string.</p>');
+            $rep.append('<p style="font-weight: bold; margin-left: 16px; margin-top: 8px;"><span style="color: green;">&check;</span> Correct string for taxonomy version ' + version_in + '.</p>');
             if (data['is_canonical']) {
                 $rep.append('<p style="font-weight: bold; margin-left: 16px;"><span style="color: green;">&check;</span> Canonical order.</p>');
             }
@@ -59,7 +60,7 @@ function explain_string(obj)
         $('div[name="explain_output"]').css('display', '');
         $('div[name="explain_output"]').empty();
         $rep = $('div[name="explain_output"]');
-        $rep.append('<p style="font-weight: bold; margin-left: 16px; margin-top: 8px;"><span style="color: red;">&cross;</span> Not correct taxonomy string.</p>');
+        $rep.append('<p style="font-weight: bold; margin-left: 16px; margin-top: 8px;"><span style="color: red;">&cross;</span> Not correct string for taxonomy version ' + version_in + '.</p>');
         $rep.append('<textarea style="font-size: 18px; /* padding: 8px; */ resize: none; width: 90%; margin: 8px 5% 16px 5%;" rows="' + 8 + '">' + data['message'] + '</textarea>');
     })
 }

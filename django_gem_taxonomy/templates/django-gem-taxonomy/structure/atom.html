@@ -127,6 +127,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
           </td>
         </tr>
         {% endif %}
+
+        {% if atom.entry_type %}
         <tr>
           <td>Type:</td>
           <td>
@@ -137,6 +139,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
               </tr>
               {% endfor %}
             </table>
+          </td>
+        </tr>
+        {% endif %}
+        <tr>
+          <td>
+            Forbidden by:
+          </td>
+          <td>
+            {% if atom.deny.all %}
+            <table class="elements" style="margin: auto;">
+              <tr>
+                <th>Name</th><th>Title</th><th>Order Id</th>
+              </tr>
+              {% for el in atom.deny.all|dictsort:"prog" %}
+              <tr>
+                <td><a href="./{{ el.name }}">{{ el.name }}</a></td>
+                <td>{{ el.title }}</td>
+                <td>{{ el.prog }}</td>
+              </tr>
+              {% endfor %}
+            </table>
+            {% else %}
+            No atoms forbid this atom
+            {% endif %}
           </td>
         </tr>
         <tr>

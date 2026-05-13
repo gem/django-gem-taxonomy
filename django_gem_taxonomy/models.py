@@ -60,6 +60,8 @@ class Atom(models.Model):
     params = models.JSONField(blank=True, null=True)
     deps = models.ManyToManyField('self', symmetrical=False,
                                   related_name='revdeps')
+    deny = models.ManyToManyField('self', symmetrical=False,
+                                  related_name='revdeny')
     # is_pseudoid = models.BooleanField()
 
     def entry_type(self):

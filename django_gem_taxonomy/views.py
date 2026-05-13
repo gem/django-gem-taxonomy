@@ -123,6 +123,7 @@ class GEMTaxonomyStringValidation(APIView):
         if request.method != 'GET':
             return Response({'message': 'Not implemented'}, status=405)
 
+        fmt = request.query_params.get('fmt', 'json')
         gt = GemTaxonomy()
 
         try:
@@ -145,8 +146,12 @@ class GEMTaxonomyStringExplanation(APIView):
             return Response({'message': 'Not implemented'}, status=405)
 
         fmt = request.query_params.get('fmt', 'json')
+        version = request.query_params.get('version', None)
 
-        gt = GemTaxonomy()
+        if version:
+            gt = GemTaxonomy(version)
+        else:
+            gt = GemTaxonomy()
 
         try:
             fmt, expl, val_reply = gt.explain(taxonomy_string, fmt=fmt)

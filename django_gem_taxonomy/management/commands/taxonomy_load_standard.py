@@ -36,9 +36,9 @@ class Command(BaseCommand):
         parser.add_argument('json_filename')
 
         # Optional arguments
-        # parser.add_argument(
-        #         '-p', '--docker-project', nargs=1, help='docker project name',
-        #         default='oqgeoviewer')
+        parser.add_argument(
+            '-n', '--no-dump', help='avoid create json files from DB'
+            , action='store_true', default=False)
         # parser.add_argument(
         #     '-l', '--list', action='store_true', help='Show projects that need'
         #     ' maintenance')
@@ -86,7 +86,7 @@ class Command(BaseCommand):
             atom_name = at_in['name']
             atom_type = (tax_json_in['AtomType'][atom_name]
                          if atom_name in tax_json_in['AtomType']
-                         else json.dumps({"name": "option"}))
+                         else json.dumps({}))
 
             atom_args = (json.loads(at_in['args'])
                          if at_in['args'] else None)
@@ -94,6 +94,7 @@ class Command(BaseCommand):
                 atom_params = (json.loads(at_in['params'])
                                if at_in['params'] else None)
             except Exception as inst:
+                exc_num = 1
                 import pdb ; pdb.set_trace()
 
             print(atom_name)
@@ -114,6 +115,15 @@ class Command(BaseCommand):
                     for dep in tax_json_in['AtomsDeps'][atom.name]:
                         atom.deps.add(Atom.objects.get(name=dep))
             except Exception as inst:
+                exc_num = 2
+                import pdb ; pdb.set_trace()
+
+            try:
+                if atom.name in tax_json_in['AtomsDeny']:
+                    for den in tax_json_in['AtomsDeny'][atom.name]:
+                        atom.deny.add(Atom.objects.get(name=den))
+            except Exception as inst:
+                exc_num = 3
                 import pdb ; pdb.set_trace()
 
             # import pdb ; pdb.set_trace()
@@ -134,9 +144,9 @@ class Command(BaseCommand):
                 )
 
         call_command('dumpdata', 'django_gem_taxonomy', indent=4,
-                     output='out/taxonomy_standard_dump.json')
+                     output='/tmp/taxonomy_standard_dump.json')
 
-        tax_dump_in = json.load(open('out/taxonomy_standard_dump.json', 'r'))
+        tax_dump_in = json.load(open('/tmp/taxonomy_standard_dump.json', 'r'))
 
         tax = {}
         for el in tax_dump_in:
@@ -225,5 +235,6 @@ class Command(BaseCommand):
 
         tax['param'] = copy.deepcopy(tax_json_in['Param'])
 
-        json.dump(tax, open('out/taxonomy_standard4taxtweb.json', 'w'),
-                  indent=4)
+        if not options['no_dump']:
+            json.dump(tax, open('out/taxonomy_standard4taxtweb.json', 'w'),
+                      indent=4)
