@@ -36,9 +36,9 @@ class Command(BaseCommand):
         parser.add_argument('json_filename')
 
         # Optional arguments
-        # parser.add_argument(
-        #         '-p', '--docker-project', nargs=1, help='docker project name',
-        #         default='oqgeoviewer')
+        parser.add_argument(
+            '-n', '--no-dump', help='avoid create json files from DB'
+            , action='store_true', default=False)
         # parser.add_argument(
         #     '-l', '--list', action='store_true', help='Show projects that need'
         #     ' maintenance')
@@ -134,9 +134,9 @@ class Command(BaseCommand):
                 )
 
         call_command('dumpdata', 'django_gem_taxonomy', indent=4,
-                     output='out/taxonomy_standard_dump.json')
+                     output='/tmp/taxonomy_standard_dump.json')
 
-        tax_dump_in = json.load(open('out/taxonomy_standard_dump.json', 'r'))
+        tax_dump_in = json.load(open('/tmp/taxonomy_standard_dump.json', 'r'))
 
         tax = {}
         for el in tax_dump_in:
@@ -225,5 +225,6 @@ class Command(BaseCommand):
 
         tax['param'] = copy.deepcopy(tax_json_in['Param'])
 
-        json.dump(tax, open('out/taxonomy_standard4taxtweb.json', 'w'),
-                  indent=4)
+        if not options['no_dump']:
+            json.dump(tax, open('out/taxonomy_standard4taxtweb.json', 'w'),
+                      indent=4)
