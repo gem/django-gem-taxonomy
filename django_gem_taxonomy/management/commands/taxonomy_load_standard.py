@@ -98,7 +98,6 @@ class Command(BaseCommand):
                 import pdb ; pdb.set_trace()
 
             print(atom_name)
-            # import pdb ; pdb.set_trace()
             atom = Atom.objects.create(
                 name=at_in['name'],
                 prog=at_in['prog'],
@@ -126,7 +125,6 @@ class Command(BaseCommand):
                 exc_num = 3
                 import pdb ; pdb.set_trace()
 
-            # import pdb ; pdb.set_trace()
 
         for param_atom, pa_ins in tax_json_in['Param'].items():
             for pa_in in pa_ins:
@@ -144,9 +142,9 @@ class Command(BaseCommand):
                 )
 
         call_command('dumpdata', 'django_gem_taxonomy', indent=4,
-                     output='/tmp/taxonomy_standard_dump.json')
+                     output='out/taxonomy_standard_dump.json')
 
-        tax_dump_in = json.load(open('/tmp/taxonomy_standard_dump.json', 'r'))
+        tax_dump_in = json.load(open('out/taxonomy_standard_dump.json', 'r'))
 
         tax = {}
         for el in tax_dump_in:
