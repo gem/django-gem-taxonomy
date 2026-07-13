@@ -83,7 +83,6 @@ class StructureAtomsGroup(View):
             atoms_groups = None
             atoms_group = AtomsGroup.objects.get(name=atoms_group)
 
-        # import pdb ; pdb.set_trace()
         return render(request, template, {'atoms_groups': atoms_groups,
                                           'atoms_group': atoms_group})
 
