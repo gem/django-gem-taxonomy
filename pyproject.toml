@@ -16,7 +16,7 @@ classifiers = [
     'License :: OSI Approved :: Apache Software License'
 ]
 dependencies = [
-    'django == 4.2.27',
+    'django ~= 4.2.27',
     'djangorestframework == 3.17.1',
     'openquake.gem-taxonomy ~= 1.12.0',
 ]
