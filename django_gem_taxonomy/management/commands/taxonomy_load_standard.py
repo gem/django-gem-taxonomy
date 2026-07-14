@@ -142,9 +142,9 @@ class Command(BaseCommand):
                 )
 
         call_command('dumpdata', 'django_gem_taxonomy', indent=4,
-                     output='out/taxonomy_standard_dump.json')
+                     output='/tmp/taxonomy_standard_dump.json')
 
-        tax_dump_in = json.load(open('out/taxonomy_standard_dump.json', 'r'))
+        tax_dump_in = json.load(open('/tmp/taxonomy_standard_dump.json', 'r'))
 
         tax = {}
         for el in tax_dump_in:
@@ -234,5 +234,5 @@ class Command(BaseCommand):
         tax['param'] = copy.deepcopy(tax_json_in['Param'])
 
         if not options['no_dump']:
-            json.dump(tax, open('out/taxonomy_standard4taxtweb.json', 'w'),
+            json.dump(tax, open('/tmp/taxonomy_standard4taxtweb.json', 'w'),
                       indent=4)
