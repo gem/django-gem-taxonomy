@@ -24,6 +24,8 @@ from pprint import pprint
 from django.core.management.base import BaseCommand
 import copy
 import json
+import os
+from random import randint
 
 from django_gem_taxonomy.models import Attribute, AtomsGroup, Atom, Param
 
@@ -141,10 +143,15 @@ class Command(BaseCommand):
                     prog=param_prog,
                 )
 
-        call_command('dumpdata', 'django_gem_taxonomy', indent=4,
-                     output='/tmp/taxonomy_standard_dump.json')
-
-        tax_dump_in = json.load(open('/tmp/taxonomy_standard_dump.json', 'r'))
+        tax_dump_in = None
+        json_file = f'/tmp/taxonomy_standard_dump-{randint(0, 99999999)}.json'
+        try:
+            call_command('dumpdata', 'django_gem_taxonomy', indent=4,
+                         output=json_file)
+            tax_dump_in = json.load(open(json_file, 'r'))
+        finally:
+            # REMOVE json_file
+            os.unlink(json_file)
 
         tax = {}
         for el in tax_dump_in:
