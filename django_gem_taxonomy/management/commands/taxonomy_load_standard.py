@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
+# vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 #
 # oq-geoviewer
 # Copyright (C) 2018-2019 GEM Foundation
@@ -24,7 +24,6 @@ import copy
 import json
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from random import randint
 from pathlib import Path
 import tempfile
 
@@ -40,11 +39,12 @@ class Command(BaseCommand):
 
         # Optional arguments
         parser.add_argument(
-            '-n', '--no-dump', help='avoid create json files from DB'
-            , action='store_true', default=False)
+            '-n', '--no-dump', help='avoid create json files from DB',
+            action='store_true', default=False)
         parser.add_argument(
-            '-d', '--development', help='enable pdb on exceptions and increase verbosity'
-            , action='store_true', default=False)
+            '-d', '--development',
+            help='enable pdb on exceptions and increase verbosity',
+            action='store_true', default=False)
 
     def handle(self, *args, **options):
         if options['development']:
@@ -97,7 +97,7 @@ class Command(BaseCommand):
                                if at_in['params'] else None)
             except Exception:
                 if options['development']:
-                    import pdb ; pdb.set_trace()
+                    import pdb; pdb.set_trace()
                 raise
 
             if options['development']:
@@ -119,9 +119,8 @@ class Command(BaseCommand):
                         atom.deps.add(Atom.objects.get(name=dep))
             except Exception:
                 if options['development']:
-                    import pdb ; pdb.set_trace()
+                    import pdb; pdb.set_trace()
                 raise
-
 
             try:
                 if atom.name in tax_json_in['AtomsDeny']:
@@ -129,7 +128,7 @@ class Command(BaseCommand):
                         atom.deny.add(Atom.objects.get(name=den))
             except Exception:
                 if options['development']:
-                    import pdb ; pdb.set_trace()
+                    import pdb; pdb.set_trace()
                 raise
 
         for param_atom, pa_ins in tax_json_in['Param'].items():
@@ -146,6 +145,8 @@ class Command(BaseCommand):
                     desc=param_desc,
                     prog=param_prog,
                 )
+        if options['no_dump']:
+            return
 
         tax_dump_in = None
         # tempfile.TemporaryDirectory() creates a completely unique,
@@ -199,12 +200,6 @@ class Command(BaseCommand):
                         tax['atom'][x]['prog']))
                 atom_val['rev_deps'] = rev_deps_new
 
-        #for atg_key in tax['attrsgroup_ord']:
-        #    atg = tax['attrsgroup'][atg_key]
-        #    atg['attributes'] = sorted(
-        #        atg['attributes'],
-        #        key=lambda x: tax['attribute'][x]['prog'])
-
         # ordered atomgroups into attributes
         for atomsgroup_key, atomsgroup_val in tax['atomsgroup'].items():
             attr = tax['attribute'][atomsgroup_val['attr']]
@@ -249,8 +244,7 @@ class Command(BaseCommand):
 
         tax['param'] = copy.deepcopy(tax_json_in['Param'])
 
-        if not options['no_dump']:
-            dump_json = os.path.join(Path(tempfile.gettempdir()),
-                                     'taxonomy_standard4taxtweb.json')
-            with open(dump_json, 'w', encoding='utf-8') as tf:
-                json.dump(tax, tf, indent=4)
+        dump_json = os.path.join(Path(tempfile.gettempdir()),
+                                 'taxonomy_standard4taxtweb.json')
+        with open(dump_json, 'w', encoding='utf-8') as tf:
+            json.dump(tax, tf, indent=4)
