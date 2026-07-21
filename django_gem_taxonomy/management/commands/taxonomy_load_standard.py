@@ -19,12 +19,11 @@
 
 # import subprocess
 # from django.conf import settings
-from django.core.management import call_command
-from pprint import pprint
-from django.core.management.base import BaseCommand
+import os
 import copy
 import json
-import os
+from django.core.management import call_command
+from django.core.management.base import BaseCommand
 from random import randint
 from pathlib import Path
 import tempfile
@@ -43,17 +42,14 @@ class Command(BaseCommand):
         parser.add_argument(
             '-n', '--no-dump', help='avoid create json files from DB'
             , action='store_true', default=False)
-        # parser.add_argument(
-        #     '-l', '--list', action='store_true', help='Show projects that need'
-        #     ' maintenance')
-        # parser.add_argument(
-        #     '-f', '--force', action='store_true', help='Rebuild cache in any'
-        #     ' case')
-        # parser.add_argument(
-        #     '-k', '--keep-cache', action='store_true',
-        #     help='Keep the existing cache')
+        parser.add_argument(
+            '-d', '--development', help='enable pdb on exceptions and increase verbosity'
+            , action='store_true', default=False)
 
     def handle(self, *args, **options):
+        if options['development']:
+            from pprint import pprint
+
         tax_json_in = None
         with open(options['json_filename'], 'r') as f:
             tax_json_in = json.load(f)
@@ -64,7 +60,8 @@ class Command(BaseCommand):
                 prog=attr_in['prog'],
                 title=attr_in['title'],
             )
-            pprint(attr)
+            if options['development']:
+                pprint(attr)
 
         for atg_in in tax_json_in['AtomsGroup']:
             atoms_group = AtomsGroup.objects.create(
@@ -73,7 +70,8 @@ class Command(BaseCommand):
                 title=atg_in['title'],
                 attr=Attribute.objects.get(name=atg_in['group'])
             )
-            pprint(atoms_group)
+            if options['development']:
+                pprint(atoms_group)
 
         atom = Atom.objects.create(
             name='_ARG',
@@ -97,11 +95,13 @@ class Command(BaseCommand):
             try:
                 atom_params = (json.loads(at_in['params'])
                                if at_in['params'] else None)
-            except Exception as inst:
-                exc_num = 1
-                import pdb ; pdb.set_trace()
+            except Exception:
+                if options['development']:
+                    import pdb ; pdb.set_trace()
+                raise
 
-            print(atom_name)
+            if options['development']:
+                print(atom_name)
             atom = Atom.objects.create(
                 name=at_in['name'],
                 prog=at_in['prog'],
@@ -117,17 +117,20 @@ class Command(BaseCommand):
                 if atom.name in tax_json_in['AtomsDeps']:
                     for dep in tax_json_in['AtomsDeps'][atom.name]:
                         atom.deps.add(Atom.objects.get(name=dep))
-            except Exception as inst:
-                exc_num = 2
-                import pdb ; pdb.set_trace()
+            except Exception:
+                if options['development']:
+                    import pdb ; pdb.set_trace()
+                raise
+
 
             try:
                 if atom.name in tax_json_in['AtomsDeny']:
                     for den in tax_json_in['AtomsDeny'][atom.name]:
                         atom.deny.add(Atom.objects.get(name=den))
-            except Exception as inst:
-                exc_num = 3
-                import pdb ; pdb.set_trace()
+            except Exception:
+                if options['development']:
+                    import pdb ; pdb.set_trace()
+                raise
 
         for param_atom, pa_ins in tax_json_in['Param'].items():
             for pa_in in pa_ins:
