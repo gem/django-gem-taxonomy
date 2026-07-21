@@ -25,6 +25,8 @@ import json
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from random import randint
+from pathlib import Path
+import tempfile
 
 from django_gem_taxonomy.models import Attribute, AtomsGroup, Atom, Param
 
@@ -130,7 +132,6 @@ class Command(BaseCommand):
                     import pdb ; pdb.set_trace()
                 raise
 
-
         for param_atom, pa_ins in tax_json_in['Param'].items():
             for pa_in in pa_ins:
                 param_name = pa_in['name']
@@ -147,14 +148,20 @@ class Command(BaseCommand):
                 )
 
         tax_dump_in = None
-        json_file = f'/tmp/taxonomy_standard_dump-{randint(0, 99999999)}.json'
-        try:
-            call_command('dumpdata', 'django_gem_taxonomy', indent=4,
-                         output=json_file)
-            tax_dump_in = json.load(open(json_file, 'r'))
-        finally:
-            # REMOVE json_file
-            os.unlink(json_file)
+        # tempfile.TemporaryDirectory() creates a completely unique,
+        # isolated directory every time
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            json_file = os.path.join(Path(temp_dir),
+                                     "taxonomy_standard_dump.json")
+            try:
+                call_command('dumpdata', 'django_gem_taxonomy', indent=4,
+                             output=json_file)
+                tax_dump_in = json.load(open(json_file, 'r'))
+            finally:
+                # REMOVE json_file
+                # TODO tollerate failure to remove
+                os.unlink(json_file)
 
         tax = {}
         for el in tax_dump_in:
@@ -197,7 +204,6 @@ class Command(BaseCommand):
         #    atg['attributes'] = sorted(
         #        atg['attributes'],
         #        key=lambda x: tax['attribute'][x]['prog'])
-
 
         # ordered atomgroups into attributes
         for atomsgroup_key, atomsgroup_val in tax['atomsgroup'].items():
@@ -244,5 +250,7 @@ class Command(BaseCommand):
         tax['param'] = copy.deepcopy(tax_json_in['Param'])
 
         if not options['no_dump']:
-            json.dump(tax, open('/tmp/taxonomy_standard4taxtweb.json', 'w'),
-                      indent=4)
+            dump_json = os.path.join(Path(tempfile.gettempdir()),
+                                     'taxonomy_standard4taxtweb.json')
+            with open(dump_json, 'w', encoding='utf-8') as tf:
+                json.dump(tax, tf, indent=4)
