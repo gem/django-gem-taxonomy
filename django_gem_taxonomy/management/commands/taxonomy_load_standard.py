@@ -26,6 +26,8 @@ import copy
 import json
 import os
 from random import randint
+from pathlib import Path
+import tempfile
 
 from django_gem_taxonomy.models import Attribute, AtomsGroup, Atom, Param
 
@@ -144,7 +146,11 @@ class Command(BaseCommand):
                 )
 
         tax_dump_in = None
-        json_file = f'/tmp/taxonomy_standard_dump-{randint(0, 99999999)}.json'
+        # tempfile.TemporaryDirectory() creates a completely unique,
+        # isolated directory every time
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            json_file = Path(temp_dir) / "taxonomy_standard_dump.json"
         try:
             call_command('dumpdata', 'django_gem_taxonomy', indent=4,
                          output=json_file)
@@ -241,5 +247,6 @@ class Command(BaseCommand):
         tax['param'] = copy.deepcopy(tax_json_in['Param'])
 
         if not options['no_dump']:
-            json.dump(tax, open('/tmp/taxonomy_standard4taxtweb.json', 'w'),
-                      indent=4)
+            dump_json = Path(tempfile.gettempdir()) / 'taxonomy_standard4taxtweb.json'
+            with open(dump_path, 'w', encoding='utf-8') as tf:
+                json.dump(tax, tf, indent=4)
