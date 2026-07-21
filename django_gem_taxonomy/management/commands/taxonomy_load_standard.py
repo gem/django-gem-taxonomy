@@ -20,7 +20,6 @@
 # import subprocess
 # from django.conf import settings
 import os
-import sys
 import copy
 import json
 from django.core.management import call_command
@@ -95,10 +94,9 @@ class Command(BaseCommand):
                 atom_params = (json.loads(at_in['params'])
                                if at_in['params'] else None)
             except Exception:
-                exc_num = 1
                 if options['development']:
                     import pdb ; pdb.set_trace()
-                sys.exit(exc_num)
+                raise
 
             if options['development']:
                 print(atom_name)
@@ -118,21 +116,19 @@ class Command(BaseCommand):
                     for dep in tax_json_in['AtomsDeps'][atom.name]:
                         atom.deps.add(Atom.objects.get(name=dep))
             except Exception:
-                exc_num = 2
                 if options['development']:
                     import pdb ; pdb.set_trace()
-                sys.exit(exc_num)
+                raise
 
 
             try:
                 if atom.name in tax_json_in['AtomsDeny']:
                     for den in tax_json_in['AtomsDeny'][atom.name]:
                         atom.deny.add(Atom.objects.get(name=den))
-            except Exception as inst:
-                exc_num = 3
+            except Exception:
                 if options['development']:
                     import pdb ; pdb.set_trace()
-                sys.exit(exc_num)
+                raise
 
 
         for param_atom, pa_ins in tax_json_in['Param'].items():
