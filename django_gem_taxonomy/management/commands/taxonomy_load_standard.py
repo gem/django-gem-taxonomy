@@ -129,7 +129,6 @@ class Command(BaseCommand):
                 exc_num = 3
                 import pdb ; pdb.set_trace()
 
-
         for param_atom, pa_ins in tax_json_in['Param'].items():
             for pa_in in pa_ins:
                 param_name = pa_in['name']
@@ -150,14 +149,16 @@ class Command(BaseCommand):
         # isolated directory every time
 
         with tempfile.TemporaryDirectory() as temp_dir:
-            json_file = Path(temp_dir) / "taxonomy_standard_dump.json"
-        try:
-            call_command('dumpdata', 'django_gem_taxonomy', indent=4,
-                         output=json_file)
-            tax_dump_in = json.load(open(json_file, 'r'))
-        finally:
-            # REMOVE json_file
-            os.unlink(json_file)
+            json_file = os.path.join(Path(temp_dir),
+                                     "taxonomy_standard_dump.json")
+            try:
+                call_command('dumpdata', 'django_gem_taxonomy', indent=4,
+                             output=json_file)
+                tax_dump_in = json.load(open(json_file, 'r'))
+            finally:
+                # REMOVE json_file
+                # TODO tollerate failure to remove
+                os.unlink(json_file)
 
         tax = {}
         for el in tax_dump_in:
@@ -200,7 +201,6 @@ class Command(BaseCommand):
         #    atg['attributes'] = sorted(
         #        atg['attributes'],
         #        key=lambda x: tax['attribute'][x]['prog'])
-
 
         # ordered atomgroups into attributes
         for atomsgroup_key, atomsgroup_val in tax['atomsgroup'].items():
@@ -247,6 +247,7 @@ class Command(BaseCommand):
         tax['param'] = copy.deepcopy(tax_json_in['Param'])
 
         if not options['no_dump']:
-            dump_json = Path(tempfile.gettempdir()) / 'taxonomy_standard4taxtweb.json'
-            with open(dump_path, 'w', encoding='utf-8') as tf:
+            dump_json = os.path.join(Path(tempfile.gettempdir()),
+                                     'taxonomy_standard4taxtweb.json')
+            with open(dump_json, 'w', encoding='utf-8') as tf:
                 json.dump(tax, tf, indent=4)
