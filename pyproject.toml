@@ -11,7 +11,7 @@ authors = [
   {'name' = 'Matteo Nastasi', 'email' = 'nastasi@openquake.org'},
 ]
 
-license = { text = "AGPL-3.0-or-later" }
+license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 
 keywords = ['GEM', 'taxonomy', 'standard', 'openquake', 'webservice', 'taxtgraph']
