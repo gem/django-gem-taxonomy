@@ -28,7 +28,7 @@ from rest_framework.response import Response
 
 from .models import Atom, AtomsGroup, Attribute
 from .version import __version__
-from openquake.gem_taxonomy import GemTaxonomy
+from openquake.django_gem_taxonomy import GemTaxonomy
 from parsimonious.exceptions import ParseError as ParsimParseError
 from parsimonious.exceptions import (IncompleteParseError as
                                      ParsimIncompleteParseError)
