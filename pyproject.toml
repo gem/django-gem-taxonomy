@@ -10,11 +10,15 @@ readme = 'README.md'
 authors = [
   {'name' = 'Matteo Nastasi', 'email' = 'nastasi@openquake.org'},
 ]
-license = {file = 'LICENSE'}
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
 keywords = ['GEM', 'taxonomy', 'standard', 'openquake', 'webservice', 'taxtgraph']
 classifiers = [
-    'License :: OSI Approved :: GNU Affero General Public License (AGPL)'
-
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
 ]
 dependencies = [
     'django ~= 4.2.30',
