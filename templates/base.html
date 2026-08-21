@@ -1,0 +1,83 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+    {% block head %}
+      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
+      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
+      {% if DEBUG_STATIC %}
+      <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
+      {% else %}
+      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
+      {% endif %}
+      {% block extra_head %}
+      {% endblock %}
+    {% endblock %}
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    {% block header %}
+    {%if gem_qgis == None %}
+    {% include "includes/header.html" %}
+    {% endif %}
+    {% endblock header %}
+
+    {% block middle %}
+    <div class="content-wrap">
+      <div id="site_wide_announcements">
+          <!-- announcements list -->
+      </div>
+      <div class="container">
+        <div class="row">
+        {% block body_outer %}
+          <div class="span8">
+          {% block body %}{% endblock %}
+          </div>
+          <div class="span4">
+          {% block sidebar %}{% endblock %}
+          </div>
+        {% endblock %}
+        </div>
+      </div> <!-- /.container -->
+    </div>
+    {% endblock middle %}
+
+    {% block footer %}
+    {%if gem_qgis == None %}
+    {% include "engine/includes/footer.html" %}
+    {% endif %}
+    {% endblock footer %}
+
+    {% if DEBUG_STATIC %}
+    <script src="{{ STATIC_URL }}lib/js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.timeago.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxprogress.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxQueue.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery-ui.custom.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.raty.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/bootstrap.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/json2.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/select2.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/waypoints.js"></script>
+    {% else %}
+    <script src="{{ STATIC_URL }}lib/js/assets.min.js"></script>
+    {% endif %}
+    <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
+
+    {% block extra_script %}{% endblock extra_script %}
+
+    <style type="text/css">
+      .select2-drop{
+        color: black;
+      }
+    </style>
+  </body>
+</html>
