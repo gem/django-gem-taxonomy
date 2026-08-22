@@ -26,7 +26,7 @@ from rest_framework.response import Response
 
 # from django.conf import settings
 
-from .models import Atom, AtomsGroup, Attribute
+from .models import Version, Atom, AtomsGroup, Attribute
 from .version import __version__
 from openquake.gem_taxonomy import GemTaxonomy
 from parsimonious.exceptions import ParseError as ParsimParseError
@@ -47,59 +47,77 @@ class TaxGraph(View):
 
 
 class StructureAtom(View):
-    def get(self, request, atom=None):
+    def get(self, request, vers_id=None, atom=None):
         param = None
         template = 'django-gem-taxonomy/structure/atom.html'
 
+        if vers_id is None:
+            vers = Version.objects.get(is_default=True)
+        else:
+            vers = Version.objects.get(vers=vers_id)
+
         if atom is None:
-            atoms = Atom.objects.all().order_by('name')
+            atoms = Atom.objects.filter(vers=vers).order_by('name')
         else:
             atoms = None
             if ':' in atom:
                 parts = atom.split(':')
-                atom_id = parts[0]
-                param_id = parts[1]
+                atom_part = parts[0]
+                param_part = parts[1]
 
-                atom = Atom.objects.get(name=atom_id)
-                param = atom.param_set.get(name=param_id)
+                atom = Atom.objects.get(vers=vers, name=atom_part)
+                param = atom.param_set.get(vers=vers, name=param_part)
                 template = 'django-gem-taxonomy/structure/param.html'
             else:
-                atom = Atom.objects.get(name=atom)
+                atom = Atom.objects.get(vers=vers, name=atom)
 
         return render(request, template, {'atoms': atoms,
                                           'atom': atom,
                                           'param': param,
+                                          'vers': vers.vers
                                           })
 
 
 class StructureAtomsGroup(View):
-    def get(self, request, atoms_group=None):
+    def get(self, request, vers_id=None, atoms_group=None):
         template = 'django-gem-taxonomy/structure/atoms_group.html'
 
+        if vers_id is None:
+            vers = Version.objects.get(is_default=True)
+        else:
+            vers = Version.objects.get(vers=vers_id)
+        
         if atoms_group is None:
-            atoms_groups = AtomsGroup.objects.all().order_by('prog')
+            atoms_groups = AtomsGroup.objects.filter(vers=vers).order_by('name')
             atoms_group = None
         else:
             atoms_groups = None
-            atoms_group = AtomsGroup.objects.get(name=atoms_group)
+            atoms_group = AtomsGroup.objects.get(vers=vers, name=atoms_group)
 
         return render(request, template, {'atoms_groups': atoms_groups,
-                                          'atoms_group': atoms_group})
+                                          'atoms_group': atoms_group,
+                                          'vers': vers.vers})
 
 
 class StructureAttribute(View):
-    def get(self, request, attribute=None):
+    def get(self, request, vers_id=None, attribute=None):
         template = 'django-gem-taxonomy/structure/attribute.html'
 
+        if vers_id is None:
+            vers = Version.objects.get(is_default=True)
+        else:
+            vers = Version.objects.get(vers=vers_id)
+        
         if attribute is None:
-            attributes = Attribute.objects.all().order_by('name')
+            attributes = Attribute.objects.filter(vers=vers).order_by('name')
             attribute = None
         else:
             attributes = None
-            attribute = Attribute.objects.get(name=attribute)
+            attribute = Attribute.objects.get(vers=vers, name=attribute)
 
         return render(request, template, {'attributes': attributes,
-                                          'attribute': attribute})
+                                          'attribute': attribute,
+                                          'vers': vers.vers})
 
 
 class GEMTaxonomyInfo(APIView):

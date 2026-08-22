@@ -27,7 +27,8 @@ from django.core.management.base import BaseCommand
 from pathlib import Path
 import tempfile
 
-from django_gem_taxonomy.models import Attribute, AtomsGroup, Atom, Param
+from django_gem_taxonomy.models import (Version,
+                                        Attribute, AtomsGroup, Atom, Param)
 
 
 class Command(BaseCommand):
@@ -35,6 +36,8 @@ class Command(BaseCommand):
             " build attributes/atoms relationships db.")
 
     def add_arguments(self, parser):
+        parser.add_argument('vers_id')
+        parser.add_argument('vers_desc')
         parser.add_argument('json_filename')
 
         # Optional arguments
@@ -45,17 +48,40 @@ class Command(BaseCommand):
             '-d', '--development',
             help='enable pdb on exceptions and increase verbosity',
             action='store_true', default=False)
+        parser.add_argument(
+            '-D', '--delete-only',
+            help=('stop command just after version deletion if it exists'
+                  ' instead of repopulate it from DB'),
+            action='store_true', default=False)
 
     def handle(self, *args, **options):
         if options['development']:
             from pprint import pprint
 
+        vers_id = options['vers_id']
+        vers_desc = options['vers_desc']
+        try:
+            vers = Version.objects.get(vers=vers_id)
+            vers.delete()
+            print(f'Version {vers_id} deleted.')
+        except Exception:
+            print(f'Version {vers_id} not found.')
+
+        if options['delete_only']:
+            print('Delete only enabled, exit now.')
+            return
+
         tax_json_in = None
         with open(options['json_filename'], 'r') as f:
             tax_json_in = json.load(f)
 
+        vers = Version.objects.create(
+            vers=vers_id,
+            desc=vers_desc)
+
         for attr_in in tax_json_in['Attribute']:
             attr = Attribute.objects.create(
+                vers=vers,
                 name=attr_in['name'],
                 prog=attr_in['prog'],
                 title=attr_in['title'],
@@ -65,15 +91,17 @@ class Command(BaseCommand):
 
         for atg_in in tax_json_in['AtomsGroup']:
             atoms_group = AtomsGroup.objects.create(
+                vers=vers,
                 name=atg_in['name'],
                 prog=atg_in['prog'],
                 title=atg_in['title'],
-                attr=Attribute.objects.get(name=atg_in['group'])
+                attr=Attribute.objects.get(vers=vers, name=atg_in['group'])
             )
             if options['development']:
                 pprint(atoms_group)
 
         atom = Atom.objects.create(
+            vers=vers,
             name='_ARG',
             prog=0,
             desc=('Virtual atom dependency to prevent arguments-only atoms'
@@ -103,6 +131,7 @@ class Command(BaseCommand):
             if options['development']:
                 print(atom_name)
             atom = Atom.objects.create(
+                vers=vers,
                 name=at_in['name'],
                 prog=at_in['prog'],
                 title=at_in['title'],
@@ -110,13 +139,13 @@ class Command(BaseCommand):
                 args=atom_args,
                 params=atom_params,
                 type=atom_type,
-                group=AtomsGroup.objects.get(name=at_in['group']),
-                attr=Attribute.objects.get(name=at_in['attr']),
+                group=AtomsGroup.objects.get(vers=vers, name=at_in['group']),
+                attr=Attribute.objects.get(vers=vers, name=at_in['attr']),
             )
             try:
                 if atom.name in tax_json_in['AtomsDeps']:
                     for dep in tax_json_in['AtomsDeps'][atom.name]:
-                        atom.deps.add(Atom.objects.get(name=dep))
+                        atom.deps.add(Atom.objects.get(vers=vers, name=dep))
             except Exception:
                 if options['development']:
                     import pdb; pdb.set_trace()
@@ -125,7 +154,7 @@ class Command(BaseCommand):
             try:
                 if atom.name in tax_json_in['AtomsDeny']:
                     for den in tax_json_in['AtomsDeny'][atom.name]:
-                        atom.deny.add(Atom.objects.get(name=den))
+                        atom.deny.add(Atom.objects.get(vers=vers, name=den))
             except Exception:
                 if options['development']:
                     import pdb; pdb.set_trace()
@@ -134,16 +163,17 @@ class Command(BaseCommand):
         for param_atom, pa_ins in tax_json_in['Param'].items():
             for pa_in in pa_ins:
                 param_name = pa_in['name']
+                param_prog = pa_in['prog']
                 param_title = pa_in['title']
                 param_desc = pa_in['desc']
-                param_prog = pa_in['prog']
 
                 Param.objects.create(
-                    atom=Atom.objects.get(name=param_atom),
+                    vers=vers,
+                    atom=Atom.objects.get(vers=vers, name=param_atom),
                     name=param_name,
+                    prog=param_prog,
                     title=param_title,
                     desc=param_desc,
-                    prog=param_prog,
                 )
         if options['no_dump']:
             return

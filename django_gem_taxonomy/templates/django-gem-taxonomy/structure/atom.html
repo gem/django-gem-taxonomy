@@ -17,8 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% extends "site_base.html" %}
 {% load i18n %}
 
-{% block title %}{% if atom == None %}Taxonomy Structure - Atoms{% else %}Taxonomy Structure - Atom: {{ atom.title }}{% endif %}{% endblock title %}
-{% block extra_head %}
+{% block title %}{% if atom == None %}Taxonomy Structure - Atoms (Vers. {{ vers }}){% else %}Taxonomy Structure - Atom  (Vers. {{ vers }}): {{ atom.name }} - {{ atom.title }}{% endif %}{% endblock title %}
+ {% block extra_head %}
     {{ block.super }}
     {% if oqp_version_maj == '1' %}
     <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
@@ -38,10 +38,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     {% block oq_body_heading %}
     <div id="oq-body-heading">
       {% if atom == None %}
-      <h1>{% trans "TAXONOMY STRUCTURE - ATOMS" %}</h1>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers }}) - ATOMS</h1>
       {% else %}
-      <h1>{% trans "TAXONOMY STRUCTURE" %}</h1>
-      <h2>{% trans "ATOM" %}: {% trans atom.title %}</h2>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers }})</h1>
+      <h2>{% trans "ATOM" %}: {{ atom.name }} - {% trans atom.title %}</h2>
       {% endif %}
       <br />
     </div>

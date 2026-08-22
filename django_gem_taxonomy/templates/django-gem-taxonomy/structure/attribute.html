@@ -17,8 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% extends "site_base.html" %}
 {% load i18n %}
 
-{% block title %}{% if attribute == None %}Taxonomy Structure - Attributes{% else %}Taxonomy Structure - Attribute: {{ attribute.title }}{% endif %}{% endblock title %}
-
+{% block title %}{% if attribute == None %}Taxonomy Structure - Attributes (Vers. {{ vers }}){% else %}Taxonomy Structure - Attribute (Vers. {{ vers }}): {{ attribute.title }}{% endif %}{% endblock title %}
 {% block extra_head %}
     {{ block.super }}
     {% if oqp_version_maj == '1' %}
@@ -39,9 +38,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     {% block oq_body_heading %}
     <div id="oq-body-heading">
       {% if attribute == None %}
-      <h1>{% trans "TAXONOMY STRUCTURE - ATTRIBUTES" %}</h1>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers }}) - ATTRIBUTES</h1>
       {% else %}
-      <h1>{% trans "TAXONOMY STRUCTURE" %}</h1>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers }})</h1>
       <h2>{% trans "ATTRIBUTE" %}: {% trans attribute.title %}</h2>
       {% endif %}
       <br />
