@@ -26,7 +26,7 @@ from rest_framework.response import Response
 
 # from django.conf import settings
 
-from .models import Version, Atom, AtomsGroup, Attribute
+from .models import Version, Param, Atom, AtomsGroup, Attribute
 from .version import __version__
 from openquake.gem_taxonomy import GemTaxonomy
 from parsimonious.exceptions import ParseError as ParsimParseError
@@ -48,7 +48,9 @@ class TaxGraph(View):
 
 class StructureAtom(View):
     def get(self, request, vers_id=None, atom=None):
-        param = None
+        atom_obj = None
+        param_obj = None
+        other_vers = None
         template = 'django-gem-taxonomy/structure/atom.html'
 
         if vers_id is None:
@@ -65,16 +67,24 @@ class StructureAtom(View):
                 atom_part = parts[0]
                 param_part = parts[1]
 
-                atom = Atom.objects.get(vers=vers, name=atom_part)
-                param = atom.param_set.get(vers=vers, name=param_part)
+                param_obj = Param.objects.get(vers=vers, name=param_part,
+                                              atom__name=atom_part)
+                atom_obj = param_obj.atom
+
+                others_objs = Param.objects.filter(
+                    name=param_part, atom__name=atom_part).exclude(vers=vers)
+                other_vers = [param.vers for param in others_objs]
                 template = 'django-gem-taxonomy/structure/param.html'
             else:
-                atom = Atom.objects.get(vers=vers, name=atom)
+                atom_obj = Atom.objects.get(vers=vers, name=atom)
+                others_objs = Atom.objects.filter(name=atom).exclude(vers=vers)
+                other_vers = [atom.vers for atom in others_objs]
 
         return render(request, template, {'atoms': atoms,
-                                          'atom': atom,
-                                          'param': param,
-                                          'vers': vers.vers
+                                          'atom': atom_obj,
+                                          'param': param_obj,
+                                          'vers': vers.vers,
+                                          'other_vers': other_vers
                                           })
 
 
