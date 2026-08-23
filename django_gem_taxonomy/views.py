@@ -60,6 +60,8 @@ class StructureAtom(View):
 
         if atom is None:
             atoms = Atom.objects.filter(vers=vers).order_by('name')
+            others_objs = Version.objects.all().exclude(vers=vers_id)
+            other_vers = [vers for vers in others_objs]
         else:
             atoms = None
             if ':' in atom:
@@ -91,6 +93,8 @@ class StructureAtom(View):
 class StructureAtomsGroup(View):
     def get(self, request, vers_id=None, atoms_group=None):
         template = 'django-gem-taxonomy/structure/atoms_group.html'
+        atoms_group_obj = None
+        other_vers = None
 
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
@@ -100,13 +104,19 @@ class StructureAtomsGroup(View):
         if atoms_group is None:
             atoms_groups = AtomsGroup.objects.filter(vers=vers).order_by('name')
             atoms_group = None
+            others_objs = Version.objects.all().exclude(vers=vers_id)
+            other_vers = [vers for vers in others_objs]
         else:
             atoms_groups = None
-            atoms_group = AtomsGroup.objects.get(vers=vers, name=atoms_group)
+            atoms_group_obj = AtomsGroup.objects.get(vers=vers, name=atoms_group)
+            others_objs = AtomsGroup.objects.filter(name=atoms_group).exclude(vers=vers)
+            other_vers = [atoms_group.vers for atoms_group in others_objs]
 
         return render(request, template, {'atoms_groups': atoms_groups,
-                                          'atoms_group': atoms_group,
-                                          'vers': vers.vers})
+                                          'atoms_group': atoms_group_obj,
+                                          'vers': vers.vers,
+                                          'other_vers': other_vers
+                                          })
 
 
 class StructureAttribute(View):

@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 {% extends "site_base.html" %}
-{% load i18n %}
+{% load i18n other_vers %}
 
 {% block title %}{% if atoms_group == None %}Taxonomy Structure - Atoms Groups (Vers. {{ vers }}){% else %}Taxonomy Structure - Atoms Group (Vers. {{ vers }}): {{ atoms_group.title }}{% endif %}{% endblock title %}
 
@@ -114,6 +114,22 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
               {% endfor %}
             </table>
           </td>
+        </tr>
+      </table>
+    </div>
+    {% endif %}
+
+    {% if other_vers %}
+    <br>
+    <div id="app" style="margin: auto;">
+      <table class="atom" style="width: 100%;">
+        <tr>
+          <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
+            <p>
+              <span style="font-weight: bold;">Other versions: </span>
+              {% for ver in other_vers %}
+              <a href="{% other_vers vers_id=ver.vers %}">{{ ver.vers }}</a>{% if not forloop.last %}, {% endif %}                       {% endfor %}
+            </p>
         </tr>
       </table>
     </div>
