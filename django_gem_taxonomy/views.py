@@ -122,6 +122,8 @@ class StructureAtomsGroup(View):
 class StructureAttribute(View):
     def get(self, request, vers_id=None, attribute=None):
         template = 'django-gem-taxonomy/structure/attribute.html'
+        attribute_obj = None
+        other_vers = None
 
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
@@ -130,14 +132,20 @@ class StructureAttribute(View):
         
         if attribute is None:
             attributes = Attribute.objects.filter(vers=vers).order_by('name')
-            attribute = None
+            attribute_obj = None
+            others_objs = Version.objects.all().exclude(vers=vers_id)
+            other_vers = [vers for vers in others_objs]
         else:
             attributes = None
-            attribute = Attribute.objects.get(vers=vers, name=attribute)
+            attribute_obj = Attribute.objects.get(vers=vers, name=attribute)
+            others_objs = Attribute.objects.filter(name=attribute).exclude(vers=vers)
+            other_vers = [atoms_group.vers for atoms_group in others_objs]
 
         return render(request, template, {'attributes': attributes,
-                                          'attribute': attribute,
-                                          'vers': vers.vers})
+                                          'attribute': attribute_obj,
+                                          'vers': vers.vers,
+                                          'other_vers': other_vers
+                                          })
 
 
 class GEMTaxonomyInfo(APIView):
