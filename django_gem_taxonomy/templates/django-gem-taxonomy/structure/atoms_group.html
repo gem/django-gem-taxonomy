@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 {% extends "site_base.html" %}
 {% load i18n other_vers %}
 
-{% block title %}{% if atoms_group == None %}Taxonomy Structure - Atoms Groups (Vers. {{ vers }}){% else %}Taxonomy Structure - Atoms Group (Vers. {{ vers }}): {{ atoms_group.title }}{% endif %}{% endblock title %}
+{% block title %}{% if atoms_group == None %}Taxonomy Structure - Atoms Groups (Vers. {{ vers.vers }}){% else %}Taxonomy Structure - Atoms Group (Vers. {{ vers.vers }}): {{ atoms_group.title }}{% endif %}{% endblock title %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -39,9 +39,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     {% block oq_body_heading %}
     <div id="oq-body-heading">
       {% if atoms_group == None %}
-      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers }}) - ATOMS GROUPS</h1>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers.vers }}) - ATOMS GROUPS</h1>
       {% else %}
-      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers }})</h1>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers.vers }})</h1>
       <h2>{% trans "ATOMS GROUP" %}: {% trans atoms_group.title %}</h2>
       {% endif %}
       <br />

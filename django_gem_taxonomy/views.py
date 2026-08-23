@@ -85,7 +85,7 @@ class StructureAtom(View):
         return render(request, template, {'atoms': atoms,
                                           'atom': atom_obj,
                                           'param': param_obj,
-                                          'vers': vers.vers,
+                                          'vers': vers,
                                           'other_vers': other_vers
                                           })
 
@@ -114,7 +114,7 @@ class StructureAtomsGroup(View):
 
         return render(request, template, {'atoms_groups': atoms_groups,
                                           'atoms_group': atoms_group_obj,
-                                          'vers': vers.vers,
+                                          'vers': vers,
                                           'other_vers': other_vers
                                           })
 
@@ -143,7 +143,7 @@ class StructureAttribute(View):
 
         return render(request, template, {'attributes': attributes,
                                           'attribute': attribute_obj,
-                                          'vers': vers.vers,
+                                          'vers': vers,
                                           'other_vers': other_vers
                                           })
 
