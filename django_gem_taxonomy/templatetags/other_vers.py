@@ -25,23 +25,23 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def other_vers(context, **kwargs):
     """
-    Rigenera l'URL della view corrente modificando solo i parametri del path specificati.
+    Regenerate the current view's URL by modifying only the specified path parameters.
     """
     request = context['request']
     
-    # 1. Recupera il nome della view corrente e i suoi parametri attuali
+    # 1. Retrieves the current view name and its current parameters.
     match = resolve(request.path_info)
     view_name = match.view_name
     current_kwargs = match.kwargs.copy()
 
     current_kwargs.update(kwargs)
     
-    # 2. Sovrascrive i parametri con i nuovi valori passati dal template
+    # 2. Overrides parameters with the new values passed from the template.
     current_kwargs.update(kwargs)
     
-    # 3. Ricostruisce l'URL strutturale
+    # 3. Reconstructs the structural URL.
     try:
         return reverse(view_name, kwargs=current_kwargs)
     except Exception:
-        return "#" # Ritorna un link vuoto in caso di errore nei parametri
+        return "#" # Returns an empty link in case of a parameter error.
 
