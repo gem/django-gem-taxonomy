@@ -77,14 +77,14 @@ Explore additional resources for usage and documentation of the GEM Building Tax
         <li><a target="_blank" href="https://github.com/gem/gem_taxonomy">GitHub repository</a> of GEM taxonomy specifications</li>
         <li><a href="{% if external_tools %}https://taxonomy.openquake.org{% else %}../glossary{% endif %}">GEM Taxonomy Glossary</a> (only for version 2 - version 4 coming soon)</li>
         <li><a target="_blank" href="https://github.com/gem/oq-gem-taxonomy">Python package</a></li>
-        <li>GEM Taxonomy Version 4.0 Explorers: <a href="structure/attribute/">Structure</a> and <a href="graph">Graph</a></li>
+        <li>GEM Taxonomy Version 4.0 Explorers: <a href="structure/attribute/">Structure</a> and <a href="graph/">Graph</a></li>
       </ul>
   </div>
 {% endblock body %}
 
 {% block extra_script %}
     {{block.super}}
-    <script src="{{ STATIC_URL }}taxonomy_v3/js/dist/jquery.min.js"></script>
-    <script src="{{ STATIC_URL }}taxonomy_v3/js/homepage.js"></script>
+    <script src="{{ STATIC_URL }}taxonomy/js/dist/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}taxonomy/js/homepage.js"></script>
     <script src="{{ STATIC_URL }}js/sol.js"></script>
 {% endblock extra_script %}

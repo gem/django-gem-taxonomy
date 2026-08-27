@@ -20,12 +20,9 @@
 # import subprocess
 # from django.conf import settings
 import os
-import copy
+import sys
 import json
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from pathlib import Path
-import tempfile
 
 from django_gem_taxonomy.models import (Version,
                                         Attribute, AtomsGroup, Atom, Param)
@@ -43,6 +40,9 @@ class Command(BaseCommand):
         # Optional arguments
         parser.add_argument(
             '-n', '--no-dump', help='avoid create json files from DB',
+            action='store_true', default=False)
+        parser.add_argument(
+            '--is-default', help='to set this dataset as default version',
             action='store_true', default=False)
         parser.add_argument(
             '-d', '--development',
@@ -77,7 +77,13 @@ class Command(BaseCommand):
 
         vers = Version.objects.create(
             vers=vers_id,
-            desc=vers_desc)
+            desc=vers_desc,
+            is_default=options['is_default']
+        )
+
+        if options['is_default'] is True:
+            vers_not_def = Version.objects.all().exclude(vers=vers_id)
+            vers_not_def.update(is_default=False)
 
         for attr_in in tax_json_in['Attribute']:
             attr = Attribute.objects.create(
@@ -178,103 +184,176 @@ class Command(BaseCommand):
         if options['no_dump']:
             return
 
-        tax_dump_in = None
-        # tempfile.TemporaryDirectory() creates a completely unique,
-        # isolated directory every time
+        tax_dump = {
+            "version": vers_id,
+            "attribute": {},
+                # "dates": {
+                #           "prog": 300,
+                #           "title": "Date of Construction or Retrofit",
+                #           "name": "dates",
+                #           "atomsgroups": [
+                #               "construction_completed_year",
+                #               "physical_condition_maintenance"
+                #           ]
+                #          },
 
-        with tempfile.TemporaryDirectory() as temp_dir:
-            json_file = os.path.join(Path(temp_dir),
-                                     "taxonomy_standard_dump.json")
-            try:
-                call_command('dumpdata', 'django_gem_taxonomy', indent=4,
-                             output=json_file)
-                tax_dump_in = json.load(open(json_file, 'r'))
-            finally:
-                # REMOVE json_file
-                # TODO tollerate failure to remove
-                os.unlink(json_file)
+            "atomsgroup": {},
+                # "material_type": {
+                #     "prog": 0,
+                #     "title": "Material type",
+                #     "attr": "material",
+                #     "mutex": true,
+                #     "name": "material_type",
+                #     "atoms": [
+                #         "MDD", "C", "CU", .... "HYB", "INF", "MATO"
+                #     ],
+                #     "is_persistent": true
+                # },
 
-        tax = {}
-        for el in tax_dump_in:
-            model = el['model'].replace('django_gem_taxonomy.', '')
-            if model not in tax:
-                tax[model] = {}
-            tax[model][el['pk']] = el['fields']
+            "atom": {},
+                # "atom": {
+                #     "ADO": {
+                #         "prog": 0,
+                #         "title": "Adobe blocks",
+                #         "desc": "",
+                #         "group": "masonry_technology",
+                #         "attr": "material",
+                #         "type": "{\"name\": \"option\"}",
+                #         "args": null,
+                #         "params": null,
+                #         "name": "ADO",
+                #         "deps": [
+                #             "M",
+                #             "MCF",
+                #             "MR",
+                #             "MUR"
+                #         ],
+                #         "rev_deps": []
+                #         "deny": []
+                #         "rev_deny": []
+                #     },
 
-            # NOTE: code to investigate wrong name set
-            # if 'name' not in tax[model][el['pk']]:
-            #     print('WARNING name missing in: %s' % tax[model][el['pk']])
-            # elif tax[model][el['pk']]['name'] != el['pk']:
-            #     print('WARNING different name in: %s (%s)' % (
-            #         tax[model][el['pk']], el['pk']))
+            "param": {},
+            "atom_type": {},
+        }
 
-            if 'name' not in tax[model][el['pk']]:
-                tax[model][el['pk']]['name'] = el['pk']
+        for atom in Atom.objects.filter(vers=vers).order_by('name'):
+            atom_out = {}
+            atom_out['prog'] = atom.prog
+            atom_out['title'] = atom.title
+            atom_out['desc'] = atom.desc
+            if not atom.group:
+                atom_out['group'] = atom.group
+            else:
+                atom_out['group'] = atom.group.name
+            if not atom.attr:
+                atom_out['attr'] = atom.attr
+            else:
+                atom_out['attr'] = atom.attr.name
+            atom_out['type'] = atom.type
+            atom_out['args'] = atom.args
+            atom_out['params'] = atom.params
+            atom_out['name'] = atom.name
 
-        for el_key, el_val in tax['atom'].items():
-            if 'rev_deps' not in el_val:
-                el_val['rev_deps'] = []
-            for el_dep_key, el_dep_val in tax['atom'].items():
+            atom_out['deps'] = []
+            # for dep in atom.deps.all().exclude(name="_ARG").order_by('name'):
+            for dep in atom.deps.all().order_by('name'):
+                atom_out['deps'].append(dep.name)
+            atom_out['rev_deps'] = []
+
+            atom_out['deny'] = []
+            for den in atom.deny.all().order_by('name'):
+                atom_out['deny'].append(den.name)
+            atom_out['rev_deny'] = []
+
+            #     atomsgroup_out['atoms'].append(atom.name)
+            tax_dump['atom'][atom.name] = atom_out
+
+        for el_key, el_val in tax_dump['atom'].items():
+            for el_dep_key, el_dep_val in tax_dump['atom'].items():
                 if el_dep_val['name'] == el_val['name']:
                     continue
                 if el_val['name'] in el_dep_val['deps']:
                     el_val['rev_deps'].append(el_dep_val['name'])
 
+        for el_key, el_val in tax_dump['atom'].items():
+            for el_den_key, el_den_val in tax_dump['atom'].items():
+                if el_den_val['name'] == el_val['name']:
+                    continue
+                if el_val['name'] in el_den_val['deny']:
+                    el_val['rev_deny'].append(el_den_val['name'])
+
+        for atomsgroup in AtomsGroup.objects.filter(vers=vers).order_by('name'):
+            atomsgroup_out = {}
+            atomsgroup_out['prog'] = atomsgroup.prog
+            atomsgroup_out['title'] = atomsgroup.title
+            atomsgroup_out['attr'] = atomsgroup.attr.name
+            atomsgroup_out['mutex'] = atomsgroup.mutex
+            atomsgroup_out['name'] = atomsgroup.name
+            atomsgroup_out['atoms'] = []
+            atoms = Atom.objects.filter(vers=vers, group=atomsgroup).order_by('prog')
+            for atom in atoms:
+                atomsgroup_out['atoms'].append(atom.name)
+            tax_dump['atomsgroup'][atomsgroup.name] = atomsgroup_out
+
+        for attr in Attribute.objects.filter(vers=vers).order_by('name'):
+            attr_out = {}
+            attr_out['prog'] = attr.prog
+            attr_out['title'] = attr.title
+            attr_out['name'] = attr.name
+            attr_out['atomsgroups'] = []
+            atomsgroups = AtomsGroup.objects.filter(vers=vers, attr=attr).order_by('prog')
+            for atomsgroup in atomsgroups:
+                attr_out['atomsgroups'].append(atomsgroup.name)
+            tax_dump['attribute'][attr.name] = attr_out
+
+
+        for atom in Atom.objects.filter(vers=vers).order_by('prog'):
+            if (atom.params and 'type' in atom.params
+                and atom.params['type'] == 'options'):
+                tax_dump['param'][atom.name] = []
+                for param in Param.objects.filter(vers=vers, atom=atom).order_by('prog'):
+                    param_out = {}
+                    param_out['atom'] = param.atom.name
+                    param_out['name'] = param.name
+                    param_out['prog'] = param.prog
+                    param_out['title'] = param.title
+                    param_out['desc'] = param.desc
+                    tax_dump['param'][atom.name].append(param_out)
+
+            for atomsgroup_key, atomsgroup_val in tax_dump['atomsgroup'].items():
+                atomsgroup_val['is_persistent'] = False
+
+                # FIXME: check 'if 'atoms' in atomsgroup_val' needed
+                #        because we start from a atoms partial populated
+                #        standard definition
+                if 'atoms' in atomsgroup_val:
+                    # check to set atomsgroup as persistent
+                    atoms_list = atomsgroup_val['atoms']
+                    for atom_name in atoms_list:
+                        atom = tax_dump['atom'][atom_name]
+                        if not atom['deps']:
+                            atomsgroup_val['is_persistent'] = True
+                            break
+
+                    atomsgroup_val['atoms'] = sorted(
+                        atomsgroup_val['atoms'],
+                        key=lambda x: tax_dump['atom'][x]['prog'])
+
         # sort rev_deps by 'group' and 'prog' to generate proper dropdown menu
-        for atom_key, atom_val in tax['atom'].items():
+        for atom_key, atom_val in tax_dump['atom'].items():
             if atom_val['rev_deps']:
                 rev_deps_new = sorted(
                     atom_val['rev_deps'],
                     key=lambda x: (
-                        tax['atomsgroup'][tax['atom'][x]['group']]['prog'],
-                        tax['atom'][x]['prog']))
+                        tax_dump['atomsgroup'][tax_dump['atom'][x]['group']]['prog'],
+                        tax_dump['atom'][x]['prog']))
                 atom_val['rev_deps'] = rev_deps_new
 
-        # ordered atomgroups into attributes
-        for atomsgroup_key, atomsgroup_val in tax['atomsgroup'].items():
-            attr = tax['attribute'][atomsgroup_val['attr']]
-            if 'atomsgroups' not in attr:
-                attr['atomsgroups'] = []
-            attr['atomsgroups'].append(atomsgroup_key)
 
-        # sort atomsgroups by ['atomsgroup'][x]['prog']
-        for attr_key, attr_val in tax['attribute'].items():
-            attr_val['atomsgroups'] = sorted(
-                attr_val['atomsgroups'],
-                key=lambda x: tax['atomsgroup'][x]['prog'])
+        json.dump(tax_dump, sys.stdout, indent=4)
 
-        for atom_key, atom_val in tax['atom'].items():
-            if atom_val['group']:
-                group = tax['atomsgroup'][atom_val['group']]
-                if 'atoms' not in group:
-                    group['atoms'] = []
-                group['atoms'].append(atom_key)
-
-        # sort atoms by ['atom'][x]['prog']
-        for atomsgroup_key, atomsgroup_val in tax['atomsgroup'].items():
-            atomsgroup_val['is_persistent'] = False
-
-            # FIXME: check 'if 'atoms' in atomsgroup_val' needed
-            #        because we start from a atoms partial populated
-            #        standard definition
-            if 'atoms' in atomsgroup_val:
-                # check to set atomsgroup as persistent
-                atoms_list = atomsgroup_val['atoms']
-                for atom_name in atoms_list:
-                    atom = tax['atom'][atom_name]
-                    if not atom['deps']:
-                        atomsgroup_val['is_persistent'] = True
-                        break
-
-                atomsgroup_val['atoms'] = sorted(
-                    atomsgroup_val['atoms'],
-                    key=lambda x: tax['atom'][x]['prog'])
-
-        tax['atom_type'] = tax_json_in['AtomType']
-
-        tax['param'] = copy.deepcopy(tax_json_in['Param'])
-
-        dump_json = os.path.join(Path(tempfile.gettempdir()),
-                                 'taxonomy_standard4taxtweb.json')
-        with open(dump_json, 'w', encoding='utf-8') as tf:
-            json.dump(tax, tf, indent=4)
+        json_dump_file = os.path.join('django_gem_taxonomy/static/taxonomy/json/',
+                                      'taxonomy%s_standard4taxtweb.json.new' % vers_id)
+        with open(json_dump_file, 'w', encoding='utf-8') as tf:
+            json.dump(tax_dump, tf, indent=4)

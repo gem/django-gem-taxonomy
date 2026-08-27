@@ -33,8 +33,15 @@ class Command(BaseCommand):
         data_path = os.path.join(os.path.dirname(gem_taxonomy_data.__file__), 'data')
         # OLD VERSION, NOW WE MUST FORCE THE 4.0 UNTIL WE WILL LOAD BOTH'
         # data_file = os.listdir(data_path)[-1]
-        data_file = 'taxonomy4.0_standard.json'
-        print("Data_file: [%s]" % data_file)
         call_command('migrate', 'django_gem_taxonomy', 'zero')
         call_command('migrate', 'django_gem_taxonomy')
-        call_command('taxonomy_load_standard', "--no-dump", os.path.join(data_path, data_file))
+
+        # first iteration set the taxonomy_standard default
+        for data_idx, data_file in enumerate(['taxonomy4.0_standard.json' 'taxonomy3.3_standard.json']):
+            print("Data_file: [%s]" % data_file)
+            call_args = ['taxonomy_load_standard', '--no-dump']
+            if data_idx == 0:
+                call_args.append('--is-default')
+            call_args.append(os.path.join(data_path, data_file))
+
+            call_command(*call_args)

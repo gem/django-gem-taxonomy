@@ -62,6 +62,8 @@ urlpatterns = [
 
     path('graph/',
          TaxGraph.as_view(), name='taxonomy_taxgraph'),
+    path('graph/<vers_id>',
+         TaxGraph.as_view(), name='taxonomy_taxgraph_wver'),
 
     path('api/v1/', include('django_gem_taxonomy.urls_api_v1')),
  ]

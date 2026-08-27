@@ -20,7 +20,7 @@
 import os
 import json
 from django.views import View
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -41,9 +41,23 @@ class TaxtWEB(View):
 
 
 class TaxGraph(View):
-    def get(self, request):
+    def get(self, request, vers_id=None):
         template = 'django-gem-taxonomy/taxgraph/taxgraph.html'
-        return render(request, template, {})
+
+        if vers_id is None:
+            vers = Version.objects.get(is_default=True)
+            return redirect('taxonomy:taxonomy_taxgraph_wver',
+                            vers_id=vers.vers)
+        else:
+            vers = Version.objects.get(vers=vers_id)
+
+        others_objs = Version.objects.all().exclude(vers=vers.vers)
+        other_vers = [vers for vers in others_objs]
+
+        return render(request, template, {
+            'vers': vers,
+            'other_vers': other_vers
+        })
 
 
 class StructureAtom(View):
@@ -55,6 +69,12 @@ class StructureAtom(View):
 
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
+            if atom is None:
+                return redirect('taxonomy:taxonomy_struct_atoms_wver',
+                                vers_id=vers.vers)
+            else:
+                return redirect('taxonomy:taxonomy_struct_atoms_wver',
+                                vers_id=vers.vers, atom=atom)
         else:
             vers = Version.objects.get(vers=vers_id)
 
@@ -98,9 +118,15 @@ class StructureAtomsGroup(View):
 
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
+            if atoms_group is None:
+                return redirect('taxonomy:taxonomy_struct_atomsgroups_wver',
+                                vers_id=vers.vers)
+            else:
+                return redirect('taxonomy:taxonomy_struct_atomsgroup_wver',
+                                vers_id=vers.vers, atoms_group=atoms_group)
         else:
             vers = Version.objects.get(vers=vers_id)
-        
+
         if atoms_group is None:
             atoms_groups = AtomsGroup.objects.filter(vers=vers).order_by('name')
             atoms_group = None
@@ -127,9 +153,16 @@ class StructureAttribute(View):
 
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
+
+            if attribute is None:
+                return redirect('taxonomy:taxonomy_struct_attributes_wver',
+                                vers_id=vers.vers)
+            else:
+                return redirect('taxonomy:taxonomy_struct_attribute_wver',
+                                vers_id=vers.vers, attribute=attribute)
         else:
             vers = Version.objects.get(vers=vers_id)
-        
+
         if attribute is None:
             attributes = Attribute.objects.filter(vers=vers).order_by('name')
             attribute_obj = None
