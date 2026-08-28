@@ -22,13 +22,13 @@ from django.shortcuts import render, redirect
 from .models import Version
 
 
-class TaxGraph(View):
+class Graph(View):
     def get(self, request, vers_id=None):
-        template = 'django-gem-taxonomy/taxgraph/taxgraph.html'
+        template = 'django-gem-taxonomy/graph/graph.html'
 
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
-            return redirect('taxonomy:taxonomy_taxgraph_wver',
+            return redirect('taxonomy:taxonomy_graph_wver',
                             vers_id=vers.vers)
         else:
             vers = Version.objects.get(vers=vers_id)

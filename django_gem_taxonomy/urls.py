@@ -29,5 +29,6 @@ urlpatterns = [
     path('api/v1/', include('django_gem_taxonomy.api_v1_urls')),
     path('graph/', include('django_gem_taxonomy.graph_urls')),
     path('structure/', include('django_gem_taxonomy.structure_urls')),
+    path('glossary/', include('django_gem_taxonomy.glossary_urls')),
 
  ]

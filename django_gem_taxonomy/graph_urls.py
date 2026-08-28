@@ -18,12 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path
-from .graph_views import TaxGraph
+from .graph_views import Graph
 
 urlpatterns = [
     path('',
-         TaxGraph.as_view(), name='taxonomy_taxgraph'),
+         Graph.as_view(), name='taxonomy_graph'),
     path('<vers_id>',
-         TaxGraph.as_view(), name='taxonomy_taxgraph_wver'),
+         Graph.as_view(), name='taxonomy_graph_wver'),
  ]
 # [A-Z0-9]+
