@@ -33,8 +33,8 @@ class Command(BaseCommand):
         data_path = os.path.join(os.path.dirname(gem_taxonomy_data.__file__), 'data')
         # OLD VERSION, NOW WE MUST FORCE THE 4.0 UNTIL WE WILL LOAD BOTH'
         # data_file = os.listdir(data_path)[-1]
-        call_command('migrate', 'django_gem_taxonomy', 'zero')
-        call_command('migrate', 'django_gem_taxonomy')
+        call_command('migrate', 'django_gem_taxonomy', 'zero', interactive=False)
+        call_command('migrate', 'django_gem_taxonomy', interactive=False)
 
         # first iteration set the taxonomy_standard default
         for data in [
