@@ -1,7 +1,7 @@
 import sys
 from io import StringIO
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 
 
 class CommandsTestCase(TestCase):
@@ -17,6 +17,17 @@ class CommandsTestCase(TestCase):
         if data['is_default']:
             call_args.append('--is-default')
         call_args.append(data['fname'])
+        call_opts = {}
+        v_file = StringIO()
+        stdout_backup, sys.stdout = sys.stdout, v_file
+        call_command(*call_args, **call_opts)
+        sys.stdout = stdout_backup
+
+class PostInstallTestCase(TransactionTestCase):
+    def test_django_gem_taxonomy_postinstall(self):
+        "Test django_gem_taxonomy_postinstall command."
+
+        call_args = ['django_gem_taxonomy_postinstall']
         call_opts = {}
         v_file = StringIO()
         stdout_backup, sys.stdout = sys.stdout, v_file
