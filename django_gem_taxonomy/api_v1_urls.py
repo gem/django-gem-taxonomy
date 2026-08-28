@@ -18,12 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path
-# from .views import TaxtWEB, TaxtGraph
-from .views import (GEMTaxonomyInfo,
-                    GEMTaxonomyStringValidation,
-                    GEMTaxonomyStringExplanation)
-
-# from .views import HelpAtom, HelpAtomsGroup, HelpAttribute
+from .api_v1_views import (GEMTaxonomyInfo,
+                           GEMTaxonomyStringValidation,
+                           GEMTaxonomyStringExplanation)
 
 urlpatterns = [
     path('info',

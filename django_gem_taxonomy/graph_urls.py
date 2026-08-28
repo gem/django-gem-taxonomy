@@ -17,17 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.urls import path, include
-from django.views.generic import TemplateView
-
-app_name = 'taxonomy'
+from django.urls import path
+from .graph_views import TaxGraph
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='django-gem-taxonomy/homepage/homepage.html'),
-         name='home'),
-
-    path('api/v1/', include('django_gem_taxonomy.api_v1_urls')),
-    path('graph/', include('django_gem_taxonomy.graph_urls')),
-    path('structure/', include('django_gem_taxonomy.structure_urls')),
-
+    path('',
+         TaxGraph.as_view(), name='taxonomy_taxgraph'),
+    path('<vers_id>',
+         TaxGraph.as_view(), name='taxonomy_taxgraph_wver'),
  ]
+# [A-Z0-9]+
