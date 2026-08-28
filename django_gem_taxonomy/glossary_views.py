@@ -17,11 +17,54 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.views import View
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Version, Param, Atom, AtomsGroup, Attribute
+
+from .glossary_forms import ContentFormSet
+from django.forms import modelform_factory
+
+
+AtomForm = modelform_factory(Atom, fields=('vers', 'name'))
+
+def manage_atom_and_content(request, vers_id, name=None):
+    # If pk is provided, we are in UPDATE mode, otherwise INSERT mode
+    if name:
+        atom = get_object_or_404(Atom, name=name, vers__vers=vers_id)
+    else:
+        atom = Atom()
+
+    if request.method == 'POST':
+        form_atom = AtomForm(request.POST, instance=atom)
+        # Pass the article instance into the generic formset
+        formset_content = ContentFormSet(request.POST, instance=atom)
+
+        if form_atom.is_valid() and formset_content.is_valid():
+            # 1. Save the main article first so it has a valid primary key (ID)
+            saved_atom = form_atom.save()
+
+            # 2. Save the formset. Django automatically fills in the
+            #    correct content_type and object_id fields on the Note record.
+            formset_content.instance = saved_atom
+            formset_content.save()
+
+            return redirect('taxonomy:glossary_atom_wver', vers_id=vers_id, atom=name) # Replace with your actual redirect URL route
+    else:
+        form_atom = AtomForm(instance=atom)
+        formset_content = ContentFormSet(instance=atom)
+
+    return render(request, 'django-gem-taxonomy/glossary/manage_atom.html', {
+        'form_atom': form_atom,
+        'formset_content': formset_content,
+        'is_update': name is not None
+    })
+
 
 
 class GlossaryAtom(View):
+    def get_queryset(self):
+        # Prefetches the generic 'note' relation efficiently using 'prefetch_related'
+        return super().get_queryset().prefetch_related('content')
+
     def get(self, request, vers_id=None, atom=None):
         atom_obj = None
         param_obj = None

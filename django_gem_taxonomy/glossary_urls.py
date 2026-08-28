@@ -19,6 +19,8 @@
 
 from django.urls import path
 from .glossary_views import GlossaryAtom, GlossaryAtomsGroup, GlossaryAttribute
+from .glossary_views import manage_atom_and_content
+
 
 urlpatterns = [
     path('attribute/',
@@ -51,4 +53,7 @@ urlpatterns = [
 
     path('<vers_id>/attribute/<str:attribute>',
          GlossaryAttribute.as_view(), name='glossary_attribute_wver'),
+
+    path('<vers_id>/atom/new/', manage_atom_and_content, name='create_atom'),
+    path('<vers_id>/atom/<str:name>/edit/', manage_atom_and_content, name='update_atom'),
  ]
