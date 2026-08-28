@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}img/favicon.png" rel="shortcut icon"/>
+{% endblock extra_head %}
+
+{% block body_outer %}
+    <div id="oq-body-wrapper">
+     {% block body %}
+        <div class="span12">
+            <div class="hero-unit">
+                <div id="oq-context-ribbon">
+                    {% block oq_context_ribbon %}
+                        <!-- Subtemplates can add context-sensitive components to the page-->
+                    {% endblock oq_context_ribbon %}
+                </div>
+                <div id="oq-body-heading">
+                    {% block oq_body_heading %}
+                        <!-- If you want a page title/heading, put that here -->
+                    {% endblock oq_body_heading %}
+                </div>
+                <div id="oq-body-sidebar">
+                    {% block oq_body_sidebar %}
+                    {% endblock oq_body_sidebar %}
+                </div>
+                <div id="oq-body-content">
+                    {% block oq_body_content %}
+                    {% endblock oq_body_content %}
+                </div>
+            </div>
+        </div>
+      {% endblock body %}
+    </div>
+{% endblock body_outer %}

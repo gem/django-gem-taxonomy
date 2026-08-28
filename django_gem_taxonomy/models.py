@@ -19,22 +19,34 @@
 from django.db import models
 import json
 
+class Version(models.Model):
+    vers = models.CharField(max_length=16, primary_key=True)
+    desc = models.TextField()
+    is_default = models.BooleanField(default=False)
+
 class Attribute(models.Model):
-    name = models.CharField(max_length=256, primary_key=True)
+    vers = models.ForeignKey(Version, on_delete=models.CASCADE)
+    name = models.CharField(max_length=256)
     prog = models.IntegerField()
     title = models.TextField()
 
+    class Meta:
+        unique_together = [['vers', 'name'],
+                           ['vers', 'prog']]
 
 class AtomsGroup(models.Model):
-    class Meta:
-        unique_together = [['attr', 'prog']]
-
-    name = models.CharField(max_length=256, primary_key=True)
+    vers = models.ForeignKey(Version, on_delete=models.CASCADE)
+    attr = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+    name = models.CharField(max_length=256)
     prog = models.IntegerField()
     title = models.TextField()
-    attr = models.ForeignKey(Attribute, on_delete=models.CASCADE)
     # mutex identify if it is possible or not dropdown multi-selection
     mutex = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = [['vers', 'attr', 'name'],
+                           ['vers', 'attr', 'prog']]
+
 
 # TODO: parameters description atom(param1[,param2[...,paramN]])
 # class AtomParam(models.Model):
@@ -46,15 +58,13 @@ class AtomsGroup(models.Model):
 
 
 class Atom(models.Model):
-    class Meta:
-        unique_together = [['group', 'prog']]
-
-    name = models.CharField(max_length=32, primary_key=True)
+    vers = models.ForeignKey(Version, on_delete=models.CASCADE)
+    attr = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
+    group = models.ForeignKey(AtomsGroup, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=32)
     prog = models.IntegerField()
     title = models.TextField()
     desc = models.TextField()
-    group = models.ForeignKey(AtomsGroup, on_delete=models.CASCADE, null=True)
-    attr = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     type = models.TextField()
     args = models.JSONField(blank=True, null=True)
     params = models.JSONField(blank=True, null=True)
@@ -64,16 +74,22 @@ class Atom(models.Model):
                                   related_name='revdeny')
     # is_pseudoid = models.BooleanField()
 
+    class Meta:
+        unique_together = [['vers', 'name'],
+                           ['vers', 'attr', 'group', 'prog']]
+
     def entry_type(self):
         return json.loads(self.type)
 
 
 class Param(models.Model):
-    class Meta:
-        unique_together = [['atom', 'name'], ['atom', 'name', 'prog']]
-
+    vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     atom = models.ForeignKey(Atom, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32)
+    prog = models.IntegerField()
     title = models.TextField()
     desc = models.TextField()
-    prog = models.IntegerField()
+
+    class Meta:
+        unique_together = [['vers', 'atom', 'name'],
+                           ['vers', 'atom', 'prog']]

@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 {% extends "site_base.html" %}
-{% load i18n %}
+{% load i18n other_vers %}
 
 {% block title %} GEM Taxonomy Graph {% endblock title %}
 
@@ -29,8 +29,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link href="{{ STATIC_URL }}css/jQuery-UI-Bootstrap-0.2.5.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
     <link href="{{ STATIC_URL }}ipt/css/bootstrap-tagsinput.css" rel="stylesheet"/>
-    <script src="{{ STATIC_URL }}taxonomy_v3/js/dist/jquery.min.js"></script>
-    <script src="{{ STATIC_URL }}taxonomy_v3/js/dist/bootstrap.bundle.min.js"></script>
+    <script src="{{ STATIC_URL }}taxonomy/js/dist/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}taxonomy/js/dist/bootstrap.bundle.min.js"></script>
     <style>
       .btn-sm { padding: 0px 4px 0px 4px; }
       .shb_deep {
@@ -95,7 +95,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </div>
       <div id="oq-body-heading">
         {% block oq_body_heading %}
-          <h1>{% trans "GEM TAXONOMY GRAPH" %}</h1>
+          <h1>{% trans "GEM TAXONOMY GRAPH (Vers." %} {{vers.vers}})</h1>
           <br />
         {% endblock oq_body_heading %}
       </div>
@@ -110,13 +110,28 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
        </form>
     </div>
     <div id="app"/>
-  </div>
+    </div>
+    {% if other_vers %}
+    <br>
+    <div id="app" style="margin: auto;">
+      <table class="atom" style="width: 100%;">
+        <tr>
+          <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
+            <p>
+              <span style="font-weight: bold;">Other versions: </span>
+              {% for ver in other_vers %}
+              <a href="{% other_vers vers_id=ver.vers %}">{{ ver.vers }}</a>{% if not forloop.last %}, {% endif %}                       {% endfor %}
+            </p>
+        </tr>
+      </table>
+    </div>
+    {% endif %}
 {% endblock body %}
 
 {% block extra_script %}
     {{block.super}}
-    <script src="{{ STATIC_URL }}taxonomy_v3/js/dist/jquery.min.js"></script>
-    <script src="{{ STATIC_URL }}taxonomy_v3/js/homepage.js"></script>
+    <script src="{{ STATIC_URL }}taxonomy/js/dist/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}taxonomy/js/homepage.js"></script>
     <script src="{{ STATIC_URL }}js/sol.js"></script>
 
     <script>
@@ -125,7 +140,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </script>
     <script>
             window.onload = function () {
-                fetch('{{ STATIC_URL }}taxonomy_v3/json/taxonomy_standard4taxtweb.json')
+                fetch('{{ STATIC_URL }}taxonomy/json/taxonomy{{ vers.vers }}_standard4taxtweb.json')
                     .then((response) => response.json())
                     .then(function (json){
                 gem_tax = json;

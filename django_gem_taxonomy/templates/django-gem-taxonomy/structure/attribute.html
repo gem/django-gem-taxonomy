@@ -15,10 +15,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 {% extends "site_base.html" %}
-{% load i18n %}
+{% load i18n other_vers %}
 
-{% block title %}{% if attribute == None %}Taxonomy Structure - Attributes{% else %}Taxonomy Structure - Attribute: {{ attribute.title }}{% endif %}{% endblock title %}
-
+{% block title %}{% if attribute == None %}Taxonomy Structure - Attributes (Vers. {{ vers.vers }}){% else %}Taxonomy Structure - Attribute (Vers. {{ vers.vers }}): {{ attribute.title }}{% endif %}{% endblock title %}
 {% block extra_head %}
     {{ block.super }}
     {% if oqp_version_maj == '1' %}
@@ -31,7 +30,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
     <link href="{{ STATIC_URL }}css/sol.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}ipt/css/bootstrap-tagsinput.css" rel="stylesheet"/>
-    <script src="{{ STATIC_URL }}taxonomy_v3/js/dist/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}taxonomy/js/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}taxonomy/css/taxonomy_help.css"/>
 {% endblock extra_head %}
 
@@ -39,9 +38,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     {% block oq_body_heading %}
     <div id="oq-body-heading">
       {% if attribute == None %}
-      <h1>{% trans "TAXONOMY STRUCTURE - ATTRIBUTES" %}</h1>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers.vers }}) - ATTRIBUTES</h1>
       {% else %}
-      <h1>{% trans "TAXONOMY STRUCTURE" %}</h1>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers.vers }})</h1>
       <h2>{% trans "ATTRIBUTE" %}: {% trans attribute.title %}</h2>
       {% endif %}
       <br />
@@ -115,6 +114,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
               {% endfor %}
             </table>
           </td>
+        </tr>
+      </table>
+    </div>
+    {% endif %}
+    {% if other_vers %}
+    <br>
+    <div id="app" style="margin: auto;">
+      <table class="atom" style="width: 100%;">
+        <tr>
+          <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
+            <p>
+              <span style="font-weight: bold;">Other versions: </span>
+              {% for ver in other_vers %}
+              <a href="{% other_vers vers_id=ver.vers %}">{{ ver.vers }}</a>{% if not forloop.last %}, {% endif %}                       {% endfor %}
+            </p>
         </tr>
       </table>
     </div>
