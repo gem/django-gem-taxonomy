@@ -31,10 +31,10 @@ class StructureAtom(View):
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
             if atom is None:
-                return redirect('taxonomy:taxonomy_struct_atoms_wver',
+                return redirect('taxonomy:structure_atoms_wver',
                                 vers_id=vers.vers)
             else:
-                return redirect('taxonomy:taxonomy_struct_atoms_wver',
+                return redirect('taxonomy:structure_atoms_wver',
                                 vers_id=vers.vers, atom=atom)
         else:
             vers = Version.objects.get(vers=vers_id)
@@ -80,10 +80,10 @@ class StructureAtomsGroup(View):
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
             if atoms_group is None:
-                return redirect('taxonomy:taxonomy_struct_atomsgroups_wver',
+                return redirect('taxonomy:structure_atomsgroups_wver',
                                 vers_id=vers.vers)
             else:
-                return redirect('taxonomy:taxonomy_struct_atomsgroup_wver',
+                return redirect('taxonomy:structure_atomsgroup_wver',
                                 vers_id=vers.vers, atoms_group=atoms_group)
         else:
             vers = Version.objects.get(vers=vers_id)
@@ -116,10 +116,10 @@ class StructureAttribute(View):
             vers = Version.objects.get(is_default=True)
 
             if attribute is None:
-                return redirect('taxonomy:taxonomy_struct_attributes_wver',
+                return redirect('taxonomy:structure_attributes_wver',
                                 vers_id=vers.vers)
             else:
-                return redirect('taxonomy:taxonomy_struct_attribute_wver',
+                return redirect('taxonomy:structure_attribute_wver',
                                 vers_id=vers.vers, attribute=attribute)
         else:
             vers = Version.objects.get(vers=vers_id)

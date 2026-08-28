@@ -22,33 +22,33 @@ from .structure_views import StructureAtom, StructureAtomsGroup, StructureAttrib
 
 urlpatterns = [
     path('attribute/',
-         StructureAttribute.as_view(), name='taxonomy_struct_attributes'),
+         StructureAttribute.as_view(), name='structure_attributes'),
     path('atom/',
-         StructureAtom.as_view(), name='taxonomy_struct_atoms'),
+         StructureAtom.as_view(), name='structure_atoms'),
     path('atom/<str:atom>',
-         StructureAtom.as_view(), name='taxonomy_struct_atom'),
+         StructureAtom.as_view(), name='structure_atom'),
 
     path('atoms_group/',
-         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroups'),
+         StructureAtomsGroup.as_view(), name='structure_atomsgroups'),
     path('atoms_group/<str:atoms_group>',
-         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroup'),
+         StructureAtomsGroup.as_view(), name='structure_atomsgroup'),
 
     path('attribute/<str:attribute>',
-         StructureAttribute.as_view(), name='taxonomy_struct_attribute'),
+         StructureAttribute.as_view(), name='structure_attribute'),
 
     # structure paths with version
     path('<vers_id>/attribute/',
-         StructureAttribute.as_view(), name='taxonomy_struct_attributes_wver'),
+         StructureAttribute.as_view(), name='structure_attributes_wver'),
     path('<vers_id>/atom/',
-         StructureAtom.as_view(), name='taxonomy_struct_atoms_wver'),
+         StructureAtom.as_view(), name='structure_atoms_wver'),
     path('<vers_id>/atom/<str:atom>',
-         StructureAtom.as_view(), name='taxonomy_struct_atom_wver'),
+         StructureAtom.as_view(), name='structure_atom_wver'),
 
     path('<vers_id>/atoms_group/',
-         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroups_wver'),
+         StructureAtomsGroup.as_view(), name='structure_atomsgroups_wver'),
     path('<vers_id>/atoms_group/<str:atoms_group>',
-         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroup_wver'),
+         StructureAtomsGroup.as_view(), name='structure_atomsgroup_wver'),
 
     path('<vers_id>/attribute/<str:attribute>',
-         StructureAttribute.as_view(), name='taxonomy_struct_attribute_wver'),
+         StructureAttribute.as_view(), name='structure_attribute_wver'),
  ]

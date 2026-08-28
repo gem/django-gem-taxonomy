@@ -28,7 +28,7 @@ class Graph(View):
 
         if vers_id is None:
             vers = Version.objects.get(is_default=True)
-            return redirect('taxonomy:taxonomy_graph_wver',
+            return redirect('taxonomy:graph_wver',
                             vers_id=vers.vers)
         else:
             vers = Version.objects.get(vers=vers_id)

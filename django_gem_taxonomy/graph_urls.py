@@ -22,8 +22,8 @@ from .graph_views import Graph
 
 urlpatterns = [
     path('',
-         Graph.as_view(), name='taxonomy_graph'),
+         Graph.as_view(), name='graph'),
     path('<vers_id>',
-         Graph.as_view(), name='taxonomy_graph_wver'),
+         Graph.as_view(), name='graph_wver'),
  ]
 # [A-Z0-9]+

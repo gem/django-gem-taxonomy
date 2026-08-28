@@ -22,33 +22,33 @@ from .glossary_views import GlossaryAtom, GlossaryAtomsGroup, GlossaryAttribute
 
 urlpatterns = [
     path('attribute/',
-         GlossaryAttribute.as_view(), name='taxonomy_struct_attributes'),
+         GlossaryAttribute.as_view(), name='glossary_attributes'),
     path('atom/',
-         GlossaryAtom.as_view(), name='taxonomy_struct_atoms'),
+         GlossaryAtom.as_view(), name='glossary_atoms'),
     path('atom/<str:atom>',
-         GlossaryAtom.as_view(), name='taxonomy_struct_atom'),
+         GlossaryAtom.as_view(), name='glossary_atom'),
 
     path('atoms_group/',
-         GlossaryAtomsGroup.as_view(), name='taxonomy_struct_atomsgroups'),
+         GlossaryAtomsGroup.as_view(), name='glossary_atomsgroups'),
     path('atoms_group/<str:atoms_group>',
-         GlossaryAtomsGroup.as_view(), name='taxonomy_struct_atomsgroup'),
+         GlossaryAtomsGroup.as_view(), name='glossary_atomsgroup'),
 
     path('attribute/<str:attribute>',
-         GlossaryAttribute.as_view(), name='taxonomy_struct_attribute'),
+         GlossaryAttribute.as_view(), name='glossary_attribute'),
 
-    # structure paths with version
+    # glossary paths with version
     path('<vers_id>/attribute/',
-         GlossaryAttribute.as_view(), name='taxonomy_struct_attributes_wver'),
+         GlossaryAttribute.as_view(), name='glossary_attributes_wver'),
     path('<vers_id>/atom/',
-         GlossaryAtom.as_view(), name='taxonomy_struct_atoms_wver'),
+         GlossaryAtom.as_view(), name='glossary_atoms_wver'),
     path('<vers_id>/atom/<str:atom>',
-         GlossaryAtom.as_view(), name='taxonomy_struct_atom_wver'),
+         GlossaryAtom.as_view(), name='glossary_atom_wver'),
 
     path('<vers_id>/atoms_group/',
-         GlossaryAtomsGroup.as_view(), name='taxonomy_struct_atomsgroups_wver'),
+         GlossaryAtomsGroup.as_view(), name='glossary_atomsgroups_wver'),
     path('<vers_id>/atoms_group/<str:atoms_group>',
-         GlossaryAtomsGroup.as_view(), name='taxonomy_struct_atomsgroup_wver'),
+         GlossaryAtomsGroup.as_view(), name='glossary_atomsgroup_wver'),
 
     path('<vers_id>/attribute/<str:attribute>',
-         GlossaryAttribute.as_view(), name='taxonomy_struct_attribute_wver'),
+         GlossaryAttribute.as_view(), name='glossary_attribute_wver'),
  ]
