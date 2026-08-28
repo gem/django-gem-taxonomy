@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 import json
 
 class Version(models.Model):
@@ -24,11 +26,19 @@ class Version(models.Model):
     desc = models.TextField()
     is_default = models.BooleanField(default=False)
 
+class VersRelatedContent(models.Model):
+    vers = models.ForeignKey(Version, on_delete=models.CASCADE)
+    name = models.CharField(max_length=256)
+    title = models.TextField()
+    content = GenericRelation('Content')
+
+
 class Attribute(models.Model):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     prog = models.IntegerField()
     title = models.TextField()
+    content = GenericRelation('Content')
 
     class Meta:
         unique_together = [['vers', 'name'],
@@ -42,6 +52,7 @@ class AtomsGroup(models.Model):
     title = models.TextField()
     # mutex identify if it is possible or not dropdown multi-selection
     mutex = models.BooleanField(default=True)
+    content = GenericRelation('Content')
 
     class Meta:
         unique_together = [['vers', 'attr', 'name'],
@@ -72,6 +83,7 @@ class Atom(models.Model):
                                   related_name='revdeps')
     deny = models.ManyToManyField('self', symmetrical=False,
                                   related_name='revdeny')
+    content = GenericRelation('Content')
     # is_pseudoid = models.BooleanField()
 
     class Meta:
@@ -89,7 +101,17 @@ class Param(models.Model):
     prog = models.IntegerField()
     title = models.TextField()
     desc = models.TextField()
+    content = GenericRelation('Content')
 
     class Meta:
         unique_together = [['vers', 'atom', 'name'],
                            ['vers', 'atom', 'prog']]
+
+
+class Content(models.Model):
+    content = models.TextField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    # - object_id: memorize the primary key (ID) of linked object
+    object_id = models.PositiveIntegerField()
+    # - content_object: virtual field that join 2 previous fields
+    content_object = GenericForeignKey('content_type', 'object_id')
