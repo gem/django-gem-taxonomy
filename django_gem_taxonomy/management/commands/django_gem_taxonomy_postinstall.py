@@ -37,11 +37,20 @@ class Command(BaseCommand):
         call_command('migrate', 'django_gem_taxonomy')
 
         # first iteration set the taxonomy_standard default
-        for data_idx, data_file in enumerate(['taxonomy4.0_standard.json' 'taxonomy3.3_standard.json']):
-            print("Data_file: [%s]" % data_file)
-            call_args = ['taxonomy_load_standard', '--no-dump']
-            if data_idx == 0:
+        for data in [
+                    {'vers_id': '4.0',
+                     'vers_desc': 'Version 4.0 year 2025',
+                     'is_default': True,
+                     'fname': 'taxonomy4.0_standard.json'},
+                    {'vers_id': '3.3',
+                     'vers_desc': 'Version 3.3 year 2024',
+                     'is_default': False,
+                     'fname': 'taxonomy3.3_standard.json'}
+                ]:
+            print("Data_file: [%s]" % data['fname'])
+            call_args = ['taxonomy_load_standard', data['vers_id'], data['vers_desc'], '--no-dump']
+            if data['is_default']:
                 call_args.append('--is-default')
-            call_args.append(os.path.join(data_path, data_file))
+            call_args.append(os.path.join(data_path, data['fname']))
 
             call_command(*call_args)

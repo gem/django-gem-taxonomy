@@ -8,9 +8,9 @@ class CommandsTestCase(TestCase):
     def test_taxonomy_load_standard(self):
         "Test taxonomy_load_standard command."
 
-        args = ['tests/data/taxonomy3.3_standard.json']
+        args = ['django_gem_taxonomy_postinstall']
         opts = {}
         v_file = StringIO()
         stdout_backup, sys.stdout = sys.stdout, v_file
-        call_command('taxonomy_load_standard', *args, **opts)
+        call_command(*args, **opts)
         sys.stdout = stdout_backup
