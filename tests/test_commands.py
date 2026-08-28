@@ -12,5 +12,5 @@ class CommandsTestCase(TestCase):
         opts = {}
         v_file = StringIO()
         stdout_backup, sys.stdout = sys.stdout, v_file
-        call_command(*args, **opts, interactive=False)
+        call_command(*args, **opts)
         sys.stdout = stdout_backup
