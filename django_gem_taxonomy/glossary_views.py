@@ -24,7 +24,7 @@ from .glossary_forms import ContentFormSet
 from django.forms import modelform_factory
 
 
-AtomForm = modelform_factory(Atom, fields=('vers', 'name'))
+AtomForm = modelform_factory(Atom, fields=('name',))
 
 def manage_atom_and_content(request, vers_id, name=None):
     # If pk is provided, we are in UPDATE mode, otherwise INSERT mode
