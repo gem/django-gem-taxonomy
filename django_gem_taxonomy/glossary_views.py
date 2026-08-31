@@ -26,6 +26,9 @@ from django.forms import modelform_factory
 
 AtomForm = modelform_factory(Atom, fields=('name',))
 
+def glossary_home(request):
+    return render(request, 'glossary/index.html')
+
 def manage_atom_and_content(request, vers_id, name=None):
     # If pk is provided, we are in UPDATE mode, otherwise INSERT mode
     if name:
@@ -58,6 +61,13 @@ def manage_atom_and_content(request, vers_id, name=None):
         'is_update': name is not None
     })
 
+
+
+class GlossaryHome(View):
+    def get(self, request):
+        template = 'django-gem-taxonomy/glossary/index.html'
+
+        return render(request, template)
 
 
 class GlossaryAtom(View):

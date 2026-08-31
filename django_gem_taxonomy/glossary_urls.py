@@ -18,11 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path
-from .glossary_views import GlossaryAtom, GlossaryAtomsGroup, GlossaryAttribute
+from .glossary_views import GlossaryAtom, GlossaryAtomsGroup, GlossaryAttribute, GlossaryHome
 from .glossary_views import manage_atom_and_content
 
 
 urlpatterns = [
+    path('', GlossaryHome.as_view(), name='glossary_home'),
+
     path('attribute/',
          GlossaryAttribute.as_view(), name='glossary_attributes'),
     path('atom/',
