@@ -18,16 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Version, Param, Atom, AtomsGroup, Attribute
+from .models import Version, Param, Atom, AtomsGroup, Attribute, Content
 
 from .glossary_forms import ContentFormSet
 from django.forms import modelform_factory
 
 
 AtomForm = modelform_factory(Atom, fields=('name',))
-
-def glossary_home(request):
-    return render(request, 'glossary/index.html')
 
 def manage_atom_and_content(request, vers_id, name=None):
     # If pk is provided, we are in UPDATE mode, otherwise INSERT mode
@@ -62,12 +59,50 @@ def manage_atom_and_content(request, vers_id, name=None):
     })
 
 
-
 class GlossaryHome(View):
     def get(self, request):
         template = 'django-gem-taxonomy/glossary/index.html'
+        defa_vers = Version.objects.get(is_default=True)
 
-        return render(request, template)
+        all_items = []
+
+        els = Content.objects.all()
+        for el in els:
+            if el.content_object.vers != defa_vers:
+                continue
+
+            item = {
+                'title': el.content_object.title,
+                'name': el.content_object.name,
+                'vers': el.content_object.vers.vers,
+            }
+
+            if isinstance(el.content_object, Atom):
+                item['type'] = 'atom'
+                item['attribute'] = getattr(el.content_object, 'attribute', None)
+                all_items.append(item)
+                print(item)
+                print(type(el.content_object))
+            elif isinstance(el.content_object, Attribute):
+                item['type'] = 'attribute'
+                item['attribute'] = None  # Gli attributi non hanno attributi
+                all_items.append(item)
+                print(item)
+                print(type(el.content_object))
+            elif isinstance(el.content_object, AtomsGroup):
+                item['type'] = 'atoms_group'
+                item['attribute'] = None  # I gruppi non hanno attributi
+                all_items.append(item)
+                print(item)
+                print(type(el.content_object))
+
+        context = {
+            'all_items': all_items,  # Passa la lista unica
+            'default_version': defa_vers,
+            'total_items': len(all_items),
+        }
+
+        return render(request, template, context)
 
 
 class GlossaryAtom(View):
