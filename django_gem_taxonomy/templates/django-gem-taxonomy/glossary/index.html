@@ -58,6 +58,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </div>
       {% endif %}
 
+      <div class="search-section">
+          <form method="get" action="" style="width: 100%;">
+              <div class="search-row">
+                  <input type="text" name="q" class="search-input" placeholder="Search by title or name..." value="{{ search_query }}">
+                  <button type="submit" class="search-btn">🔍 Search</button>
+                  {% if search_query or selected_versions or current_letter %}
+                      <a href="?" class="clear-btn">✕ Clear</a>
+                  {% endif %}
+              </div>
+
+              <div class="version-checkboxes">
+                  <span class="filter-label">📂 Filter by Version:</span>
+                  {% for version in all_versions %}
+                      <label>
+                          <input type="checkbox" name="version" value="{{ version.vers }}"
+                                 {% if version.vers|stringformat:"s" in selected_versions %}checked{% endif %}>
+                          {{ version.vers }}
+                      </label>
+                  {% endfor %}
+                  <span class="version-info">(select multiple)</span>
+              </div>
+          </form>
+      </div>
+
       <div style="color: #888; font-size: 14px; margin-bottom: 15px;">
           Showing <strong>{{ total_items }}</strong> item{{ total_items|pluralize }}
           {% if current_letter %}
@@ -89,4 +113,146 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
 {% block extra_script %}
     {{block.super}}
+
+    <script>
+        (function() {
+            const searchInput = document.querySelector('input[name="q"]');
+            const dropdown = document.createElement('div');
+            dropdown.className = 'suggestions-dropdown';
+            dropdown.style.cssText = `
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                max-height: 350px;
+                overflow-y: auto;
+                margin-top: 2px;
+                width: 100%;
+            `;
+
+            const searchWrapper = searchInput.parentElement;
+            searchWrapper.style.position = 'relative';
+            searchWrapper.appendChild(dropdown);
+
+            let debounceTimer;
+
+            function fetchSuggestions(query) {
+                if (!query || query.length === 0) {
+                    dropdown.classList.remove('show');
+                    return;
+                }
+
+                fetch(`/taxonomy/glossary/suggestions/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderSuggestions(data.suggestions, query);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching suggestions:', error);
+                    });
+            }
+
+	    function renderSuggestions(suggestions, query) {
+                if (suggestions.length === 0) {
+                    dropdown.innerHTML = '<div style="padding:15px;color:#999;text-align:center;font-size:14px;">No suggestions found</div>';
+                    dropdown.classList.add('show');
+                    return;
+                }
+
+                let html = '';
+                suggestions.forEach(item => {
+                    let displayText = item.text;
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    displayText = displayText.replace(regex, '<span style="background:#ffff99;padding:0 2px;">$1</span>');
+
+                    let emoji = '';
+                    let typeLabel = '';
+                    let bgColor = '#f0f0f0';
+                    let textColor = '#888';
+
+                    if (item.type === 'title') {
+                        emoji = '📄';
+                        typeLabel = 'Title';
+                        bgColor = '#e8f4fd';
+                        textColor = '#3498db';
+                    } else if (item.type === 'name') {
+                        emoji = '📛';
+                        typeLabel = 'Name';
+                        bgColor = '#e8f5e9';
+                        textColor = '#27ae60';
+                    } else if (item.type === 'content') {
+                        emoji = '📝';
+                        typeLabel = 'Content';
+                        bgColor = '#fff3cd';
+                        textColor = '#856404';
+                    } else if (item.type === 'atom') {
+                        emoji = '⚛️';
+                        typeLabel = 'Atom';
+                        bgColor = '#fef3e2';
+                        textColor = '#e67e22';
+                    }
+
+                    html += `
+                        <div class="suggestion-item" data-value="${item.text}" style="padding:10px 15px;cursor:pointer;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;font-size:14px;color:#2c3e50;">
+                            <span>${emoji}</span>
+                            <div style="flex:1;">
+                                ${displayText}
+                            </div>
+                            <span style="font-size:11px;padding:2px 8px;background:${bgColor};border-radius:10px;white-space:nowrap;color:${textColor};">
+                                ${typeLabel}
+                            </span>
+                        </div>
+                    `;
+                });
+
+                dropdown.innerHTML = html;
+                dropdown.classList.add('show');
+
+                dropdown.querySelectorAll('.suggestion-item').forEach(el => {
+                    el.addEventListener('click', function() {
+                        searchInput.value = this.dataset.value;
+                        dropdown.classList.remove('show');
+                        this.closest('form').submit();
+                    });
+                });
+            }
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+
+                clearTimeout(debounceTimer);
+
+                if (query.length === 0) {
+                    dropdown.classList.remove('show');
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    fetchSuggestions(query);
+                }, 300);
+            });
+
+            // Close dropdown on click outside
+            document.addEventListener('click', function(event) {
+                const isClickInside = searchInput.contains(event.target) || dropdown.contains(event.target);
+                if (!isClickInside) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            // Close dropdown with esc
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    dropdown.classList.remove('show');
+                }
+            });
+        })();
+    </script>
+
 {% endblock extra_script %}
+

@@ -23,6 +23,10 @@ from .models import Version, Param, Atom, AtomsGroup, Attribute, Content
 from .glossary_forms import ContentFormSet
 from django.forms import modelform_factory
 
+from django.http import JsonResponse
+from django.http import JsonResponse
+from django.db import models
+
 
 AtomForm = modelform_factory(Atom, fields=('name',))
 
@@ -65,13 +69,21 @@ class GlossaryHome(View):
         defa_vers = Version.objects.get(is_default=True)
 
         letter = request.GET.get('letter', '').strip().upper()
+        search_query = request.GET.get('q', '').strip()
+        selected_versions = request.GET.getlist('version')
+
+        all_versions = Version.objects.all().order_by('vers')
 
         all_items = []
-
         els = Content.objects.all()
+
         for el in els:
-            if el.content_object.vers != defa_vers:
-                continue
+            if selected_versions:
+                if str(el.content_object.vers.vers) not in selected_versions:
+                    continue
+            else:
+                if el.content_object.vers != defa_vers:
+                    continue
 
             item = {
                 'title': el.content_object.title,
@@ -84,30 +96,30 @@ class GlossaryHome(View):
             if isinstance(el.content_object, Atom):
                 item['type'] = 'atom'
                 item['attribute'] = getattr(el.content_object, 'attribute', None)
-                all_items.append(item)
-                print(item)
-                print(type(el.content_object))
             elif isinstance(el.content_object, Attribute):
                 item['type'] = 'attribute'
-                all_items.append(item)
-                print(item)
-                print(type(el.content_object))
             elif isinstance(el.content_object, AtomsGroup):
                 item['type'] = 'atoms_group'
-                all_items.append(item)
-                print(item)
-                print(type(el.content_object))
+
+            all_items.append(item)
 
         if letter and len(letter) == 1:
             filtered_items = []
             for item in all_items:
-                # Controlla se title o name inizia con la lettera
                 if (item['title'] and item['title'][0].upper() == letter) or \
                    (item['name'] and item['name'][0].upper() == letter):
                     filtered_items.append(item)
             all_items = filtered_items
 
-        # All items sort
+        if search_query:
+            search_lower = search_query.lower()
+            filtered_items = []
+            for item in all_items:
+                if (item['title'] and search_lower in item['title'].lower()) or \
+                   (item['name'] and search_lower in item['name'].lower()):
+                    filtered_items.append(item)
+            all_items = filtered_items
+
         all_items.sort(key=lambda x: x['title'].lower())
 
         all_letters = set()
@@ -128,10 +140,112 @@ class GlossaryHome(View):
             'default_version': defa_vers,
             'total_items': len(all_items),
             'letters': sorted_letters,
-            'current_letter': letter
+            'current_letter': letter,
+            'search_query': search_query,
+            'selected_versions': selected_versions,
+            'all_versions': all_versions,
         }
 
         return render(request, template, context)
+
+
+class GlossarySuggestions(View):
+    def get(self, request):
+        query = request.GET.get('q', '').strip()
+
+        if not query:
+            return JsonResponse({'suggestions': []})
+
+        suggestions = []
+
+        # Title and name search
+        if len(query) >= 3:
+            # Atom search
+            atom_results = Atom.objects.filter(
+                models.Q(title__icontains=query) |
+                models.Q(name__icontains=query)
+            )[:5]
+
+            for obj in atom_results:
+                suggestions.append({
+                    'type': 'title',
+                    'text': obj.title or obj.name,
+                    'label': f'📄 {obj.title or obj.name}'
+                })
+
+            # Attributes search
+            attr_results = Attribute.objects.filter(
+                models.Q(title__icontains=query) |
+                models.Q(name__icontains=query)
+            )[:5]
+
+            for obj in attr_results:
+                suggestions.append({
+                    'type': 'title',
+                    'text': obj.title or obj.name,
+                    'label': f'📄 {obj.title or obj.name}'
+                })
+
+            # AtomsGroup search
+            group_results = AtomsGroup.objects.filter(
+                models.Q(title__icontains=query) |
+                models.Q(name__icontains=query)
+            )[:5]
+
+            for obj in group_results:
+                suggestions.append({
+                    'type': 'title',
+                    'text': obj.title or obj.name,
+                    'label': f'📄 {obj.title or obj.name}'
+                })
+
+        # Content search
+        if len(query) >= 3:
+            content_results = Content.objects.filter(
+                models.Q(content__icontains=query)
+            )[:10]
+
+            for content in content_results:
+                obj = content.content_object
+                if obj:
+                    title = getattr(obj, 'title', None) or getattr(obj, 'name', None)
+                    if title:
+                        content_text = content.content or ''
+                        if content_text:
+                            pos = content_text.lower().find(query.lower())
+                            if pos != -1:
+                                start = max(0, pos - 30)
+                                end = min(len(content_text), pos + 60)
+                                preview = '...' + content_text[start:end] + '...' if start > 0 else content_text[:end] + '...'
+                            else:
+                                preview = content_text[:100] + '...'
+                        else:
+                            preview = ''
+
+                        suggestions.append({
+                            'type': 'content',
+                            'text': title,
+                            'label': f'📝 {title}',
+                            'preview': preview
+                        })
+
+        # ATOM
+        if len(query) >= 1:
+            atom_results = Atom.objects.filter(
+                models.Q(name__icontains=query)
+            )[:10]
+
+            for atom in atom_results:
+                suggestions.append({
+                    'type': 'atom',
+                    'text': atom.name,
+                    'label': f'⚛️ {atom.name}'
+                })
+
+        # Suggestion number limit
+        suggestions = suggestions[:20]
+
+        return JsonResponse({'suggestions': suggestions})
 
 
 class GlossaryAtom(View):
