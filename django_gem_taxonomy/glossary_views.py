@@ -85,19 +85,19 @@ class GlossaryHome(View):
                 print(type(el.content_object))
             elif isinstance(el.content_object, Attribute):
                 item['type'] = 'attribute'
-                item['attribute'] = None  # Gli attributi non hanno attributi
+                item['attribute'] = None
                 all_items.append(item)
                 print(item)
                 print(type(el.content_object))
             elif isinstance(el.content_object, AtomsGroup):
                 item['type'] = 'atoms_group'
-                item['attribute'] = None  # I gruppi non hanno attributi
+                item['attribute'] = None
                 all_items.append(item)
                 print(item)
                 print(type(el.content_object))
 
         context = {
-            'all_items': all_items,  # Passa la lista unica
+            'all_items': all_items,
             'default_version': defa_vers,
             'total_items': len(all_items),
         }
