@@ -24,7 +24,6 @@ from .glossary_forms import ContentFormSet
 from django.forms import modelform_factory
 
 from django.http import JsonResponse
-from django.http import JsonResponse
 from django.db import models
 
 
