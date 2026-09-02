@@ -64,6 +64,8 @@ class GlossaryHome(View):
         template = 'django-gem-taxonomy/glossary/index.html'
         defa_vers = Version.objects.get(is_default=True)
 
+        letter = request.GET.get('letter', '').strip().upper()
+
         all_items = []
 
         els = Content.objects.all()
@@ -75,6 +77,8 @@ class GlossaryHome(View):
                 'title': el.content_object.title,
                 'name': el.content_object.name,
                 'vers': el.content_object.vers.vers,
+                'type': None,
+                'attribute': None
             }
 
             if isinstance(el.content_object, Atom):
@@ -85,21 +89,46 @@ class GlossaryHome(View):
                 print(type(el.content_object))
             elif isinstance(el.content_object, Attribute):
                 item['type'] = 'attribute'
-                item['attribute'] = None
                 all_items.append(item)
                 print(item)
                 print(type(el.content_object))
             elif isinstance(el.content_object, AtomsGroup):
                 item['type'] = 'atoms_group'
-                item['attribute'] = None
                 all_items.append(item)
                 print(item)
                 print(type(el.content_object))
+
+        if letter and len(letter) == 1:
+            filtered_items = []
+            for item in all_items:
+                # Controlla se title o name inizia con la lettera
+                if (item['title'] and item['title'][0].upper() == letter) or \
+                   (item['name'] and item['name'][0].upper() == letter):
+                    filtered_items.append(item)
+            all_items = filtered_items
+
+        # All items sort
+        all_items.sort(key=lambda x: x['title'].lower())
+
+        all_letters = set()
+        for item in all_items:
+            if item['title']:
+                first_char = item['title'][0].upper()
+                if first_char.isalpha():
+                    all_letters.add(first_char)
+            if item['name']:
+                first_char = item['name'][0].upper()
+                if first_char.isalpha():
+                    all_letters.add(first_char)
+
+        sorted_letters = sorted(list(all_letters))
 
         context = {
             'all_items': all_items,
             'default_version': defa_vers,
             'total_items': len(all_items),
+            'letters': sorted_letters,
+            'current_letter': letter
         }
 
         return render(request, template, context)
