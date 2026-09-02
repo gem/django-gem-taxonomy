@@ -26,7 +26,6 @@ from django.forms import modelform_factory
 from django.http import JsonResponse
 from django.db import models
 
-
 AtomForm = modelform_factory(Atom, fields=('name',))
 
 def manage_atom_and_content(request, vers_id, name=None):
