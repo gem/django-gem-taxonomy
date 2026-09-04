@@ -40,38 +40,42 @@ ContentFormSet = generic_inlineformset_factory(Content, fields=('content',),
 
 class AttributeFormForm(forms.ModelForm):
     name = forms.CharField(disabled=True, required=False)
+    title = forms.CharField(disabled=True, required=False)
 
     class Meta:
         model = Attribute
-        fields = ['name']
+        fields = ['name', 'title']
 
 AttributeForm = modelform_factory(Attribute, form=AttributeFormForm)
 
 
 class AtomsGroupFormForm(forms.ModelForm):
     name = forms.CharField(disabled=True, required=False)
+    title = forms.CharField(disabled=True, required=False)
 
     class Meta:
         model = AtomsGroup
-        fields = ['name']
+        fields = ['name', 'title']
 
 AtomsGroupForm = modelform_factory(AtomsGroup, form=AtomsGroupFormForm)
 
 class AtomFormForm(forms.ModelForm):
     name = forms.CharField(disabled=True, required=False)
+    title = forms.CharField(disabled=True, required=False)
 
     class Meta:
         model = Atom
-        fields = ['name']
+        fields = ['name', 'title']
 
 AtomForm = modelform_factory(Atom, form=AtomFormForm)
 
 class ParamFormForm(forms.ModelForm):
     param_atom = forms.CharField(label="Parametrized Atom", disabled=True, required=False)
+    title = forms.CharField(disabled=True, required=False)
 
     class Meta:
         model = Param
-        fields = ['param_atom']
+        fields = ['param_atom', 'title']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
