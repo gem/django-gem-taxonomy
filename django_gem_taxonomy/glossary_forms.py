@@ -17,9 +17,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
-from .models import Atom, Content
+from .models import Content
+from django_ckeditor_5.widgets import CKEditor5Widget
+
+def assign_ckeditor(db_field, **kwargs):
+    if db_field.name == 'content':
+        kwargs['widget'] = CKEditor5Widget(
+            attrs={'class': 'django_ckeditor_5'},
+            config_name='extends'
+        )
+    return db_field.formfield(**kwargs)
 
 # Create a generic inline formset for the Note model.
 # - extra=1: Displays one empty field to add a new note.
 # - max_num=1: (Optional) Set this if you want to limit it to exactly one note per object.
-ContentFormSet = generic_inlineformset_factory(Content, fields=('content',), extra=1, max_num=1, validate_max=True)
+ContentFormSet = generic_inlineformset_factory(Content, fields=('content',),
+                                               formfield_callback=assign_ckeditor,
+                                               extra=1, max_num=1, validate_max=True)

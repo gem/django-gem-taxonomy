@@ -6,7 +6,7 @@
 <form method="post">
     {% csrf_token %}
     
-    <h3>Atom Details</h3>
+    <h3>Attribute Details</h3>
     {{ form_obj.as_p }}
 
     <h3>Associated Content (Generic Relation)</h3>
@@ -25,7 +25,7 @@
     {% endfor %}
 
     <button type="submit">
-        {% if is_update %}Save Changes{% else %}Create Atom and Note{% endif %}
+        {% if is_update %}Save Changes{% else %}Create Attribute and Note{% endif %}
     </button>
 </form>
 </body>

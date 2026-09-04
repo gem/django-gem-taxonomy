@@ -15,10 +15,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import json
 from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-import json
 
 class Version(models.Model):
     vers = models.CharField(max_length=16, primary_key=True)
@@ -108,9 +110,10 @@ class Param(models.Model):
 
 
 class Content(models.Model):
-    content = models.TextField()
+    content = CKEditor5Field('Content')
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     # - object_id: memorize the primary key (ID) of linked object
     object_id = models.PositiveIntegerField()
     # - content_object: virtual field that join 2 previous fields
     content_object = GenericForeignKey('content_type', 'object_id')
+
