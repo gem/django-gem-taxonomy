@@ -1,0 +1,258 @@
+<!--
+Copyright (c) 2026 GEM Foundation
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "site_base.html" %}
+{% load i18n other_vers %}
+
+{% block title %}Taxonomy Glossary{% endblock title %}
+ {% block extra_head %}
+    {{ block.super }}
+    {% if oqp_version_maj == '1' %}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+    {% else %}
+    <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
+    {% endif %}
+    <link href="{{ STATIC_URL }}css/glossary.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/handsontable.full.min.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/jQuery-UI-Bootstrap-0.2.5.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
+    <link href="{{ STATIC_URL }}css/sol.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}ipt/css/bootstrap-tagsinput.css" rel="stylesheet"/>
+    <script src="{{ STATIC_URL }}taxonomy/js/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}taxonomy/css/taxonomy_help.css"/>
+ {% endblock extra_head %}
+
+    {% block body %}
+    {% block oq_body_heading %}
+    <div id="oq-body-heading">
+      <h1>{% trans "TAXONOMY GLOSSARY" %}</h1>
+      <br />
+    </div>
+    {% endblock oq_body_heading %}
+
+    <div id="app" style="margin: auto;">
+      {% if letters %}
+      <div class="letter-nav">
+          <span style="display: inline-block; padding: 5px 10px; color: #888; font-size: 14px; font-weight: normal;">Filter by letter:</span>
+          <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}" class="{% if not current_letter %}active-letter{% endif %}" style="background:{% if not current_letter %}#3498db{% else %}white{% endif %};color:{% if not current_letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if not current_letter %}#3498db{% else %}#ddd{% endif %};border-radius:3px;padding:5px 12px;text-decoration:none;font-weight:bold;font-size:14px;">All</a>
+
+          {% for letter in letters %}
+              <a href="?letter={{ letter|lower }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="{% if current_letter|lower == letter|lower %}active-letter{% else %}has-articles{% endif %}" style="background:{% if current_letter == letter %}#3498db{% else %}white{% endif %};color:{% if current_letter == letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if current_letter == letter %}#3498db{% else %}#ddd{% endif %};border-radius:3px;padding:5px 12px;text-decoration:none;font-weight:bold;font-size:14px;">
+                  {{ letter }}
+              </a>
+          {% endfor %}
+          <span style="font-size: 11px; color: #999; margin-left: 10px;">(filters by title or atom)</span>
+      </div>
+      {% endif %}
+
+      <div class="search-section">
+          <form method="get" action="" style="width: 100%;">
+              <div class="search-row">
+                  <input type="text" name="q" class="search-input" placeholder="Search by title or name..." value="{{ search_query }}">
+                  <button type="submit" class="search-btn">🔍 Search</button>
+                  {% if search_query or selected_versions %}
+                      <a href="?" class="clear-btn">✕ Clear</a>
+                  {% endif %}
+              </div>
+
+              <div class="version-checkboxes">
+                  <span class="filter-label">📂 Filter by Version:</span>
+                  {% for version in all_versions %}
+                      <label>
+                          <input type="checkbox" name="version" value="{{ version.vers }}"
+                                 {% if version.vers|stringformat:"s" in selected_versions %}checked{% endif %}>
+                          {{ version.vers }}
+                      </label>
+                  {% endfor %}
+                  <span class="version-info">(select multiple)</span>
+              </div>
+          </form>
+      </div>
+
+      <div style="color: #888; font-size: 14px; margin-bottom: 15px;">
+          Showing <strong>{{ total_items }}</strong> item{{ total_items|pluralize }}
+          {% if current_letter %}
+              for letter "<strong>{{ current_letter }}</strong>"
+          {% endif %}
+      </div>
+
+      {% for item in all_items %}
+      {% if item.name|slice:":1" != '_' %}
+      <div class="col-md-4">
+        <h2>
+           <a href="{{item.vers}}/{{item.type}}/{{item.name}}">
+	     {{item.title}} [{{item.name}}]
+           </a>
+           {% if item.type == 'atom' %}
+               <span class="badge atom-badge">Atom</span>
+           {% elif item.type == 'attribute' %}
+               <span class="badge attribute-badge">Attribute</span>
+           {% elif item.type == 'atoms_group' %}
+               <span class="badge">Group</span>
+           {% endif %}
+           <span class="badge">Ver. {{ item.vers }}</span>
+        </h2>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+{% endblock body %}
+
+{% block extra_script %}
+    {{block.super}}
+
+    <script>
+        (function() {
+            const searchInput = document.querySelector('input[name="q"]');
+            const dropdown = document.createElement('div');
+            dropdown.className = 'suggestions-dropdown';
+            dropdown.style.cssText = `
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                max-height: 350px;
+                overflow-y: auto;
+                margin-top: 2px;
+                width: 100%;
+            `;
+
+            const searchWrapper = searchInput.parentElement;
+            searchWrapper.style.position = 'relative';
+            searchWrapper.appendChild(dropdown);
+
+            let debounceTimer;
+
+            function fetchSuggestions(query) {
+                if (!query || query.length === 0) {
+                    dropdown.classList.remove('show');
+                    return;
+                }
+
+                fetch(`/taxonomy/glossary/suggestions/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderSuggestions(data.suggestions, query);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching suggestions:', error);
+                    });
+            }
+
+	    function renderSuggestions(suggestions, query) {
+                if (suggestions.length === 0) {
+                    dropdown.innerHTML = '<div style="padding:15px;color:#999;text-align:center;font-size:14px;">No suggestions found</div>';
+                    dropdown.classList.add('show');
+                    return;
+                }
+
+                let html = '';
+                suggestions.forEach(item => {
+                    let displayText = item.text;
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    displayText = displayText.replace(regex, '<span style="background:#ffff99;padding:0 2px;">$1</span>');
+
+                    let emoji = '';
+                    let typeLabel = '';
+                    let bgColor = '#f0f0f0';
+                    let textColor = '#888';
+
+                    if (item.type === 'title') {
+                        emoji = '📄';
+                        typeLabel = 'Title';
+                        bgColor = '#e8f4fd';
+                        textColor = '#3498db';
+                    } else if (item.type === 'name') {
+                        emoji = '📛';
+                        typeLabel = 'Name';
+                        bgColor = '#e8f5e9';
+                        textColor = '#27ae60';
+                    } else if (item.type === 'content') {
+                        emoji = '📝';
+                        typeLabel = 'Content';
+                        bgColor = '#fff3cd';
+                        textColor = '#856404';
+                    } else if (item.type === 'atom') {
+                        emoji = '⚛️';
+                        typeLabel = 'Atom';
+                        bgColor = '#fef3e2';
+                        textColor = '#e67e22';
+                    }
+
+                    html += `
+                        <div class="suggestion-item" data-value="${item.text}" style="padding:10px 15px;cursor:pointer;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;font-size:14px;color:#2c3e50;">
+                            <span>${emoji}</span>
+                            <div style="flex:1;">
+                                ${displayText}
+                            </div>
+                            <span style="font-size:11px;padding:2px 8px;background:${bgColor};border-radius:10px;white-space:nowrap;color:${textColor};">
+                                ${typeLabel}
+                            </span>
+                        </div>
+                    `;
+                });
+
+                dropdown.innerHTML = html;
+                dropdown.classList.add('show');
+
+                dropdown.querySelectorAll('.suggestion-item').forEach(el => {
+                    el.addEventListener('click', function() {
+                        searchInput.value = this.dataset.value;
+                        dropdown.classList.remove('show');
+                        this.closest('form').submit();
+                    });
+                });
+            }
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+
+                clearTimeout(debounceTimer);
+
+                if (query.length === 0) {
+                    dropdown.classList.remove('show');
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    fetchSuggestions(query);
+                }, 300);
+            });
+
+            // Close dropdown on click outside
+            document.addEventListener('click', function(event) {
+                const isClickInside = searchInput.contains(event.target) || dropdown.contains(event.target);
+                if (!isClickInside) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            // Close dropdown with esc
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    dropdown.classList.remove('show');
+                }
+            });
+        })();
+    </script>
+
+{% endblock extra_script %}
+

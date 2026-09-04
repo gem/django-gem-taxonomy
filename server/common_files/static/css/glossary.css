@@ -1,0 +1,170 @@
+.letter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 15px 0 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 5px;
+  border: 1px solid #e9ecef;
+}  
+.letter-nav a.has-articles:hover {
+    background: #3498db !important;
+    color: white !important;
+    border-color: #3498db !important;
+}
+.letter-nav a.active-letter {
+    background: #3498db !important;
+    color: white !important;
+    border-color: #3498db !important;
+}
+.badge.atom-badge {
+    background-color: #e67e22;
+    color: white;
+}
+.badge.attribute-badge {
+    background-color: #27ae60;
+    color: white;
+}
+.search-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 15px 0 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #e9ecef;
+    align-items: center;
+}
+.search-section .search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+.search-section .search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.search-section .search-input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+.search-section .search-btn {
+    padding: 8px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.search-section .search-btn:hover {
+    background: #2980b9;
+}
+.search-section .clear-btn {
+    padding: 8px 15px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+.search-section .clear-btn:hover {
+    background: #c0392b;
+}
+.version-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    padding: 12px 15px;
+    background: #f0f8ff;
+    border-radius: 5px;
+    border: 1px solid #d0e8f5;
+    align-items: center;
+    margin: 10px 0;
+}
+.version-checkboxes .filter-label {
+    color: #888;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 5px;
+}
+.version-checkboxes label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #2c3e50;
+}
+.version-checkboxes label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+.version-checkboxes label:hover {
+    color: #3498db;
+}
+.version-checkboxes .version-info {
+    font-size: 12px;
+    color: #999;
+    margin-left: 10px;
+}
+.filter-badge {
+    display: inline-block;
+    background: #e8f4fd;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #3498db;
+    margin-right: 5px;
+}
+.filter-badge-version {
+    background: #e8f5e9;
+    color: #27ae60;
+}
+.result-info {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+/* suggestions */
+.suggestions-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    max-height: 350px;
+    overflow-y: auto;
+    margin-top: 2px;
+    width: 100%;
+}
+.suggestions-dropdown.show {
+    display: block !important;
+}
+.suggestions-dropdown .suggestion-item:hover {
+    background: #f0f8ff !important;
+}
+.suggestions-dropdown .suggestion-item:last-child {
+    border-bottom: none !important;
+}
