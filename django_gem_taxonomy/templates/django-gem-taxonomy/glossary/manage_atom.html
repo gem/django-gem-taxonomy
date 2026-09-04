@@ -1,8 +1,13 @@
+<html>
+<head>
+{{ formset_content.media }}
+</head>
+<body>
 <form method="post">
     {% csrf_token %}
     
     <h3>Atom Details</h3>
-    {{ form_atom.as_p }}
+    {{ form_obj.as_p }}
 
     <h3>Associated Content (Generic Relation)</h3>
     <!-- The management_form is strictly required for Django formsets to track data counts -->
@@ -13,7 +18,7 @@
             {{ form.id }} {# Hidden field tracking existing notes during updates #}
             {{ form.content.label_tag }} {{ form.content }}
             
-            {% if formset_notes.can_delete and form.instance.pk %}
+            {% if formset_content.can_delete and form.instance.pk %}
                 <p>Check to delete this content: {{ form.DELETE }}</p>
             {% endif %}
         </div>
@@ -23,3 +28,5 @@
         {% if is_update %}Save Changes{% else %}Create Atom and Note{% endif %}
     </button>
 </form>
+</body>
+</html>

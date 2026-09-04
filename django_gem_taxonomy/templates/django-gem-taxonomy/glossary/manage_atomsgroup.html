@@ -1,0 +1,32 @@
+<html>
+<head>
+{{ formset_content.media }}
+</head>
+<body>
+<form method="post">
+    {% csrf_token %}
+    
+    <h3>Atom Group Details</h3>
+    {{ form_obj.as_p }}
+
+    <h3>Associated Content (Generic Relation)</h3>
+    <!-- The management_form is strictly required for Django formsets to track data counts -->
+    {{ formset_content.management_form }}
+    
+    {% for form in formset_content %}
+        <div class="note-form" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+            {{ form.id }} {# Hidden field tracking existing notes during updates #}
+            {{ form.content.label_tag }} {{ form.content }}
+            
+            {% if formset_content.can_delete and form.instance.pk %}
+                <p>Check to delete this content: {{ form.DELETE }}</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <button type="submit">
+        {% if is_update %}Save Changes{% else %}Create AtomsGroup and Note{% endif %}
+    </button>
+</form>
+</body>
+</html>

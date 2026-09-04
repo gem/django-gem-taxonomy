@@ -118,6 +118,22 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </table>
     </div>
     {% endif %}
+    {% if attribute.content.all %}
+    <br>
+    <div id="app" style="margin: auto;">
+      <table class="atom" style="width: 100%;">
+        <tr>
+          <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
+            <p>
+              <span style="font-weight: bold;">Optional HTML Content: </span>
+            </p>
+          <td>
+            {{ attribute.content.all.0.content|safe }}
+          </td>
+        </tr>
+      </table>
+    </div>
+    {% endif %}
     {% if other_vers %}
     <br>
     <div id="app" style="margin: auto;">

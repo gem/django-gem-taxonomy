@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 #
-# oq-geoviewer
-# Copyright (C) 2024 GEM Foundation
+# Copyright (C) 2025-2026 GEM Foundation
 #
-# oq-geoviewer is free software: you can redistribute it and/or modify
+# django-gem-taxonomy is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# oq-geoviewer is distributed in the hope that it will be useful,
+# django-gem-taxonomy is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import json
 from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-import json
 
 class Version(models.Model):
     vers = models.CharField(max_length=16, primary_key=True)
@@ -109,9 +110,10 @@ class Param(models.Model):
 
 
 class Content(models.Model):
-    content = models.TextField()
+    content = CKEditor5Field('Content')
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     # - object_id: memorize the primary key (ID) of linked object
     object_id = models.PositiveIntegerField()
     # - content_object: virtual field that join 2 previous fields
     content_object = GenericForeignKey('content_type', 'object_id')
+
