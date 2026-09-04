@@ -63,7 +63,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
               <div class="search-row">
                   <input type="text" name="q" class="search-input" placeholder="Search by title or name..." value="{{ search_query }}">
                   <button type="submit" class="search-btn">🔍 Search</button>
-                  {% if search_query or selected_versions or current_letter %}
+                  {% if search_query or selected_versions %}
                       <a href="?" class="clear-btn">✕ Clear</a>
                   {% endif %}
               </div>

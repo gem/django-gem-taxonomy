@@ -143,25 +143,6 @@ class GlossaryHome(View):
 
             all_items.append(item)
 
-        if letter and len(letter) == 1:
-            filtered_items = []
-            for item in all_items:
-                if (item['title'] and item['title'][0].upper() == letter) or \
-                   (item['name'] and item['name'][0].upper() == letter):
-                    filtered_items.append(item)
-            all_items = filtered_items
-
-        if search_query:
-            search_lower = search_query.lower()
-            filtered_items = []
-            for item in all_items:
-                if (item['title'] and search_lower in item['title'].lower()) or \
-                   (item['name'] and search_lower in item['name'].lower()):
-                    filtered_items.append(item)
-            all_items = filtered_items
-
-        all_items.sort(key=lambda x: x['title'].lower())
-
         all_letters = set()
         for item in all_items:
             if item['title']:
@@ -172,13 +153,33 @@ class GlossaryHome(View):
                 first_char = item['name'][0].upper()
                 if first_char.isalpha():
                     all_letters.add(first_char)
-
         sorted_letters = sorted(list(all_letters))
 
+        display_items = all_items
+
+        if search_query:
+            search_lower = search_query.lower()
+            filtered_items = []
+            for item in display_items:
+                if (item['title'] and search_lower in item['title'].lower()) or \
+                   (item['name'] and search_lower in item['name'].lower()):
+                    filtered_items.append(item)
+            display_items = filtered_items
+
+        if letter and len(letter) == 1:
+            filtered_items = []
+            for item in display_items:
+                if (item['title'] and item['title'][0].upper() == letter) or \
+                   (item['name'] and item['name'][0].upper() == letter):
+                    filtered_items.append(item)
+            display_items = filtered_items
+
+        display_items.sort(key=lambda x: x['title'].lower())
+
         context = {
-            'all_items': all_items,
+            'all_items': display_items,
             'default_version': defa_vers,
-            'total_items': len(all_items),
+            'total_items': len(display_items),
             'letters': sorted_letters,
             'current_letter': letter,
             'search_query': search_query,
