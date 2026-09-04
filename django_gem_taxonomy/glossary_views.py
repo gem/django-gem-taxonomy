@@ -29,8 +29,8 @@ from django.views.decorators.http import require_POST
 
 from .models import Version, Param, Atom, AtomsGroup, Attribute
 
-from .glossary_forms import ContentFormSet
-from django.forms import modelform_factory
+from .glossary_forms import (AttributeForm, AtomsGroupForm, AtomForm, ParamForm,
+                             ContentFormSet)
 
 
 class GlossaryAttribute(View):
@@ -69,8 +69,6 @@ class GlossaryAttribute(View):
                                           })
 
 
-AttributeForm = modelform_factory(AtomsGroup, fields=('name',))
-
 def manage_attribute_content(request, vers_id, name):
     # If pk is provided, we are in UPDATE mode, otherwise INSERT mode
     obj = get_object_or_404(Attribute, name=name, vers__vers=vers_id)
@@ -97,7 +95,7 @@ def manage_attribute_content(request, vers_id, name):
     return render(request, 'django-gem-taxonomy/glossary/manage_attribute.html', {
         'form_obj': form_obj,
         'formset_content': formset_content,
-        'is_update': name is not None
+        'is_update': True
     })
 
 
@@ -136,8 +134,6 @@ class GlossaryAtomsGroup(View):
                                           })
 
 
-AtomsGroupForm = modelform_factory(AtomsGroup, fields=('name',))
-
 def manage_atomsgroup_content(request, vers_id, name):
     # If pk is provided, we are in UPDATE mode, otherwise INSERT mode
     obj = get_object_or_404(AtomsGroup, name=name, vers__vers=vers_id)
@@ -164,7 +160,7 @@ def manage_atomsgroup_content(request, vers_id, name):
     return render(request, 'django-gem-taxonomy/glossary/manage_atomsgroup.html', {
         'form_obj': form_obj,
         'formset_content': formset_content,
-        'is_update': name is not None
+        'is_update': True
     })
 
 
@@ -221,39 +217,73 @@ class GlossaryAtom(View):
                                           'other_vers': other_vers
                                           })
 
-AtomForm = modelform_factory(Atom, fields=('name',))
 
-def manage_atom_content(request, vers_id, name=None):
-    # If pk is provided, we are in UPDATE mode, otherwise INSERT mode
-    if name:
-        obj = get_object_or_404(Atom, name=name, vers__vers=vers_id)
+
+def manage_atom_content(request, vers_id, name):
+    if ':' in name:
+        parts = name.split(':')
+        atom_part = parts[0]
+        param_part = parts[1]
+
+        obj = Param.objects.get(vers__vers=vers_id,
+                                name=param_part, atom__name=atom_part)
+
+        obj = get_object_or_404(Param, name=param_part, atom__name=atom_part,
+                                vers__vers=vers_id)
     else:
-        obj = Atom()
+        obj = Atom.objects.get(vers__vers=vers_id, name=name)
+        obj = get_object_or_404(Atom, name=name, vers__vers=vers_id)
 
     if request.method == 'POST':
-        form_obj = AtomForm(request.POST, instance=obj)
-        # Pass the article instance into the generic formset
-        formset_content = ContentFormSet(request.POST, instance=obj)
+        if ':' in name:
+            formset_content = ContentFormSet(request.POST, instance=obj)
+            form_obj = ParamForm(request.POST, instance=obj)
+            if form_obj.is_valid() and formset_content.is_valid():
+                # 1. Save the main article first so it has a valid primary key (ID)
+                saved_obj = form_obj.save()
 
-        if form_obj.is_valid() and formset_content.is_valid():
-            # 1. Save the main article first so it has a valid primary key (ID)
-            saved_obj = form_obj.save()
+                # 2. Save the formset. Django automatically fills in the
+                #    correct content_type and object_id fields on the Note record.
+                formset_content.instance = saved_obj
+                formset_content.save()
 
-            # 2. Save the formset. Django automatically fills in the
-            #    correct content_type and object_id fields on the Note record.
-            formset_content.instance = saved_obj
-            formset_content.save()
+                return redirect('taxonomy:glossary_atom_wver', vers_id=vers_id,
+                                name=name)
+        else:
+            form_obj = AtomForm(request.POST, instance=obj)
+            # Pass the article instance into the generic formset
+            formset_content = ContentFormSet(request.POST, instance=obj)
 
-            return redirect('taxonomy:glossary_atom_wver', vers_id=vers_id, name=name) # Replace with your actual redirect URL route
+            if form_obj.is_valid() and formset_content.is_valid():
+                # 1. Save the main article first so it has a valid primary key (ID)
+                saved_obj = form_obj.save()
+
+                # 2. Save the formset. Django automatically fills in the
+                #    correct content_type and object_id fields on the Note record.
+                formset_content.instance = saved_obj
+                formset_content.save()
+
+                return redirect('taxonomy:glossary_atom_wver', vers_id=vers_id, name=name)
     else:
-        form_obj = AtomForm(instance=obj)
-        formset_content = ContentFormSet(instance=obj)
+        if ':' in name:
+            form_obj = ParamForm(instance=obj)
+            formset_content = ContentFormSet(instance=obj)
+        else:
+            form_obj = AtomForm(instance=obj)
+            formset_content = ContentFormSet(instance=obj)
 
-    return render(request, 'django-gem-taxonomy/glossary/manage_atom.html', {
-        'form_obj': form_obj,
-        'formset_content': formset_content,
-        'is_update': name is not None
-    })
+    if ':' in name:
+        return render(request, 'django-gem-taxonomy/glossary/manage_param.html', {
+            'form_obj': form_obj,
+            'formset_content': formset_content,
+            'is_update': True
+        })
+    else:
+        return render(request, 'django-gem-taxonomy/glossary/manage_atom.html', {
+            'form_obj': form_obj,
+            'formset_content': formset_content,
+            'is_update': True
+        })
 
 
 def clean_folder_name(name):

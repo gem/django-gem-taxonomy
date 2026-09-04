@@ -1,5 +1,5 @@
 #!/bin/bash
-VENV_NAME=venv_django-gem-taxonomy
+VENV_NAME=venv_dgt
 if [ "$VIRTUAL_ENV" ]; then
     if [ "$(basename "$VIRTUAL_ENV")" != "$VENV_NAME" ]; then
         deactivate
