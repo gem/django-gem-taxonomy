@@ -16,8 +16,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from django import forms
+from django.forms import modelform_factory
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
-from .models import Content
+from .models import Attribute, AtomsGroup, Atom, Param, Content
 from django_ckeditor_5.widgets import CKEditor5Widget
 
 def assign_ckeditor(db_field, **kwargs):
@@ -34,3 +36,45 @@ def assign_ckeditor(db_field, **kwargs):
 ContentFormSet = generic_inlineformset_factory(Content, fields=('content',),
                                                formfield_callback=assign_ckeditor,
                                                extra=1, max_num=1, validate_max=True)
+
+
+class AttributeFormForm(forms.ModelForm):
+    name = forms.CharField(disabled=True, required=False)
+
+    class Meta:
+        model = Attribute
+        fields = ['name']
+
+AttributeForm = modelform_factory(Attribute, form=AttributeFormForm)
+
+
+class AtomsGroupFormForm(forms.ModelForm):
+    name = forms.CharField(disabled=True, required=False)
+
+    class Meta:
+        model = AtomsGroup
+        fields = ['name']
+
+AtomsGroupForm = modelform_factory(AtomsGroup, form=AtomsGroupFormForm)
+
+class AtomFormForm(forms.ModelForm):
+    name = forms.CharField(disabled=True, required=False)
+
+    class Meta:
+        model = Atom
+        fields = ['name']
+
+AtomForm = modelform_factory(Atom, form=AtomFormForm)
+
+class ParamFormForm(forms.ModelForm):
+    param_atom = forms.CharField(label="Parametrized Atom", disabled=True, required=False)
+
+    class Meta:
+        model = Param
+        fields = ['param_atom']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and getattr(self.instance, 'atom', None):
+            self.fields['param_atom'].initial = self.instance.atom.name + ':' + self.instance.name
+ParamForm = modelform_factory(Param, form=ParamFormForm)
