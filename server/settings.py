@@ -164,3 +164,6 @@ TEMPLATES = [
     },
 ]
 
+SERIALIZATION_MODULES = {
+    'json_gfk': 'django_gem_taxonomy.serializers',
+}

@@ -54,12 +54,12 @@ class GlossaryAttribute(View):
         if name is None:
             attributes = Attribute.objects.filter(vers=vers).order_by('name')
             attribute_obj = None
-            others_objs = Version.objects.all().exclude(vers=vers_id)
+            others_objs = Version.objects.all().exclude(vers=vers_id).order_by('vers')
             other_vers = [vers for vers in others_objs]
         else:
             attributes = None
             attribute_obj = Attribute.objects.get(vers=vers, name=name)
-            others_objs = Attribute.objects.filter(name=name).exclude(vers=vers)
+            others_objs = Attribute.objects.filter(name=name).exclude(vers=vers).order_by('vers')
             other_vers = [atoms_group.vers for atoms_group in others_objs]
 
         return render(request, template, {'attributes': attributes,
@@ -119,12 +119,12 @@ class GlossaryAtomsGroup(View):
         if name is None:
             atoms_groups = AtomsGroup.objects.filter(vers=vers).order_by('name')
             atoms_group_obj = None
-            others_objs = Version.objects.all().exclude(vers=vers_id)
+            others_objs = Version.objects.all().exclude(vers=vers_id).order_by('vers')
             other_vers = [vers for vers in others_objs]
         else:
             atoms_groups = None
             atoms_group_obj = AtomsGroup.objects.get(vers=vers, name=name)
-            others_objs = AtomsGroup.objects.filter(name=name).exclude(vers=vers)
+            others_objs = AtomsGroup.objects.filter(name=name).exclude(vers=vers).order_by('vers')
             other_vers = [atoms_group.vers for atoms_group in others_objs]
 
         return render(request, template, {'atoms_groups': atoms_groups,
@@ -188,7 +188,7 @@ class GlossaryAtom(View):
 
         if name is None:
             atoms = Atom.objects.filter(vers=vers).order_by('name')
-            others_objs = Version.objects.all().exclude(vers=vers_id)
+            others_objs = Version.objects.all().exclude(vers=vers_id).order_by('vers')
             other_vers = [vers for vers in others_objs]
         else:
             atoms = None
@@ -202,12 +202,12 @@ class GlossaryAtom(View):
                 atom_obj = param_obj.atom
 
                 others_objs = Param.objects.filter(
-                    name=param_part, atom__name=atom_part).exclude(vers=vers)
+                    name=param_part, atom__name=atom_part).exclude(vers=vers).order_by('vers')
                 other_vers = [param.vers for param in others_objs]
                 template = 'django-gem-taxonomy/glossary/param.html'
             else:
                 atom_obj = Atom.objects.get(vers=vers, name=name)
-                others_objs = Atom.objects.filter(name=name).exclude(vers=vers)
+                others_objs = Atom.objects.filter(name=name).exclude(vers=vers).order_by('vers')
                 other_vers = [atom.vers for atom in others_objs]
 
         return render(request, template, {'atoms': atoms,
