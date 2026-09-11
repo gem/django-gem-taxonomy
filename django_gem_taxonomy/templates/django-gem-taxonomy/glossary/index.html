@@ -54,7 +54,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                   {{ letter }}
               </a>
           {% endfor %}
-          <span style="font-size: 11px; color: #999; margin-left: 10px;">(filters by title or atom)</span>
       </div>
       {% endif %}
 
@@ -103,7 +102,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                <a href="{{item.vers}}/atom/{{item.name}}">
                  {{item.title}} [{{item.name}}]
                </a>
-               <span class="badge">Parametrized Atom</span>
+               <span class="badge param-badge">Parametrized Atom</span>
            {% else %}
                <a href="{{item.vers}}/{{item.type}}/{{item.name}}">
                  {{item.title}} [{{item.name}}]
@@ -113,10 +112,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                {% elif item.type == 'attribute' %}
                    <span class="badge attribute-badge">Attribute</span>
                {% elif item.type == 'atoms_group' %}
-                   <span class="badge">Atoms Group</span>
+                   <span class="badge atomsgroup-badge">Atoms Group</span>
                {% endif %}
            {% endif %}
-           <span class="badge">Ver. {{ item.vers }}</span>
+           <span class="badge">
+               <a href="{{item.vers}}/{{item.type}}/">
+		   Ver. {{ item.vers }}
+               </a>
+	   </span>
         </h2>
       </div>
       {% endif %}

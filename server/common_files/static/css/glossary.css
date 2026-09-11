@@ -18,8 +18,23 @@
     color: white !important;
     border-color: #3498db !important;
 }
+.badge a {
+    color: #fff;
+}    
+.badge a:hover,
+.badge a:focus {
+    text-decoration: none;
+}    
 .badge.atom-badge {
     background-color: #e67e22;
+    color: white;
+}
+.badge.atomsgroup-badge {
+    background-color: #9b59b6;
+    color: white;
+}
+.badge.param-badge {
+    background-color: #e74c3c;
     color: white;
 }
 .badge.attribute-badge {
