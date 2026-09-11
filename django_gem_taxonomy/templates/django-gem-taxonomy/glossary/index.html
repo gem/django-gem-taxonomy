@@ -220,7 +220,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                     }
 
                     html += `
-                        <div class="suggestion-item" data-value="${item.text}" style="padding:10px 15px;cursor:pointer;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;font-size:14px;color:#2c3e50;">
+                        <div class="suggestion-item" data-value="${item.text}" data-url="${item.url || ''}" style="padding:10px 15px;cursor:pointer;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;font-size:14px;color:#2c3e50;">
                             <span>${emoji}</span>
                             <div style="flex:1;">
                                 ${displayText}
@@ -235,11 +235,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                 dropdown.innerHTML = html;
                 dropdown.classList.add('show');
 
-                dropdown.querySelectorAll('.suggestion-item').forEach(el => {
+		dropdown.querySelectorAll('.suggestion-item').forEach(el => {
                     el.addEventListener('click', function() {
-                        searchInput.value = this.dataset.value;
-                        dropdown.classList.remove('show');
-                        this.closest('form').submit();
+                        const url = this.dataset.url;
+                        if (url) {
+                            window.location.href = url;
+                        } else {
+                            searchInput.value = this.dataset.value;
+                            dropdown.classList.remove('show');
+                            this.closest('form').submit();
+                        }
                     });
                 });
             }

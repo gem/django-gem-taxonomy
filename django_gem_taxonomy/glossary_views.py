@@ -218,7 +218,8 @@ class GlossarySuggestions(View):
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name}'
+                    'label': f'📄 {obj.title or obj.name}',
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.name}"
                 })
 
             # Attributes search
@@ -231,7 +232,8 @@ class GlossarySuggestions(View):
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name}'
+                    'label': f'📄 {obj.title or obj.name}',
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/attribute/{obj.name}"
                 })
 
             # AtomsGroup search
@@ -244,7 +246,22 @@ class GlossarySuggestions(View):
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name}'
+                    'label': f'📄 {obj.title or obj.name}',
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atoms_group/{obj.name}"
+                })
+
+            # Param search
+            param_results = Param.objects.filter(
+                models.Q(title__icontains=query) |
+                models.Q(name__icontains=query)
+            )[:5]
+
+            for obj in param_results:
+                suggestions.append({
+                    'type': 'title',
+                    'text': obj.title or obj.name,
+                    'label': f'📄 {obj.title or obj.name}',
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
                 })
 
         # Content search
@@ -270,12 +287,24 @@ class GlossarySuggestions(View):
                         else:
                             preview = ''
 
-                        suggestions.append({
-                            'type': 'content',
-                            'text': title,
-                            'label': f'📝 {title}',
-                            'preview': preview
-                        })
+                        url = None
+                        if isinstance(obj, Atom):
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.name}"
+                        elif isinstance(obj, Attribute):
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/attribute/{obj.name}"
+                        elif isinstance(obj, AtomsGroup):
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/atoms_group/{obj.name}"
+                        elif isinstance(obj, Param):
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
+
+                        if url:
+                            suggestions.append({
+                                'type': 'content',
+                                'text': title,
+                                'label': f'📝 {title}',
+                                'preview': preview,
+                                'url': url
+                            })
 
         # ATOM
         if len(query) >= 1:
@@ -287,7 +316,8 @@ class GlossarySuggestions(View):
                 suggestions.append({
                     'type': 'atom',
                     'text': atom.name,
-                    'label': f'⚛️ {atom.name}'
+                    'label': f'⚛️ {atom.name}',
+                    'url': f"/taxonomy/glossary/{atom.vers.vers}/atom/{atom.name}"
                 })
 
         # Suggestion number limit
