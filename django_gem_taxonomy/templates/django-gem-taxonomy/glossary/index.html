@@ -99,15 +99,22 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       {% if item.name|slice:":1" != '_' %}
       <div class="col-md-4">
         <h2>
-           <a href="{{item.vers}}/{{item.type}}/{{item.name}}">
-	     {{item.title}} [{{item.name}}]
-           </a>
-           {% if item.type == 'atom' %}
-               <span class="badge atom-badge">Atom</span>
-           {% elif item.type == 'attribute' %}
-               <span class="badge attribute-badge">Attribute</span>
-           {% elif item.type == 'atoms_group' %}
-               <span class="badge">Group</span>
+           {% if item.type == 'param' %}
+               <a href="{{item.vers}}/atom/{{item.name}}">
+                 {{item.title}} [{{item.name}}]
+               </a>
+               <span class="badge">Parametrized Atom</span>
+           {% else %}
+               <a href="{{item.vers}}/{{item.type}}/{{item.name}}">
+                 {{item.title}} [{{item.name}}]
+               </a>
+               {% if item.type == 'atom' %}
+                   <span class="badge atom-badge">Atom</span>
+               {% elif item.type == 'attribute' %}
+                   <span class="badge attribute-badge">Attribute</span>
+               {% elif item.type == 'atoms_group' %}
+                   <span class="badge">Atoms Group</span>
+               {% endif %}
            {% endif %}
            <span class="badge">Ver. {{ item.vers }}</span>
         </h2>

@@ -138,6 +138,10 @@ class GlossaryHome(View):
                 item['type'] = 'attribute'
             elif isinstance(el.content_object, AtomsGroup):
                 item['type'] = 'atoms_group'
+            elif isinstance(el.content_object, Param):
+                item['type'] = 'param'
+                item['name'] = f"{el.content_object.atom.name}:{el.content_object.name}"
+                item['title'] = el.content_object.title
 
             all_items.append(item)
 
