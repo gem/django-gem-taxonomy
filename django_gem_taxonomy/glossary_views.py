@@ -26,6 +26,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
 
 from .models import Version, Param, Atom, AtomsGroup, Attribute, Content
 
@@ -257,7 +258,7 @@ class GlossarySuggestions(View):
                 if obj:
                     title = getattr(obj, 'title', None) or getattr(obj, 'name', None)
                     if title:
-                        content_text = content.content or ''
+                        content_text = strip_tags(content.content or '')
                         if content_text:
                             pos = content_text.lower().find(query.lower())
                             if pos != -1:
