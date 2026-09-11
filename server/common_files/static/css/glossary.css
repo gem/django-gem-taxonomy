@@ -51,6 +51,7 @@
     border: 2px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
+    margin-bottom: 0;
 }
 .search-section .search-input:focus {
     border-color: #3498db;

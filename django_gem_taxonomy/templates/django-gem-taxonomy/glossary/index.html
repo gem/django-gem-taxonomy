@@ -71,11 +71,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
               <div class="version-checkboxes">
                   <span class="filter-label">📂 Filter by Version:</span>
                   {% for version in all_versions %}
+                      {% with version_str=version.vers|stringformat:"s" %}
                       <label>
                           <input type="checkbox" name="version" value="{{ version.vers }}"
-                                 {% if version.vers|stringformat:"s" in selected_versions %}checked{% endif %}>
+                                 {% if selected_versions %}
+                                     {% if version_str in selected_versions %}checked{% endif %}
+                                 {% else %}
+                                     {% if version_str == "4.0" %}checked{% endif %}
+                                 {% endif %}>
                           {{ version.vers }}
                       </label>
+                      {% endwith %}
                   {% endfor %}
                   <span class="version-info">(select multiple)</span>
               </div>

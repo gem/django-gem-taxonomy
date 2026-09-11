@@ -144,14 +144,17 @@ class GlossaryHome(View):
         all_letters = set()
         for item in all_items:
             if item['title']:
-                first_char = item['title'][0].upper()
-                if first_char.isalpha():
-                    all_letters.add(first_char)
+                first_char = item['title'][0]
+                if first_char.isalpha() or first_char.isdigit():
+                    all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
             if item['name']:
-                first_char = item['name'][0].upper()
-                if first_char.isalpha():
-                    all_letters.add(first_char)
-        sorted_letters = sorted(list(all_letters))
+                first_char = item['name'][0]
+                if first_char.isalpha() or first_char.isdigit():
+                    all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
+
+        numeric_letters = sorted([l for l in all_letters if str(l).isdigit()])
+        alpha_letters = sorted([l for l in all_letters if str(l).isalpha()])
+        sorted_letters = numeric_letters + alpha_letters
 
         display_items = all_items
 
@@ -172,6 +175,7 @@ class GlossaryHome(View):
                     filtered_items.append(item)
             display_items = filtered_items
 
+        # 5. ORDINA
         display_items.sort(key=lambda x: x['title'].lower())
 
         context = {
