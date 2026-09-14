@@ -60,7 +60,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <div class="search-section">
           <form method="get" action="" style="width: 100%;">
               <div class="search-row">
-                  <input type="text" name="q" class="search-input" placeholder="Search by title or name..." value="{{ search_query }}">
+                  <input type="text" name="q" class="search-input" placeholder="Search..." value="{{ search_query }}">
                   <button type="submit" class="search-btn">🔍 Search</button>
                   {% if search_query or selected_versions %}
                       <a href="?" class="clear-btn">✕ Clear</a>
@@ -68,7 +68,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
               </div>
 
               <div class="version-checkboxes">
-                  <span class="filter-label">📂 Filter by Version:</span>
+                  <span class="filter-label">Filter by Version:</span>
                   {% for version in all_versions %}
                       {% with version_str=version.vers|stringformat:"s" %}
                       <label>
