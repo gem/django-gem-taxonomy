@@ -39,6 +39,7 @@ def dgtaxonomy2dgtaxonomy_two(apps, schema_editor):
                 name=atg_in.name,
                 prog=atg_in.prog,
                 title=atg_in.title,
+                mutex=atg_in.mutex,
                 attr=Attribute2.objects.using(db_alias).get(vers=vers, name=atg_in.attr.name)
             )
    
@@ -116,6 +117,7 @@ def dgtaxonomy_two2dgtaxonomy(apps, schema_editor):
                 name=atg_in.name,
                 prog=atg_in.prog,
                 title=atg_in.title,
+                mutex=atg_in.mutex,
                 attr=Attribute.objects.using(db_alias).get(name=atg_in.attr.name)
             )
     for at_in in Atom2.objects.using(db_alias).filter(vers=vers):
