@@ -15,10 +15,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 -->
 {% extends "site_base.html" %}
-{% load i18n %}
+{% load i18n other_vers %}
 
-{% block title %}{% if atom == None %}Taxonomy Structure - Atoms{% else %}Taxonomy Structure - Atom: {{ atom.title }}{% endif %}{% endblock title %}
-{% block extra_head %}
+{% block title %}{% if atom == None %}Taxonomy Structure - Atoms (Vers. {{ vers.vers }}){% else %}Taxonomy Structure - Atom  (Vers. {{ vers.vers }}): {{ atom.name }} - {{ atom.title }}{% endif %}{% endblock title %}
+ {% block extra_head %}
     {{ block.super }}
     {% if oqp_version_maj == '1' %}
     <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
@@ -30,7 +30,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
     <link href="{{ STATIC_URL }}css/sol.css" rel="stylesheet"/>
     <link href="{{ STATIC_URL }}ipt/css/bootstrap-tagsinput.css" rel="stylesheet"/>
-    <script src="{{ STATIC_URL }}taxonomy_v3/js/dist/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}taxonomy/js/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}taxonomy/css/taxonomy_help.css"/>
 {% endblock extra_head %}
 
@@ -38,10 +38,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     {% block oq_body_heading %}
     <div id="oq-body-heading">
       {% if atom == None %}
-      <h1>{% trans "TAXONOMY STRUCTURE - ATOMS" %}</h1>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers.vers }}) - ATOMS</h1>
       {% else %}
-      <h1>{% trans "TAXONOMY STRUCTURE" %}</h1>
-      <h2>{% trans "ATOM" %}: {% trans atom.title %}</h2>
+      <h1>{% trans "TAXONOMY STRUCTURE (Vers." %} {{ vers.vers }})</h1>
+      <h2>{% trans "ATOM" %}: {{ atom.name }} - {% trans atom.title %}</h2>
       {% endif %}
       <br />
     </div>
@@ -66,10 +66,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
           <th>Title</th>
         </tr>
         {% for atom in atoms %}
+        {%   if atom.name|slice:":1" != '_' %}
         <tr>
           <td><a href="{{ atom.name }}">{{ atom.name }}</a></td>
           <td>{{ atom.title }}</td>
         </tr>
+        {%   endif %}
         {% endfor %}
       </table>
     </div>
@@ -229,6 +231,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </div>
     {% endif %}
 
+    {% if other_vers %}
+    <br>
+    <div id="app" style="margin: auto;">
+      <table class="atom" style="width: 100%;">
+        <tr>
+          <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
+            <p>
+              <span style="font-weight: bold;">Other versions: </span>
+              {% for ver in other_vers %}
+              <a href="{% other_vers vers_id=ver.vers %}">{{ ver.vers }}</a>{% if not forloop.last %}, {% endif %}                       {% endfor %}
+            </p>
+        </tr>
+      </table>
+    </div>
+    {% endif %}
 {% endblock body %}
 
 {% block extra_script %}

@@ -44,8 +44,26 @@ urlpatterns = [
     path('structure/attribute/<str:attribute>',
          StructureAttribute.as_view(), name='taxonomy_struct_attribute'),
 
+    # structure paths with version
+    path('structure/<vers_id>/attribute/',
+         StructureAttribute.as_view(), name='taxonomy_struct_attributes_wver'),
+    path('structure/<vers_id>/atom/',
+         StructureAtom.as_view(), name='taxonomy_struct_atoms_wver'),
+    path('structure/<vers_id>/atom/<str:atom>',
+         StructureAtom.as_view(), name='taxonomy_struct_atom_wver'),
+
+    path('structure/<vers_id>/atoms_group/',
+         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroups_wver'),
+    path('structure/<vers_id>/atoms_group/<str:atoms_group>',
+         StructureAtomsGroup.as_view(), name='taxonomy_struct_atomsgroup_wver'),
+
+    path('structure/<vers_id>/attribute/<str:attribute>',
+         StructureAttribute.as_view(), name='taxonomy_struct_attribute_wver'),
+
     path('graph/',
          TaxGraph.as_view(), name='taxonomy_taxgraph'),
+    path('graph/<vers_id>',
+         TaxGraph.as_view(), name='taxonomy_taxgraph_wver'),
 
     path('api/v1/', include('django_gem_taxonomy.urls_api_v1')),
  ]

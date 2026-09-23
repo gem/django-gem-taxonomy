@@ -22,5 +22,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='homepage.html')),
+    path('engine/license', TemplateView.as_view(template_name='homepage.html'), name="license"),
+
     path('taxonomy/', include('django_gem_taxonomy.urls')),
 ]
