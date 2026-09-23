@@ -84,7 +84,7 @@ class Atom(models.Model):
 
 class Param(models.Model):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
-    atom = models.ForeignKey(Atom, on_delete=models.CASCADE, null=True)
+    atom = models.ForeignKey(Atom, on_delete=models.CASCADE)
     name = models.CharField(max_length=32)
     prog = models.IntegerField()
     title = models.TextField()
