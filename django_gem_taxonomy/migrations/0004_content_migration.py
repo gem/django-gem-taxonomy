@@ -75,9 +75,9 @@ def dgtaxonomy2dgtaxonomy_two(apps, schema_editor):
             atom.deny.add(Atom2.objects.using(db_alias).get(vers=vers, name=den.name))
 
     for par_in in Param.objects.using(db_alias).all():
-        Param2.objects.create(
+        Param2.objects.using(db_alias).create(
             vers=vers,
-            atom=Atom2.objects.get(vers=vers, name=par_in.atom.name),
+            atom=Atom2.objects.using(db_alias).get(vers=vers, name=par_in.atom.name),
             name=par_in.name,
             title=par_in.title,
             desc=par_in.desc,
@@ -150,8 +150,8 @@ def dgtaxonomy_two2dgtaxonomy(apps, schema_editor):
             atom.deny.add(Atom.objects.using(db_alias).get(name=den.name))
 
     for par_in in Param2.objects.using(db_alias).all():
-        Param.objects.create(
-            atom=Atom.objects.get(name=par_in.atom.name),
+        Param.objects.using(db_alias).create(
+            atom=Atom.objects.using(db_alias).get(name=par_in.atom.name),
             name=par_in.name,
             title=par_in.title,
             desc=par_in.desc,
