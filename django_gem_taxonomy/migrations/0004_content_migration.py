@@ -16,6 +16,10 @@ def dgtaxonomy2dgtaxonomy_two(apps, schema_editor):
 
     # migrate to the new schema that includes version as part of the
     # unique constraints, the old version has '4.0' as implied
+
+    if Attribute.objects.using(db_alias).all().count() == 0:
+        return
+
     try:
         vers = Version2.objects.using(db_alias).get(vers='4.0')
     except Version2.DoesNotExist:
@@ -98,7 +102,10 @@ def dgtaxonomy_two2dgtaxonomy(apps, schema_editor):
     Atom2= apps.get_model("django_gem_taxonomy", "Atom2")
     Param2= apps.get_model("django_gem_taxonomy", "Param2") 
 
-    vers = Version2.objects.using(db_alias).get(vers='4.0')
+    try:
+        vers = Version2.objects.using(db_alias).get(vers='4.0')
+    except Version2.DoesNotExist:
+        return
 
     Param.objects.using(db_alias).delete()
     Atom.objects.using(db_alias).delete()
