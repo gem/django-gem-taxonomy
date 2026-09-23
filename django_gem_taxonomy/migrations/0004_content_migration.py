@@ -151,14 +151,14 @@ def dgtaxonomy_two2dgtaxonomy(apps, schema_editor):
             group=group,
         )
 
-    for at_in in Atom2.objects.using(db_alias).all():
+    for at_in in Atom2.objects.using(db_alias).filter(vers=vers):
         atom = Atom.objects.using(db_alias).get(name=at_in.name)
         for dep in at_in.deps.all():
             atom.deps.add(Atom.objects.using(db_alias).get(name=dep.name))
         for den in at_in.deny.all():
             atom.deny.add(Atom.objects.using(db_alias).get(name=den.name))
 
-    for par_in in Param2.objects.using(db_alias).all():
+    for par_in in Param2.objects.using(db_alias).filter(vers=vers):
         Param.objects.using(db_alias).create(
             atom=Atom.objects.using(db_alias).get(name=par_in.atom.name),
             name=par_in.name,
