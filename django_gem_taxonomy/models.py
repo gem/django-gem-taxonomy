@@ -77,3 +77,79 @@ class Param(models.Model):
     title = models.TextField()
     desc = models.TextField()
     prog = models.IntegerField()
+
+
+class Version2(models.Model):
+    vers = models.CharField(max_length=16, primary_key=True)
+    desc = models.TextField()
+    is_default = models.BooleanField(default=False)
+
+class Attribute2(models.Model):
+    vers = models.ForeignKey(Version2, on_delete=models.CASCADE)
+    name = models.CharField(max_length=256)
+    prog = models.IntegerField()
+    title = models.TextField()
+
+    class Meta:
+        unique_together = [['vers', 'name'],
+                           ['vers', 'prog']]
+
+class AtomsGroup2(models.Model):
+    vers = models.ForeignKey(Version2, on_delete=models.CASCADE)
+    attr = models.ForeignKey(Attribute2, on_delete=models.CASCADE)
+    name = models.CharField(max_length=256)
+    prog = models.IntegerField()
+    title = models.TextField()
+    # mutex identify if it is possible or not dropdown multi-selection
+    mutex = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = [['vers', 'attr', 'name'],
+                           ['vers', 'attr', 'prog']]
+
+
+# TODO: parameters description atom(param1[,param2[...,paramN]])
+# class AtomParam(models.Model):
+#     atom = models.ForeignKey(Atom)
+
+# TODO: arguments description atom[:arg1[:arg2[...:argN]]]
+# class AtomArg(models.Model):
+#     atom = models.ForeignKey(Atom)
+
+
+class Atom2(models.Model):
+    vers = models.ForeignKey(Version2, on_delete=models.CASCADE)
+    attr = models.ForeignKey(Attribute2, on_delete=models.CASCADE, null=True)
+    group = models.ForeignKey(AtomsGroup2, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=32)
+    prog = models.IntegerField()
+    title = models.TextField()
+    desc = models.TextField()
+    type = models.TextField()
+    args = models.JSONField(blank=True, null=True)
+    params = models.JSONField(blank=True, null=True)
+    deps = models.ManyToManyField('self', symmetrical=False,
+                                  related_name='revdeps')
+    deny = models.ManyToManyField('self', symmetrical=False,
+                                  related_name='revdeny')
+    # is_pseudoid = models.BooleanField()
+
+    class Meta:
+        unique_together = [['vers', 'name'],
+                           ['vers', 'attr', 'group', 'prog']]
+
+    def entry_type(self):
+        return json.loads(self.type)
+
+
+class Param2(models.Model):
+    vers = models.ForeignKey(Version2, on_delete=models.CASCADE)
+    atom = models.ForeignKey(Atom2, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=32)
+    prog = models.IntegerField()
+    title = models.TextField()
+    desc = models.TextField()
+
+    class Meta:
+        unique_together = [['vers', 'atom', 'name'],
+                           ['vers', 'atom', 'prog']]
