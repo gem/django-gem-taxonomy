@@ -44,18 +44,20 @@ def dgtaxonomy2dgtaxonomy_two(apps, schema_editor):
                 prog=atg_in.prog,
                 title=atg_in.title,
                 mutex=atg_in.mutex,
-                attr=Attribute2.objects.using(db_alias).get(vers=vers, name=atg_in.attr.name)
+                attr=Attribute2.objects.using(db_alias).get(
+                    vers=vers, name=atg_in.attr.name)
             )
    
     for at_in in Atom.objects.using(db_alias).all():
         if at_in.attr is not None:
-            attr = Attribute2.objects.using(db_alias).get(vers=vers, name=at_in.attr.name)
+            attr = Attribute2.objects.using(db_alias).get(
+                vers=vers, name=at_in.attr.name)
         else:
             attr = None
 
         if at_in.group is not None:
-            group = AtomsGroup2.objects.using(db_alias).get(vers=vers, attr=attr,
-                                                            name=at_in.group.name)
+            group = AtomsGroup2.objects.using(db_alias).get(
+                vers=vers, attr=attr, name=at_in.group.name)
         else:
             group = None
         
@@ -75,14 +77,20 @@ def dgtaxonomy2dgtaxonomy_two(apps, schema_editor):
     for at_in in Atom.objects.using(db_alias).all():
         atom = Atom2.objects.using(db_alias).get(vers=vers, name=at_in.name)
         for dep in at_in.deps.all():
-            atom.deps.add(Atom2.objects.using(db_alias).get(vers=vers, name=dep.name))
+            atom.deps.add(Atom2.objects.using(db_alias).get(
+                vers=vers, name=dep.name))
         for den in at_in.deny.all():
-            atom.deny.add(Atom2.objects.using(db_alias).get(vers=vers, name=den.name))
+            atom.deny.add(Atom2.objects.using(db_alias).get(
+                vers=vers, name=den.name))
 
     for par_in in Param.objects.using(db_alias).all():
+        atom = None
+        if par_in.atom is not None:
+            atom = Atom2.objects.using(db_alias).get(
+                vers=vers, name=par_in.atom.name)
         Param2.objects.using(db_alias).create(
             vers=vers,
-            atom=Atom2.objects.using(db_alias).get(vers=vers, name=par_in.atom.name),
+            atom=atom,
             name=par_in.name,
             title=par_in.title,
             desc=par_in.desc,
@@ -159,8 +167,11 @@ def dgtaxonomy_two2dgtaxonomy(apps, schema_editor):
             atom.deny.add(Atom.objects.using(db_alias).get(name=den.name))
 
     for par_in in Param2.objects.using(db_alias).filter(vers=vers):
+        atom = None
+        if par_in.atom is not None:
+            atom = Atom.objects.using(db_alias).get(name=par_in.atom.name)
         Param.objects.using(db_alias).create(
-            atom=Atom.objects.using(db_alias).get(name=par_in.atom.name),
+            atom=atom,
             name=par_in.name,
             title=par_in.title,
             desc=par_in.desc,
