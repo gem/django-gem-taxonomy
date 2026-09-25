@@ -20,21 +20,46 @@
 # from django.conf import settings
 import os
 import sys
+import csv
 import json
+from django.utils.text import slugify
 from django.core.management.base import BaseCommand
 
 from django_gem_taxonomy.models import (Version,
                                         Attribute, AtomsGroup, Atom, Param)
 
 
+attr_name_map = {
+    'direction': 'direction',
+    'material-of-lateral-load-resisting-system': 'material',
+    'lateral-load-resisting-system': 'llrs',
+    'height': 'height',
+    'date': 'dates',
+    'occupancy': 'occupancy',
+    'building-position-within-a-block': 'position',
+    'shape-of-the-building-plan': 'shape',
+    'structural-irregularity': 'irregularity',
+    'exterior-walls': 'ext_walls',
+    'roof': 'roof',
+    'floor': 'floor',
+    'foundation': 'foundation',
+    }
+
+atomsgroup_name_map = {
+    'Type lateral load-resisting system': 'type_lateral_load',
+    'Building occupancy type - general': 'building_occupancy_class',
+    'Building position within a block': 'building_position_within',
+    }
+
 class Command(BaseCommand):
-    help = ("Based on taxonomy vers 3.3 or 4 constraint typologies"
-            " build attributes/atoms relationships db.")
+    help = ("Based on taxonomy vers 2 constraint typologies"
+            " build attributes/atoms relationships db."
+            "FIXME: all constraints, deny, params descr are missing")
 
     def add_arguments(self, parser):
         parser.add_argument('vers_id')
         parser.add_argument('vers_desc')
-        parser.add_argument('json_filename')
+        parser.add_argument('psv_filename')
 
         # Optional arguments
         parser.add_argument(
@@ -70,9 +95,9 @@ class Command(BaseCommand):
             print('Delete only enabled, exit now.')
             return
 
-        tax_json_in = None
-        with open(options['json_filename'], 'r') as f:
-            tax_json_in = json.load(f)
+        tax_psv_in = None
+        f = open(options['psv_filename'], 'r')
+        tax_psv_in = csv.DictReader(f, delimiter='|')
 
         vers = Version.objects.create(
             vers=vers_id,
@@ -84,102 +109,111 @@ class Command(BaseCommand):
             vers_not_def = Version.objects.all().exclude(vers=vers_id)
             vers_not_def.update(is_default=False)
 
-        for attr_in in tax_json_in['Attribute']:
-            attr = Attribute.objects.create(
-                vers=vers,
-                name=attr_in['name'],
-                prog=attr_in['prog'],
-                title=attr_in['title'],
-            )
-            if options['development']:
-                pprint(attr)
+        # atomsgroup_count|attribute_title|atomsgroup_title|atomsgroup_name|atomsgroup_prog|atom_name|atom_title
+        attr = None
+        attr_name = 'invalid'
+        attr_title = 'invalid'
+        attr_prog = -100
+        attr_name = 'invalid'
 
-        for atg_in in tax_json_in['AtomsGroup']:
-            atoms_group = AtomsGroup.objects.create(
-                vers=vers,
-                name=atg_in['name'],
-                prog=atg_in['prog'],
-                title=atg_in['title'],
-                attr=Attribute.objects.get(vers=vers, name=atg_in['group'])
-            )
-            if options['development']:
-                pprint(atoms_group)
+        atomsgroup = None
+        atomsgroup_title = 'invalid'
+        atomsgroup_name = 'invalid'
+        atomsgroup_prog = -100
 
-        atom = Atom.objects.create(
-            vers=vers,
-            name='_ARG',
-            prog=0,
-            desc=('Virtual atom dependency to prevent arguments-only atoms'
-                  ' to be visualized as unconstrained atoms'),
-            args=None,
-            params=None,
-            type=json.dumps({"name": "virtual"}),
-            group=None,
-            attr=None,
-        )
-        for at_in in tax_json_in['Atom']:
-            atom_name = at_in['name']
-            atom_type = (tax_json_in['AtomType'][atom_name]
-                         if atom_name in tax_json_in['AtomType']
-                         else json.dumps({}))
+        atom = None
+        atom_name = 'invalid'
+        atom_prog = -100
 
-            atom_args = (json.loads(at_in['args'])
-                         if at_in['args'] else None)
-            try:
-                atom_params = (json.loads(at_in['params'])
-                               if at_in['params'] else None)
-            except Exception:
-                if options['development']:
-                    import pdb; pdb.set_trace()
-                raise
-
-            if options['development']:
-                print(atom_name)
-            atom = Atom.objects.create(
-                vers=vers,
-                name=at_in['name'],
-                prog=at_in['prog'],
-                title=at_in['title'],
-                desc=at_in['desc'],
-                args=atom_args,
-                params=atom_params,
-                type=atom_type,
-                group=AtomsGroup.objects.get(vers=vers, name=at_in['group']),
-                attr=Attribute.objects.get(vers=vers, name=at_in['attr']),
-            )
-            try:
-                if atom.name in tax_json_in['AtomsDeps']:
-                    for dep in tax_json_in['AtomsDeps'][atom.name]:
-                        atom.deps.add(Atom.objects.get(vers=vers, name=dep))
-            except Exception:
-                if options['development']:
-                    import pdb; pdb.set_trace()
-                raise
-
-            try:
-                if atom.name in tax_json_in['AtomsDeny']:
-                    for den in tax_json_in['AtomsDeny'][atom.name]:
-                        atom.deny.add(Atom.objects.get(vers=vers, name=den))
-            except Exception:
-                if options['development']:
-                    import pdb; pdb.set_trace()
-                raise
-
-        for param_atom, pa_ins in tax_json_in['Param'].items():
-            for pa_in in pa_ins:
-                param_name = pa_in['name']
-                param_prog = pa_in['prog']
-                param_title = pa_in['title']
-                param_desc = pa_in['desc']
-
-                Param.objects.create(
+        for row in tax_psv_in:
+            if attr_title != row['attr_title']:
+                attr_title = row['attr_title']
+                attr_name = attr_name_map[slugify(attr_title)]
+                attr_prog += 100
+                attr = Attribute.objects.create(
                     vers=vers,
-                    atom=Atom.objects.get(vers=vers, name=param_atom),
-                    name=param_name,
-                    prog=param_prog,
-                    title=param_title,
-                    desc=param_desc,
+                    name=attr_name,
+                    prog=attr_prog,
+                    title=attr_title,
                 )
+
+            if atomsgroup_title != row['atomsgroup_title']:
+                atom_prog = -100
+                atomsgroup_title = row['atomsgroup_title']
+
+                if atomsgroup_title in atomsgroup_name_map:
+                    atomsgroup_name = atomsgroup_name_map[atomsgroup_title]
+                else:
+                    atomsgroup_name = slugify(row['atomsgroup_title']).replace('-', '_')
+                atomsgroup_prog = int(row['atomsgroup_prog']) * 100
+
+                try:
+                    atoms_group = AtomsGroup.objects.create(
+                        vers=vers,
+                        name=atomsgroup_name,
+                        prog=atomsgroup_prog,
+                        title=atomsgroup_title,
+                        attr=attr
+                    )
+                except Exception:
+                    import pdb ; pdb.set_trace()
+            atom_name = row['atom_name']
+            atom_title = row['atom_title']
+            atom_prog += 100
+
+            if ':' in atom_name:
+                parts = atom_name.split(':')
+                atom_part = parts[0]
+                param_part = parts[1]
+                try:
+                    atom = Atom.objects.get(vers=vers,
+                                            name=atom_part)
+                except Exception:
+                    print('WARNING: parametrized atom [%s] does not exists' % atom_name)
+                    atom = Atom.objects.create(
+                        vers=vers,
+                        name=atom_part,
+                        prog=atom_prog,
+                        title='from: ' + atom_title,
+                        desc='',
+                        args='',
+                        params={"type": "options",
+                                "params_min": 1,
+                                "params_max": 1},
+                        type='{}',
+                        group=atoms_group,
+                        attr=attr
+                    )
+                param = Param.objects.create(
+                    vers=vers,
+                    atom=atom,
+                    name=param_part,
+                    prog=atom_prog,
+                    title=atom_title,
+                    desc='',
+                )
+            else:
+
+                if atom_name in ['IRPP', 'IRPS', 'IRVP', 'IRVS']:
+                    params={"type": "options",
+                            "params_min": 1,
+                            "params_max": 1}
+                else:
+                    params=''
+                
+                atom = Atom.objects.create(
+                    vers=vers,
+                    name=atom_name,
+                    prog=atom_prog,
+                    title=atom_title,
+                    desc='',
+                    args='',
+                    params=params,
+                    type='{}',
+                    group=atoms_group,
+                    attr=attr
+                )
+
         if options['no_dump']:
             return
 

@@ -27,12 +27,30 @@ class Version(models.Model):
     desc = models.TextField()
     is_default = models.BooleanField(default=False)
 
+
+class VersRelatedContentManager(models.Manager):
+    def get_by_natural_key(self, vers, name):
+        return self.get(vers__vers=vers, name=name)
+
+
 class VersRelatedContent(models.Model):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     title = models.TextField()
     content = GenericRelation('Content')
 
+    class Meta:
+        unique_together = [['vers', 'name']]
+
+    objects = VersRelatedContentManager()
+
+    def natural_key(self):
+        return (self.vers.vers, self.name)
+
+
+class AttributeManager(models.Manager):
+    def get_by_natural_key(self, vers, name):
+        return self.get(vers__vers=vers, name=name)
 
 class Attribute(models.Model):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
@@ -44,6 +62,17 @@ class Attribute(models.Model):
     class Meta:
         unique_together = [['vers', 'name'],
                            ['vers', 'prog']]
+
+    objects = AttributeManager()
+
+    def natural_key(self):
+        return (self.vers.vers, self.name)
+
+
+class AtomsGroupManager(models.Manager):
+    def get_by_natural_key(self, vers, attr, name):
+        return self.get(vers__vers=vers, attr__name=attr, name=name)
+
 
 class AtomsGroup(models.Model):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
@@ -60,6 +89,12 @@ class AtomsGroup(models.Model):
                            ['vers', 'attr', 'prog']]
 
 
+    objects = AtomsGroupManager()
+
+    def natural_key(self):
+        return (self.vers.vers, self.attr.name, self.name)
+
+
 # TODO: parameters description atom(param1[,param2[...,paramN]])
 # class AtomParam(models.Model):
 #     atom = models.ForeignKey(Atom)
@@ -68,6 +103,10 @@ class AtomsGroup(models.Model):
 # class AtomArg(models.Model):
 #     atom = models.ForeignKey(Atom)
 
+
+class AtomManager(models.Manager):
+    def get_by_natural_key(self, vers, name):
+        return self.get(vers__vers=vers, name=name)
 
 class Atom(models.Model):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
@@ -91,8 +130,18 @@ class Atom(models.Model):
         unique_together = [['vers', 'name'],
                            ['vers', 'attr', 'group', 'prog']]
 
+    objects = AtomManager()
+
     def entry_type(self):
         return json.loads(self.type)
+
+    def natural_key(self):
+        return (self.vers.vers, self.name)
+
+
+class ParamManager(models.Manager):
+    def get_by_natural_key(self, vers, atom, name):
+        return self.get(vers__vers=vers, atom__name=atom, name=name)
 
 
 class Param(models.Model):
@@ -108,6 +157,11 @@ class Param(models.Model):
         unique_together = [['vers', 'atom', 'name'],
                            ['vers', 'atom', 'prog']]
 
+    objects = ParamManager()
+
+    def natural_key(self):
+        return (self.vers.vers, self.atom.name, self.name)
+
 
 class Content(models.Model):
     content = CKEditor5Field('Content')
@@ -116,4 +170,24 @@ class Content(models.Model):
     object_id = models.PositiveIntegerField()
     # - content_object: virtual field that join 2 previous fields
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['content_type', 'object_id'],
+                name='unique_generic_relation'
+                )
+        ]
+
+
+    def natural_key(self):
+        pass
+
+    # 3. Inform Django that this model MUST be serialized AFTER the target models.
+    # If you know the specific apps, you explicitly add them here.
+    # Django will read this list and reorder the dump output accordingly.
+    natural_key.dependencies = [
+        'django_gem_taxonomy.VersRelatedContent',
+        'django_gem_taxonomy.Attribute', 'django_gem_taxonomy.AtomsGroup',
+        'django_gem_taxonomy.Atom', 'django_gem_taxonomy.Param', ]
 
