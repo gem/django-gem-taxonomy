@@ -115,11 +115,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                    <span class="badge atomsgroup-badge">Atoms Group</span>
                {% endif %}
            {% endif %}
-           <span class="badge">
-               <a href="{{item.vers}}/{{item.type}}/">
-		   Ver. {{ item.vers }}
-               </a>
-	   </span>
+	   <span class="badge">
+               {% if item.type == 'param' %}
+                   <a href="{{item.vers}}/atom/">
+                       Ver. {{ item.vers }}
+                   </a>
+               {% else %}
+                   <a href="{{item.vers}}/{{item.type}}/">
+                       Ver. {{ item.vers }}
+                   </a>
+               {% endif %}
+           </span>
         </h2>
       </div>
       {% endif %}

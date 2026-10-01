@@ -205,16 +205,27 @@ class GlossarySuggestions(View):
             return JsonResponse({'suggestions': []})
 
         suggestions = []
+        query_len = len(query)
 
-        # Title and name search
-        if len(query) >= 3:
-            # Atom search
-            atom_results = Atom.objects.filter(
-                models.Q(title__icontains=query) |
-                models.Q(name__icontains=query)
+        atom_results = Atom.objects.filter(
+            models.Q(name__icontains=query)
+        )[:10]
+
+        for atom in atom_results:
+            suggestions.append({
+                'type': 'atom',
+                'text': atom.name,
+                'label': f'⚛️ {atom.name}',
+                'url': f"/taxonomy/glossary/{atom.vers.vers}/atom/{atom.name}"
+            })
+
+        if query_len > 3:
+            # Atom search (title)
+            atom_title_results = Atom.objects.filter(
+                models.Q(title__icontains=query)
             )[:5]
 
-            for obj in atom_results:
+            for obj in atom_title_results:
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
@@ -264,8 +275,7 @@ class GlossarySuggestions(View):
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
                 })
 
-        # Content search
-        if len(query) >= 3:
+            # CONTENT search
             content_results = Content.objects.filter(
                 models.Q(content__icontains=query)
             )[:10]
@@ -306,21 +316,6 @@ class GlossarySuggestions(View):
                                 'url': url
                             })
 
-        # ATOM
-        if len(query) >= 1:
-            atom_results = Atom.objects.filter(
-                models.Q(name__icontains=query)
-            )[:10]
-
-            for atom in atom_results:
-                suggestions.append({
-                    'type': 'atom',
-                    'text': atom.name,
-                    'label': f'⚛️ {atom.name}',
-                    'url': f"/taxonomy/glossary/{atom.vers.vers}/atom/{atom.name}"
-                })
-
-        # Suggestion number limit
         suggestions = suggestions[:20]
 
         return JsonResponse({'suggestions': suggestions})
