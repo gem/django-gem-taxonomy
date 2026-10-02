@@ -97,25 +97,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       {% for item in all_items %}
       {% if item.name|slice:":1" != '_' %}
       <div class="col-md-4">
-        <h2>
+        <h2 class="list-result">
            {% if item.type == 'param' %}
                <a href="{{item.vers}}/atom/{{item.name}}">
                  {{item.title}} [{{item.name}}]
                </a>
-               <span class="badge param-badge">Parametrized Atom</span>
            {% else %}
                <a href="{{item.vers}}/{{item.type}}/{{item.name}}">
                  {{item.title}} [{{item.name}}]
                </a>
-               {% if item.type == 'atom' %}
-                   <span class="badge atom-badge">Atom</span>
-               {% elif item.type == 'attribute' %}
-                   <span class="badge attribute-badge">Attribute</span>
-               {% elif item.type == 'atoms_group' %}
-                   <span class="badge atomsgroup-badge">Atoms Group</span>
-               {% endif %}
            {% endif %}
-	   <span class="badge">
+	   <span class="badge version-badge">
                {% if item.type == 'param' %}
                    <a href="{{item.vers}}/atom/">
                        Ver. {{ item.vers }}
@@ -126,6 +118,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                    </a>
                {% endif %}
            </span>
+           {% if item.type == 'param' %}
+               <span class="badge param-badge">Parametrized Atom</span>
+           {% else %}
+               {% if item.type == 'atom' %}
+                   <span class="badge atom-badge">Atom</span>
+               {% elif item.type == 'attribute' %}
+                   <span class="badge attribute-badge">Attribute</span>
+               {% elif item.type == 'atoms_group' %}
+                   <span class="badge atomsgroup-badge">Atoms Group</span>
+               {% endif %}
+           {% endif %}
         </h2>
       </div>
       {% endif %}
