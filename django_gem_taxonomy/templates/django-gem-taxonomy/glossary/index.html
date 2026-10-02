@@ -191,7 +191,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
                 let html = '';
                 suggestions.forEach(item => {
-                    let displayText = item.text;
+                    let displayText = item.label;
                     if (item.type === 'content' && item.preview) {
                         let preview = item.preview;
                         if (preview.length > 100) {
@@ -229,7 +229,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                     }
 
                     html += `
-                        <div class="suggestion-item" data-value="${item.text}" data-url="${item.url || ''}" style="padding:10px 15px;cursor:pointer;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;font-size:14px;color:#2c3e50;">
+                        <div class="suggestion-item" data-value="${item.label}" data-url="${item.url || ''}" style="padding:10px 15px;cursor:pointer;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;font-size:14px;color:#2c3e50;">
                             <span>${emoji}</span>
                             <div style="flex:1;">
                                 ${displayText}

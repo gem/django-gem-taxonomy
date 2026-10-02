@@ -35,6 +35,7 @@ from .glossary_forms import (AttributeForm, AtomsGroupForm, AtomForm, ParamForm,
 
 from django.http import JsonResponse
 from django.db import models
+from django.db.models import Case, When, Value, IntegerField, Exists, OuterRef
 
 class GlossaryAttribute(View):
     def get(self, request, vers_id=None, name=None):
@@ -207,17 +208,35 @@ class GlossarySuggestions(View):
         suggestions = []
         query_len = len(query)
 
+        # check content atom
+        has_content = Content.objects.filter(
+            content_type__model='atom',
+            object_id=OuterRef('pk')
+        ).exclude(content='').exclude(content__isnull=True)
+
         atom_results = Atom.objects.filter(
             models.Q(name__icontains=query)
-        )[:10]
+        ).annotate(
+            has_content=Exists(has_content),    
+            relevance=Case(
+                When(name__iexact=query, then=Value(0)),
+                When(name__istartswith=query, then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            )
+        ).filter(
+           has_content=True
+        ).order_by('relevance', 'name')[:10]
 
+        print(f"🔍 QUERY: '{query}' - Trovati {len(atom_results)} atom")
         for atom in atom_results:
+            print(f"  - '{atom.name}' (vers: {atom.vers.vers})")
             suggestions.append({
                 'type': 'atom',
                 'text': atom.name,
-                'label': f'⚛️ {atom.name}',
+                'label': f'{atom.name} (v. {atom.vers.vers})',
                 'url': f"/taxonomy/glossary/{atom.vers.vers}/atom/{atom.name}"
-            })
+            })    
 
         if query_len > 3:
             # Atom search (title)
