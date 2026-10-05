@@ -148,15 +148,21 @@ class GlossaryHome(View):
             all_items.append(item)
 
         all_letters = set()
-        for item in all_items:
-            if item['title']:
-                first_char = item['title'][0]
-                if first_char.isalpha() or first_char.isdigit():
-                    all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
-            if item['name']:
-                first_char = item['name'][0]
-                if first_char.isalpha() or first_char.isdigit():
-                    all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
+        all_contents = Content.objects.all()   # ← TUTTI, senza filtri
+        for el in all_contents:
+            obj = el.content_object
+            if obj:
+                title = getattr(obj, 'title', None)
+                name = getattr(obj, 'name', None)
+
+                if title:
+                    first_char = title[0]
+                    if first_char.isalpha() or first_char.isdigit():
+                        all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
+                if name:
+                    first_char = name[0]
+                    if first_char.isalpha() or first_char.isdigit():
+                        all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
 
         numeric_letters = sorted([l for l in all_letters if str(l).isdigit()])
         alpha_letters = sorted([l for l in all_letters if str(l).isalpha()])
