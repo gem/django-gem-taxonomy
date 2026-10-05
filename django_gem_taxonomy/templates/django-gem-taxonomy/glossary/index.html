@@ -59,14 +59,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
       <div class="search-section">
           <form method="get" action="" style="width: 100%;">
-              <div class="search-row">
-                  <input type="text" name="q" class="search-input" placeholder="Search..." value="{{ search_query }}">
-                  <button type="submit" class="search-btn">🔍 Search</button>
-                  {% if search_query or selected_versions %}
-                      <a href="?" class="clear-btn">✕ Clear</a>
-                  {% endif %}
-              </div>
-
               <div class="version-checkboxes">
                   <span class="filter-label">Filter by Version:</span>
                   {% for version in all_versions %}
@@ -83,6 +75,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                       {% endwith %}
                   {% endfor %}
                   <span class="version-info">(select multiple)</span>
+              </div>
+
+              <div class="search-row">
+                  <input type="text" name="q" class="search-input" placeholder="Search..." value="{{ search_query }}">
+                  <button type="submit" class="search-btn">🔍 Search</button>
+                  {% if search_query or selected_versions %}
+                      <a href="?" class="clear-btn">✕ Clear</a>
+                  {% endif %}
               </div>
           </form>
       </div>
@@ -166,13 +166,23 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
             let debounceTimer;
 
-            function fetchSuggestions(query) {
+	    function fetchSuggestions(query) {
                 if (!query || query.length === 0) {
                     dropdown.classList.remove('show');
                     return;
                 }
 
-                fetch(`/taxonomy/glossary/suggestions/?q=${encodeURIComponent(query)}`)
+                const selectedVersions = [];
+                document.querySelectorAll('.version-checkboxes input[type="checkbox"]:checked').forEach(cb => {
+                    selectedVersions.push(cb.value);
+                });
+
+                let url = `/taxonomy/glossary/suggestions/?q=${encodeURIComponent(query)}`;
+                selectedVersions.forEach(v => {
+                    url += `&version=${encodeURIComponent(v)}`;
+                });
+
+                fetch(url)
                     .then(response => response.json())
                     .then(data => {
                         renderSuggestions(data.suggestions, query);

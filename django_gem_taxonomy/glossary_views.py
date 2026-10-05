@@ -181,7 +181,6 @@ class GlossaryHome(View):
                     filtered_items.append(item)
             display_items = filtered_items
 
-        # 5. ORDINA
         display_items.sort(key=lambda x: x['title'].lower())
 
         context = {
@@ -208,6 +207,12 @@ class GlossarySuggestions(View):
         suggestions = []
         query_len = len(query)
 
+        selected_versions = request.GET.getlist('version')
+
+        if not selected_versions:
+            defa_vers = Version.objects.get(is_default=True)
+            selected_versions = [str(defa_vers.vers)]
+
         # check content atom
         has_content = Content.objects.filter(
             content_type__model='atom',
@@ -215,7 +220,8 @@ class GlossarySuggestions(View):
         ).exclude(content='').exclude(content__isnull=True)
 
         atom_results = Atom.objects.filter(
-            models.Q(name__icontains=query)
+            models.Q(name__icontains=query),
+            vers__vers__in=selected_versions
         ).annotate(
             has_content=Exists(has_content),    
             relevance=Case(
@@ -228,9 +234,7 @@ class GlossarySuggestions(View):
            has_content=True
         ).order_by('relevance', 'name')[:10]
 
-        #print(f"🔍 QUERY: '{query}' - Trovati {len(atom_results)} atom")
         for atom in atom_results:
-            #print(f"  - '{atom.name}' (vers: {atom.vers.vers})")
             suggestions.append({
                 'type': 'atom',
                 'text': atom.name,
@@ -241,7 +245,8 @@ class GlossarySuggestions(View):
         if query_len > 3:
             # Atom search (title)
             atom_title_results = Atom.objects.filter(
-                models.Q(title__icontains=query)
+                models.Q(title__icontains=query),
+                vers__vers__in=selected_versions
             )[:5]
 
             for obj in atom_title_results:
@@ -255,53 +260,59 @@ class GlossarySuggestions(View):
             # Attributes search
             attr_results = Attribute.objects.filter(
                 models.Q(title__icontains=query) |
-                models.Q(name__icontains=query)
+                models.Q(name__icontains=query),
+                vers__vers__in=selected_versions
             )[:5]
 
             for obj in attr_results:
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name} (v. {obj.vers.vers})',
+                    'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/attribute/{obj.name}"
                 })
 
             # AtomsGroup search
             group_results = AtomsGroup.objects.filter(
                 models.Q(title__icontains=query) |
-                models.Q(name__icontains=query)
+                models.Q(name__icontains=query),
+                vers__vers__in=selected_versions
             )[:5]
 
             for obj in group_results:
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name} (v. {obj.vers.vers})',
+                    'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/atoms_group/{obj.name}"
                 })
 
             # Param search
             param_results = Param.objects.filter(
                 models.Q(title__icontains=query) |
-                models.Q(name__icontains=query)
+                models.Q(name__icontains=query),
+                vers__vers__in=selected_versions
             )[:5]
 
             for obj in param_results:
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name} (v. {obj.vers.vers})',
+                    'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
                 })
 
-            # CONTENT search
             content_results = Content.objects.filter(
                 models.Q(content__icontains=query)
-            )[:10]
+            )[:20]
 
             for content in content_results:
                 obj = content.content_object
                 if obj:
+                    obj_vers = getattr(obj, 'vers', None)
+                    if not obj_vers or str(obj_vers.vers) not in selected_versions:
+                        continue
+
                     title = getattr(obj, 'title', None) or getattr(obj, 'name', None)
                     if title:
                         content_text = strip_tags(content.content or '')
@@ -310,9 +321,9 @@ class GlossarySuggestions(View):
                             if pos != -1:
                                 start = max(0, pos - 30)
                                 end = min(len(content_text), pos + 60)
-                                preview = '...' + content_text[start:end] + '...' if start > 0 else content_text[:end] + '...'
+                                preview = '... ' + content_text[start:end] + ' ...' if start > 0 else content_text[:end] + '...'
                             else:
-                                preview = content_text[:100] + '...'
+                                preview = content_text[:100] + ' ...'
                         else:
                             preview = ''
 
@@ -330,7 +341,7 @@ class GlossarySuggestions(View):
                             suggestions.append({
                                 'type': 'content',
                                 'text': title,
-                                'label': f'📝 {title}',
+                                'label': f'{title} (v. {obj.vers.vers})',
                                 'preview': preview,
                                 'url': url
                             })
