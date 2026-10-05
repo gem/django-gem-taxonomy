@@ -228,9 +228,9 @@ class GlossarySuggestions(View):
            has_content=True
         ).order_by('relevance', 'name')[:10]
 
-        print(f"🔍 QUERY: '{query}' - Trovati {len(atom_results)} atom")
+        #print(f"🔍 QUERY: '{query}' - Trovati {len(atom_results)} atom")
         for atom in atom_results:
-            print(f"  - '{atom.name}' (vers: {atom.vers.vers})")
+            #print(f"  - '{atom.name}' (vers: {atom.vers.vers})")
             suggestions.append({
                 'type': 'atom',
                 'text': atom.name,
@@ -248,7 +248,7 @@ class GlossarySuggestions(View):
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name}',
+                    'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.name}"
                 })
 
@@ -262,7 +262,7 @@ class GlossarySuggestions(View):
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name}',
+                    'label': f'📄 {obj.title or obj.name} (v. {obj.vers.vers})',
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/attribute/{obj.name}"
                 })
 
@@ -276,7 +276,7 @@ class GlossarySuggestions(View):
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name}',
+                    'label': f'📄 {obj.title or obj.name} (v. {obj.vers.vers})',
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/atoms_group/{obj.name}"
                 })
 
@@ -290,7 +290,7 @@ class GlossarySuggestions(View):
                 suggestions.append({
                     'type': 'title',
                     'text': obj.title or obj.name,
-                    'label': f'📄 {obj.title or obj.name}',
+                    'label': f'📄 {obj.title or obj.name} (v. {obj.vers.vers})',
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
                 })
 
