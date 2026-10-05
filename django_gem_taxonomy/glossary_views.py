@@ -26,12 +26,16 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
 
-from .models import Version, Param, Atom, AtomsGroup, Attribute
+from .models import Version, Param, Atom, AtomsGroup, Attribute, Content
 
 from .glossary_forms import (AttributeForm, AtomsGroupForm, AtomForm, ParamForm,
                              ContentFormSet)
 
+from django.http import JsonResponse
+from django.db import models
+from django.db.models import Case, When, Value, IntegerField, Exists, OuterRef
 
 class GlossaryAttribute(View):
     def get(self, request, vers_id=None, name=None):
@@ -97,6 +101,260 @@ def manage_attribute_content(request, vers_id, name):
         'formset_content': formset_content,
         'is_update': True
     })
+
+
+class GlossaryHome(View):
+    def get(self, request):
+        template = 'django-gem-taxonomy/glossary/index.html'
+        defa_vers = Version.objects.get(is_default=True)
+
+        letter = request.GET.get('letter', '').strip().upper()
+        search_query = request.GET.get('q', '').strip()
+        selected_versions = request.GET.getlist('version')
+
+        all_versions = Version.objects.all().order_by('vers')
+
+        all_items = []
+        els = Content.objects.all()
+
+        for el in els:
+            if selected_versions:
+                if str(el.content_object.vers.vers) not in selected_versions:
+                    continue
+            else:
+                if el.content_object.vers != defa_vers:
+                    continue
+
+            item = {
+                'title': el.content_object.title,
+                'name': el.content_object.name,
+                'vers': el.content_object.vers.vers,
+                'type': None,
+                'attribute': None
+            }
+
+            if isinstance(el.content_object, Atom):
+                item['type'] = 'atom'
+                item['attribute'] = getattr(el.content_object, 'attribute', None)
+            elif isinstance(el.content_object, Attribute):
+                item['type'] = 'attribute'
+            elif isinstance(el.content_object, AtomsGroup):
+                item['type'] = 'atoms_group'
+            elif isinstance(el.content_object, Param):
+                item['type'] = 'param'
+                item['name'] = f"{el.content_object.atom.name}:{el.content_object.name}"
+                item['title'] = el.content_object.title
+
+            all_items.append(item)
+
+        all_letters = set()
+        all_contents = Content.objects.all()   # ← TUTTI, senza filtri
+        for el in all_contents:
+            obj = el.content_object
+            if obj:
+                title = getattr(obj, 'title', None)
+                name = getattr(obj, 'name', None)
+
+                if title:
+                    first_char = title[0]
+                    if first_char.isalpha() or first_char.isdigit():
+                        all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
+                if name:
+                    first_char = name[0]
+                    if first_char.isalpha() or first_char.isdigit():
+                        all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
+
+        numeric_letters = sorted([l for l in all_letters if str(l).isdigit()])
+        alpha_letters = sorted([l for l in all_letters if str(l).isalpha()])
+        sorted_letters = numeric_letters + alpha_letters
+
+        display_items = all_items
+
+        if search_query:
+            search_lower = search_query.lower()
+            filtered_items = []
+            for item in display_items:
+                if (item['title'] and search_lower in item['title'].lower()) or \
+                   (item['name'] and search_lower in item['name'].lower()):
+                    filtered_items.append(item)
+            display_items = filtered_items
+
+        if letter and len(letter) == 1:
+            filtered_items = []
+            for item in display_items:
+                if (item['title'] and item['title'][0].upper() == letter) or \
+                   (item['name'] and item['name'][0].upper() == letter):
+                    filtered_items.append(item)
+            display_items = filtered_items
+
+        display_items.sort(key=lambda x: x['title'].lower())
+
+        context = {
+            'all_items': display_items,
+            'default_version': defa_vers,
+            'total_items': len(display_items),
+            'letters': sorted_letters,
+            'current_letter': letter,
+            'search_query': search_query,
+            'selected_versions': selected_versions,
+            'all_versions': all_versions,
+        }
+
+        return render(request, template, context)
+
+
+class GlossarySuggestions(View):
+    def get(self, request):
+        query = request.GET.get('q', '').strip()
+
+        if not query:
+            return JsonResponse({'suggestions': []})
+
+        suggestions = []
+        query_len = len(query)
+
+        selected_versions = request.GET.getlist('version')
+
+        if not selected_versions:
+            defa_vers = Version.objects.get(is_default=True)
+            selected_versions = [str(defa_vers.vers)]
+
+        # check content atom
+        has_content = Content.objects.filter(
+            content_type__model='atom',
+            object_id=OuterRef('pk')
+        ).exclude(content='').exclude(content__isnull=True)
+
+        atom_results = Atom.objects.filter(
+            models.Q(name__icontains=query),
+            vers__vers__in=selected_versions
+        ).annotate(
+            has_content=Exists(has_content),    
+            relevance=Case(
+                When(name__iexact=query, then=Value(0)),
+                When(name__istartswith=query, then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            )
+        ).filter(
+           has_content=True
+        ).order_by('relevance', 'name')[:10]
+
+        for atom in atom_results:
+            suggestions.append({
+                'type': 'atom',
+                'text': atom.name,
+                'label': f'{atom.name} (v. {atom.vers.vers})',
+                'url': f"/taxonomy/glossary/{atom.vers.vers}/atom/{atom.name}"
+            })    
+
+        if query_len > 3:
+            # Atom search (title)
+            atom_title_results = Atom.objects.filter(
+                models.Q(title__icontains=query),
+                vers__vers__in=selected_versions
+            )[:5]
+
+            for obj in atom_title_results:
+                suggestions.append({
+                    'type': 'title',
+                    'text': obj.title or obj.name,
+                    'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.name}"
+                })
+
+            # Attributes search
+            attr_results = Attribute.objects.filter(
+                models.Q(title__icontains=query) |
+                models.Q(name__icontains=query),
+                vers__vers__in=selected_versions
+            )[:5]
+
+            for obj in attr_results:
+                suggestions.append({
+                    'type': 'title',
+                    'text': obj.title or obj.name,
+                    'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/attribute/{obj.name}"
+                })
+
+            # AtomsGroup search
+            group_results = AtomsGroup.objects.filter(
+                models.Q(title__icontains=query) |
+                models.Q(name__icontains=query),
+                vers__vers__in=selected_versions
+            )[:5]
+
+            for obj in group_results:
+                suggestions.append({
+                    'type': 'title',
+                    'text': obj.title or obj.name,
+                    'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atoms_group/{obj.name}"
+                })
+
+            # Param search
+            param_results = Param.objects.filter(
+                models.Q(title__icontains=query) |
+                models.Q(name__icontains=query),
+                vers__vers__in=selected_versions
+            )[:5]
+
+            for obj in param_results:
+                suggestions.append({
+                    'type': 'title',
+                    'text': obj.title or obj.name,
+                    'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
+                })
+
+            content_results = Content.objects.filter(
+                models.Q(content__icontains=query)
+            )[:20]
+
+            for content in content_results:
+                obj = content.content_object
+                if obj:
+                    obj_vers = getattr(obj, 'vers', None)
+                    if not obj_vers or str(obj_vers.vers) not in selected_versions:
+                        continue
+
+                    title = getattr(obj, 'title', None) or getattr(obj, 'name', None)
+                    if title:
+                        content_text = strip_tags(content.content or '')
+                        if content_text:
+                            pos = content_text.lower().find(query.lower())
+                            if pos != -1:
+                                start = max(0, pos - 30)
+                                end = min(len(content_text), pos + 60)
+                                preview = '... ' + content_text[start:end] + ' ...' if start > 0 else content_text[:end] + '...'
+                            else:
+                                preview = content_text[:100] + ' ...'
+                        else:
+                            preview = ''
+
+                        url = None
+                        if isinstance(obj, Atom):
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.name}"
+                        elif isinstance(obj, Attribute):
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/attribute/{obj.name}"
+                        elif isinstance(obj, AtomsGroup):
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/atoms_group/{obj.name}"
+                        elif isinstance(obj, Param):
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
+
+                        if url:
+                            suggestions.append({
+                                'type': 'content',
+                                'text': title,
+                                'label': f'{title} (v. {obj.vers.vers})',
+                                'preview': preview,
+                                'url': url
+                            })
+
+        suggestions = suggestions[:20]
+
+        return JsonResponse({'suggestions': suggestions})
 
 
 class GlossaryAtomsGroup(View):
