@@ -27,13 +27,18 @@ class Version(models.Model):
     desc = models.TextField()
     is_default = models.BooleanField(default=False)
 
+class SluggedTitleModel(models.Model):
+    slug_title = models.TextField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
 
 class VersRelatedContentManager(models.Manager):
     def get_by_natural_key(self, vers, name):
         return self.get(vers__vers=vers, name=name)
 
 
-class VersRelatedContent(models.Model):
+class VersRelatedContent(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     title = models.TextField()
@@ -52,7 +57,7 @@ class AttributeManager(models.Manager):
     def get_by_natural_key(self, vers, name):
         return self.get(vers__vers=vers, name=name)
 
-class Attribute(models.Model):
+class Attribute(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     prog = models.IntegerField()
@@ -74,7 +79,7 @@ class AtomsGroupManager(models.Manager):
         return self.get(vers__vers=vers, attr__name=attr, name=name)
 
 
-class AtomsGroup(models.Model):
+class AtomsGroup(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     attr = models.ForeignKey(Attribute, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
@@ -108,7 +113,7 @@ class AtomManager(models.Manager):
     def get_by_natural_key(self, vers, name):
         return self.get(vers__vers=vers, name=name)
 
-class Atom(models.Model):
+class Atom(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     attr = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     group = models.ForeignKey(AtomsGroup, on_delete=models.CASCADE, null=True)
@@ -144,7 +149,7 @@ class ParamManager(models.Manager):
         return self.get(vers__vers=vers, atom__name=atom, name=name)
 
 
-class Param(models.Model):
+class Param(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     atom = models.ForeignKey(Atom, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32)
