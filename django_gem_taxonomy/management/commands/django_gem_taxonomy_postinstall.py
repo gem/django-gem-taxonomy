@@ -19,7 +19,7 @@
 import os
 from django.core.management import call_command
 from openquake import gem_taxonomy_data
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
@@ -42,10 +42,24 @@ class Command(BaseCommand):
                     {'vers_id': '3.3',
                      'vers_desc': 'Version 3.3 year 2024',
                      'is_default': False,
-                     'fname': 'taxonomy3.3_standard.json'}
+                     'fname': 'taxonomy3.3_standard.json'},
+                    {'vers_id': '2.0',
+                     'vers_desc': 'Version 2.0 year 2013',
+                     'is_default': False,
+                     'fname': 'taxonomy2.0_standard.psv',
+                     }
                 ]:
             print("Data_file: [%s]" % data['fname'])
-            call_args = ['taxonomy_load_standard', data['vers_id'], data['vers_desc'], '--no-dump']
+
+            if data['fname'].endswith('.json'):
+                command = 'taxonomy_load_standard'
+            elif data['fname'].endswith('.psv'):
+                command = 'taxonomy2_0_load_standard'
+            else:
+                raise CommandError('Unknown %s format, abort.' % data['fname'])
+
+            call_args = [command, data['vers_id'], data['vers_desc'], '--no-dump']
+
             if data['is_default']:
                 call_args.append('--is-default')
             call_args.append(os.path.join(data_path, data['fname']))
