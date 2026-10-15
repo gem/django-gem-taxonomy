@@ -21,6 +21,7 @@ from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.utils.text import slugify
 
 class Version(models.Model):
     vers = models.CharField(max_length=16, primary_key=True)
@@ -28,15 +29,21 @@ class Version(models.Model):
     is_default = models.BooleanField(default=False)
 
 
+class SluggedTitleModel(models.Model):
+    title = models.TextField()
+    slug_title = models.TextField()
+
+    class Meta:
+        abstract = True
+
+
 class VersRelatedContentManager(models.Manager):
     def get_by_natural_key(self, vers, name):
         return self.get(vers__vers=vers, name=name)
 
-
-class VersRelatedContent(models.Model):
+class VersRelatedContent(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
-    title = models.TextField()
     content = GenericRelation('Content')
 
     class Meta:
@@ -47,26 +54,39 @@ class VersRelatedContent(models.Model):
     def natural_key(self):
         return (self.vers.vers, self.name)
 
+    def save(self, *args, **kwargs):
+        self.slug_title = slugify(self.title)
+        super().save(*args, **kwargs)
+
 
 class AttributeManager(models.Manager):
     def get_by_natural_key(self, vers, name):
         return self.get(vers__vers=vers, name=name)
 
-class Attribute(models.Model):
+class Attribute(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     prog = models.IntegerField()
-    title = models.TextField()
     content = GenericRelation('Content')
 
     class Meta:
-        unique_together = [['vers', 'name'],
-                           ['vers', 'prog']]
+        unique_together = [
+            ['vers', 'name'],
+            ['vers', 'prog'],
+            ['vers', 'slug_title'],
+        ]
+        indexes = [
+            models.Index(fields=['vers', 'slug_title']),
+        ]
 
     objects = AttributeManager()
 
     def natural_key(self):
         return (self.vers.vers, self.name)
+
+    def save(self, *args, **kwargs):
+        self.slug_title = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class AtomsGroupManager(models.Manager):
@@ -74,25 +94,35 @@ class AtomsGroupManager(models.Manager):
         return self.get(vers__vers=vers, attr__name=attr, name=name)
 
 
-class AtomsGroup(models.Model):
+class AtomsGroup(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     attr = models.ForeignKey(Attribute, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     prog = models.IntegerField()
-    title = models.TextField()
     # mutex identify if it is possible or not dropdown multi-selection
     mutex = models.BooleanField(default=True)
     content = GenericRelation('Content')
 
     class Meta:
-        unique_together = [['vers', 'attr', 'name'],
-                           ['vers', 'attr', 'prog']]
+        unique_together = [
+            ['vers', 'attr', 'prog'],
+            ['vers', 'name'],
+            ['vers', 'slug_title'],
+        ]
+
+        indexes = [
+            models.Index(fields=['vers', 'slug_title']),
+        ]
 
 
     objects = AtomsGroupManager()
 
     def natural_key(self):
         return (self.vers.vers, self.attr.name, self.name)
+
+    def save(self, *args, **kwargs):
+        self.slug_title = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 # TODO: parameters description atom(param1[,param2[...,paramN]])
@@ -108,13 +138,12 @@ class AtomManager(models.Manager):
     def get_by_natural_key(self, vers, name):
         return self.get(vers__vers=vers, name=name)
 
-class Atom(models.Model):
+class Atom(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     attr = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     group = models.ForeignKey(AtomsGroup, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32)
     prog = models.IntegerField()
-    title = models.TextField()
     desc = models.TextField()
     type = models.TextField()
     args = models.JSONField(blank=True, null=True)
@@ -127,8 +156,15 @@ class Atom(models.Model):
     # is_pseudoid = models.BooleanField()
 
     class Meta:
-        unique_together = [['vers', 'name'],
-                           ['vers', 'attr', 'group', 'prog']]
+        unique_together = [
+            ['vers', 'name'],
+            ['vers', 'slug_title'],
+            ['vers', 'attr', 'group', 'prog']
+        ]
+
+        indexes = [
+            models.Index(fields=['vers', 'slug_title']),
+        ]
 
     objects = AtomManager()
 
@@ -138,29 +174,44 @@ class Atom(models.Model):
     def natural_key(self):
         return (self.vers.vers, self.name)
 
+    def save(self, *args, **kwargs):
+        self.slug_title = slugify(self.title + ' ' + self.name)
+        super().save(*args, **kwargs)
+
 
 class ParamManager(models.Manager):
     def get_by_natural_key(self, vers, atom, name):
         return self.get(vers__vers=vers, atom__name=atom, name=name)
 
 
-class Param(models.Model):
+class Param(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     atom = models.ForeignKey(Atom, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32)
     prog = models.IntegerField()
-    title = models.TextField()
     desc = models.TextField()
     content = GenericRelation('Content')
 
     class Meta:
-        unique_together = [['vers', 'atom', 'name'],
-                           ['vers', 'atom', 'prog']]
+        unique_together = [
+            ['vers', 'atom', 'name'],
+            ['vers', 'slug_title'],
+            ['vers', 'atom', 'prog'],
+        ]
+
+        indexes = [
+            models.Index(fields=['vers', 'slug_title']),
+        ]
 
     objects = ParamManager()
 
     def natural_key(self):
         return (self.vers.vers, self.atom.name, self.name)
+
+    def save(self, *args, **kwargs):
+        self.slug_title = slugify(self.title + ' ' + self.atom.name + '_'
+                                  + self.name)
+        super().save(*args, **kwargs)
 
 
 class Content(models.Model):
@@ -172,6 +223,10 @@ class Content(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]
+
         constraints = [
             models.UniqueConstraint(
                 fields=['content_type', 'object_id'],
