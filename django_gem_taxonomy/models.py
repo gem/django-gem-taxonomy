@@ -30,7 +30,8 @@ class Version(models.Model):
 
 
 class SluggedTitleModel(models.Model):
-    slug_title = models.TextField(null=True, blank=True)
+    title = models.TextField()
+    slug_title = models.TextField()
 
     class Meta:
         abstract = True
@@ -43,7 +44,6 @@ class VersRelatedContentManager(models.Manager):
 class VersRelatedContent(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
-    title = models.TextField()
     content = GenericRelation('Content')
 
     class Meta:
@@ -67,7 +67,6 @@ class Attribute(SluggedTitleModel):
     vers = models.ForeignKey(Version, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     prog = models.IntegerField()
-    title = models.TextField()
     content = GenericRelation('Content')
 
     class Meta:
@@ -100,7 +99,6 @@ class AtomsGroup(SluggedTitleModel):
     attr = models.ForeignKey(Attribute, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     prog = models.IntegerField()
-    title = models.TextField()
     # mutex identify if it is possible or not dropdown multi-selection
     mutex = models.BooleanField(default=True)
     content = GenericRelation('Content')
@@ -146,7 +144,6 @@ class Atom(SluggedTitleModel):
     group = models.ForeignKey(AtomsGroup, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32)
     prog = models.IntegerField()
-    title = models.TextField()
     desc = models.TextField()
     type = models.TextField()
     args = models.JSONField(blank=True, null=True)
@@ -192,7 +189,6 @@ class Param(SluggedTitleModel):
     atom = models.ForeignKey(Atom, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32)
     prog = models.IntegerField()
-    title = models.TextField()
     desc = models.TextField()
     content = GenericRelation('Content')
 
@@ -227,6 +223,10 @@ class Content(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]
+
         constraints = [
             models.UniqueConstraint(
                 fields=['content_type', 'object_id'],
