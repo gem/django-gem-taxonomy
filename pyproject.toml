@@ -23,9 +23,8 @@ classifiers = [
 dependencies = [
     'django ~= 4.2.30',
     'djangorestframework == 3.17.1',
-    # FIXME: use proper dependency when published
-    # 'openquake.gem-taxonomy ~= 1.14.0',
-    'openquake.gem-taxonomy @ git+https://github.com/gem/oq-gem-taxonomy.git@glossary',
+    # NOTE: devel dependencies are managed via github action
+    'openquake.gem-taxonomy ~= 1.14.0',
     'django-ckeditor-5==0.2.20',
 ]
 
