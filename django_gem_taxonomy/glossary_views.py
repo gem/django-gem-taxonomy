@@ -36,6 +36,7 @@ from .glossary_forms import (AttributeForm, AtomsGroupForm, AtomForm, ParamForm,
 from django.http import JsonResponse
 from django.db import models
 from django.db.models import Case, When, Value, IntegerField, Exists, OuterRef
+from django.core.paginator import Paginator
 
 class GlossaryAttribute(View):
     def get(self, request, vers_id=None, name=None):
@@ -147,22 +148,17 @@ class GlossaryHome(View):
 
             all_items.append(item)
 
+        # indexes under version filtering
         all_letters = set()
-        all_contents = Content.objects.all()   # ← TUTTI, senza filtri
-        for el in all_contents:
-            obj = el.content_object
-            if obj:
-                title = getattr(obj, 'title', None)
-                name = getattr(obj, 'name', None)
-
-                if title:
-                    first_char = title[0]
-                    if first_char.isalpha() or first_char.isdigit():
-                        all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
-                if name:
-                    first_char = name[0]
-                    if first_char.isalpha() or first_char.isdigit():
-                        all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
+        for item in all_items:
+            if item['title']:
+                first_char = item['title'][0]
+                if first_char.isalpha() or first_char.isdigit():
+                    all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
+            if item['name']:
+                first_char = item['name'][0]
+                if first_char.isalpha() or first_char.isdigit():
+                    all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
 
         numeric_letters = sorted([l for l in all_letters if str(l).isdigit()])
         alpha_letters = sorted([l for l in all_letters if str(l).isalpha()])
@@ -189,8 +185,15 @@ class GlossaryHome(View):
 
         display_items.sort(key=lambda x: x['title'].lower())
 
+        # Paginator
+        paginator = Paginator(display_items, 20)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+
         context = {
-            'all_items': display_items,
+            'all_items': page_obj,
+            'page_obj': page_obj,
+            'paginator': paginator,
             'default_version': defa_vers,
             'total_items': len(display_items),
             'letters': sorted_letters,

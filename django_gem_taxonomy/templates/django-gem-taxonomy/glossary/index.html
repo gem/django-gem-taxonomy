@@ -43,10 +43,28 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </div>
     {% endblock oq_body_heading %}
 
+    <div class="version-checkboxes">
+        <span class="filter-label">Version:</span>
+        {% for version in all_versions %}
+            {% with version_str=version.vers|stringformat:"s" %}
+            <label>
+                <input type="checkbox" name="version" value="{{ version.vers }}"
+                       {% if selected_versions %}
+                           {% if version_str in selected_versions %}checked{% endif %}
+                       {% else %}
+                           {% if version_str == "4.0" %}checked{% endif %}
+                       {% endif %}>
+                {{ version.vers }}
+            </label>
+            {% endwith %}
+        {% endfor %}
+        <span class="version-info">(select multiple)</span>
+    </div>
+
     <div id="app" style="margin: auto;">
       {% if letters %}
       <div class="letter-nav">
-          <span style="display: inline-block; padding: 5px 10px; color: #888; font-size: 14px; font-weight: normal;">Filter by letter:</span>
+	      <!--<span style="display: inline-block; padding: 5px 10px; color: #888; font-size: 14px; font-weight: normal;">Filter by letter:</span>-->
           <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}" class="{% if not current_letter %}active-letter{% endif %}" style="background:{% if not current_letter %}#3498db{% else %}white{% endif %};color:{% if not current_letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if not current_letter %}#3498db{% else %}#ddd{% endif %};border-radius:3px;padding:5px 12px;text-decoration:none;font-weight:bold;font-size:14px;">All</a>
 
           {% for letter in letters %}
@@ -58,25 +76,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       {% endif %}
 
       <div class="search-section">
-          <form method="get" action="" style="width: 100%;">
-              <div class="version-checkboxes">
-                  <span class="filter-label">Filter by Version:</span>
-                  {% for version in all_versions %}
-                      {% with version_str=version.vers|stringformat:"s" %}
-                      <label>
-                          <input type="checkbox" name="version" value="{{ version.vers }}"
-                                 {% if selected_versions %}
-                                     {% if version_str in selected_versions %}checked{% endif %}
-                                 {% else %}
-                                     {% if version_str == "4.0" %}checked{% endif %}
-                                 {% endif %}>
-                          {{ version.vers }}
-                      </label>
-                      {% endwith %}
-                  {% endfor %}
-                  <span class="version-info">(select multiple)</span>
-              </div>
-
+          <form method="get" action="" class="search-tax">
               <div class="search-row">
                   <input type="text" name="q" class="search-input" placeholder="Search..." value="{{ search_query }}">
                   <button type="submit" class="search-btn">🔍 Search</button>
@@ -133,6 +133,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </div>
       {% endif %}
       {% endfor %}
+
+      <!-- Paginator -->
+      {% if page_obj.has_other_pages %}
+      <div class="pagination" style="display: flex; gap: 5px; justify-content: center; align-items: center; margin: 30px 0; flex-wrap: wrap;">
+          {% if page_obj.has_previous %}
+              <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if current_letter %}&letter={{ current_letter }}{% endif %}{% for v in selected_versions %}&version={{ v }}{% endfor %}" class="page-btn">« First</a>
+              <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_letter %}&letter={{ current_letter }}{% endif %}{% for v in selected_versions %}&version={{ v }}{% endfor %}" class="page-btn">‹ Prev</a>
+          {% endif %}
+
+          <span class="page-info">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_letter %}&letter={{ current_letter }}{% endif %}{% for v in selected_versions %}&version={{ v }}{% endfor %}" class="page-btn">Next ›</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_letter %}&letter={{ current_letter }}{% endif %}{% for v in selected_versions %}&version={{ v }}{% endfor %}" class="page-btn">Last »</a>
+          {% endif %}
+      </div>
+      {% endif %}
     </div>
 {% endblock body %}
 

@@ -71,15 +71,19 @@
     color: #3498db;
     text-decoration: none;
 }
+.search-tax {
+    width: 100%;
+    margin: 0;
+}
 .search-section {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     margin: 15px 0 20px 0;
-    padding: 15px;
+    /* padding: 15px;
     background: #f8f9fa;
+    border: 1px solid #e9ecef; */
     border-radius: 5px;
-    border: 1px solid #e9ecef;
     align-items: center;
 }
 .search-section .search-row {
@@ -136,7 +140,7 @@
     background: #f0f8ff;
     border-radius: 5px;
     border: 1px solid #d0e8f5;
-    align-items: center;
+    /*align-items: center;*/
     margin: 10px 0;
 }
 .version-checkboxes .filter-label {
@@ -213,4 +217,34 @@
 }
 .suggestions-dropdown .suggestion-item:last-child {
     border-bottom: none !important;
+}
+
+/* Paginator */
+.pagination {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+.pagination .page-btn {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #3498db;
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+.pagination .page-btn:hover {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+.pagination .page-info {
+    padding: 6px 12px;
+    color: #888;
+    font-size: 13px;
 }
