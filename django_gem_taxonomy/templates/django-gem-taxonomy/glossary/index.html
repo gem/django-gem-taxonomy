@@ -43,40 +43,41 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </div>
     {% endblock oq_body_heading %}
 
-    <div class="version-checkboxes">
-        <span class="filter-label">Version:</span>
-        {% for version in all_versions %}
-            {% with version_str=version.vers|stringformat:"s" %}
-            <label>
-                <input type="checkbox" name="version" value="{{ version.vers }}"
-                       {% if selected_versions %}
-                           {% if version_str in selected_versions %}checked{% endif %}
-                       {% else %}
-                           {% if version_str == "4.0" %}checked{% endif %}
-                       {% endif %}>
-                {{ version.vers }}
-            </label>
-            {% endwith %}
-        {% endfor %}
-        <span class="version-info">(select multiple)</span>
-    </div>
-
     <div id="app" style="margin: auto;">
-      {% if letters %}
-      <div class="letter-nav">
-	      <!--<span style="display: inline-block; padding: 5px 10px; color: #888; font-size: 14px; font-weight: normal;">Filter by letter:</span>-->
-          <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}" class="{% if not current_letter %}active-letter{% endif %}" style="background:{% if not current_letter %}#3498db{% else %}white{% endif %};color:{% if not current_letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if not current_letter %}#3498db{% else %}#ddd{% endif %};border-radius:3px;padding:5px 12px;text-decoration:none;font-weight:bold;font-size:14px;">All</a>
-
-          {% for letter in letters %}
-              <a href="?letter={{ letter|lower }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="{% if current_letter|lower == letter|lower %}active-letter{% else %}has-articles{% endif %}" style="background:{% if current_letter == letter %}#3498db{% else %}white{% endif %};color:{% if current_letter == letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if current_letter == letter %}#3498db{% else %}#ddd{% endif %};border-radius:3px;padding:5px 12px;text-decoration:none;font-weight:bold;font-size:14px;">
-                  {{ letter }}
-              </a>
-          {% endfor %}
-      </div>
-      {% endif %}
-
       <div class="search-section">
           <form method="get" action="" class="search-tax">
+              <div class="version-checkboxes">
+                  <span class="filter-label">Version:</span>
+                  {% for version in all_versions %}
+                      {% with version_str=version.vers|stringformat:"s" %}
+                      <label>
+                          <input type="checkbox" name="version" value="{{ version.vers }}"
+                                 {% if selected_versions %}
+                                     {% if version_str in selected_versions %}checked{% endif %}
+                                 {% else %}
+                                     {% if version_str == "4.0" %}checked{% endif %}
+                                 {% endif %}>
+                          {{ version.vers }}
+                      </label>
+                      {% endwith %}
+                  {% endfor %}
+                  <span class="version-info">(select multiple)</span>
+              </div>
+
+              {% if letters %}
+              <div class="letter-nav">
+                      <!--<span style="display: inline-block; padding: 5px 10px; color: #888; font-size: 14px; font-weight: normal;">Filter by letter:</span>-->
+                  <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}" class="{% if not current_letter %}active-letter{% endif %}" style="background:{% if not current_letter %}#3498db{% else %}white{% endif %};color:{% if not current_letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if not current_letter %}#3498db{% else %}#ddd{% endif %};">All</a>
+
+                  {% for letter in letters %}
+                      <a href="?letter={{ letter|lower }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="{% if current_letter|lower == letter|lower %}active-letter{% else %}has-articles{% endif %}" style="background:{% if current_letter == letter %}#3498db{% else %}white{% endif %};color:{% if current_letter == letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if current_letter == letter %}#3498db{% else %}#ddd{% endif %};">
+                          {{ letter }}
+                      </a>
+                  {% endfor %}
+              </div>
+              {% endif %}
+
+
               <div class="search-row">
                   <input type="text" name="q" class="search-input" placeholder="Search..." value="{{ search_query }}">
                   <button type="submit" class="search-btn">🔍 Search</button>
@@ -184,6 +185,26 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
             searchWrapper.appendChild(dropdown);
 
             let debounceTimer;
+
+            document.querySelectorAll('.version-checkboxes input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const selectedVersions = [];
+                    document.querySelectorAll('.version-checkboxes input[type="checkbox"]:checked').forEach(c => {
+                        selectedVersions.push(c.value);
+                    });
+
+                    const params = new URLSearchParams();
+                    const searchVal = document.querySelector('input[name="q"]').value.trim();
+                    if (searchVal) params.append('q', searchVal);
+
+                    const letterVal = new URLSearchParams(window.location.search).get('letter');
+                    if (letterVal) params.append('letter', letterVal);
+
+                    selectedVersions.forEach(v => params.append('version', v));
+
+                    window.location.href = '?' + params.toString();
+                });
+            });
 
 	    function fetchSuggestions(query) {
                 if (!query || query.length === 0) {
