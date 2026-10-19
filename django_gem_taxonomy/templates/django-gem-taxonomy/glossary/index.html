@@ -66,17 +66,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
 
               {% if letters %}
               <div class="letter-nav">
-                      <!--<span style="display: inline-block; padding: 5px 10px; color: #888; font-size: 14px; font-weight: normal;">Filter by letter:</span>-->
-                  <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}" class="{% if not current_letter %}active-letter{% endif %}" style="background:{% if not current_letter %}#3498db{% else %}white{% endif %};color:{% if not current_letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if not current_letter %}#3498db{% else %}#ddd{% endif %};">All</a>
+                  <!-- Link "All" -->
+                  <a href="?{% if request.GET.q %}q={{ request.GET.q }}{% endif %}{% for v in selected_versions %}&version={{ v }}{% endfor %}" class="{% if not current_letter %}active-letter{% endif %}" style="background:{% if not current_letter %}#3498db{% else %}white{% endif %};color:{% if not current_letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if not current_letter %}#3498db{% else %}#ddd{% endif %};">All</a>
 
                   {% for letter in letters %}
-                      <a href="?letter={{ letter|lower }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="{% if current_letter|lower == letter|lower %}active-letter{% else %}has-articles{% endif %}" style="background:{% if current_letter == letter %}#3498db{% else %}white{% endif %};color:{% if current_letter == letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if current_letter == letter %}#3498db{% else %}#ddd{% endif %};">
+                      <!-- Link lettere: aggiungi versioni -->
+                      <a href="?letter={{ letter|lower }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for v in selected_versions %}&version={{ v }}{% endfor %}" class="{% if current_letter|lower == letter|lower %}active-letter{% else %}has-articles{% endif %}" style="background:{% if current_letter == letter %}#3498db{% else %}white{% endif %};color:{% if current_letter == letter %}white{% else %}#2c3e50{% endif %};border:1px solid {% if current_letter == letter %}#3498db{% else %}#ddd{% endif %};">
                           {{ letter }}
                       </a>
                   {% endfor %}
               </div>
               {% endif %}
-
 
               <div class="search-row">
                   <input type="text" name="q" class="search-input" placeholder="Search..." value="{{ search_query }}">
