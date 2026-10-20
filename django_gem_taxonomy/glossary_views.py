@@ -28,7 +28,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 
-from .models import Version, Param, Atom, AtomsGroup, Attribute, Content
+from .models import (Version, Param, Atom, AtomsGroup, Attribute,
+                    Content, VersRelatedContent)
 
 from .glossary_forms import (AttributeForm, AtomsGroupForm, AtomForm, ParamForm,
                              ContentFormSet)
@@ -145,6 +146,8 @@ class GlossaryHome(View):
                 item['type'] = 'param'
                 item['name'] = f"{el.content_object.atom.name}:{el.content_object.name}"
                 item['title'] = el.content_object.title
+            elif isinstance(el.content_object, VersRelatedContent):
+                item['type'] = 'vers_related_content'
 
             all_items.append(item)
 

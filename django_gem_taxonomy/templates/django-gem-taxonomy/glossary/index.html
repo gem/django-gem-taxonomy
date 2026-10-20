@@ -103,6 +103,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                <a href="{{item.vers}}/atom/{{item.name}}">
                  {{item.title}} [{{item.name}}]
                </a>
+	   {% elif item.type == 'vers_related_content' %}
+               <a href="{{item.vers}}/vers_related_content/{{item.name}}">
+                 {{item.title}}
+               </a>
            {% else %}
                <a href="{{item.vers}}/{{item.type}}/{{item.name}}">
                  {{item.title}} [{{item.name}}]
