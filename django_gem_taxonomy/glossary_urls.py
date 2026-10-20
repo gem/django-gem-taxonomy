@@ -19,8 +19,8 @@
 
 from django.urls import path
 from .glossary_views import (GlossaryAtom, GlossaryAtomsGroup, 
-                             GlossaryAttribute, GlossaryHome, GlossarySuggestions)
-from .glossary_views import (manage_atom_content, manage_atomsgroup_content,
+                             GlossaryAttribute, GlossaryHome, GlossarySuggestions,
+                             manage_atom_content, manage_atomsgroup_content,
                              manage_attribute_content, custom_upload_file)
 
 
