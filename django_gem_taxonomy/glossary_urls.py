@@ -21,7 +21,8 @@ from django.urls import path
 from .glossary_views import (GlossaryAtom, GlossaryAtomsGroup, 
                              GlossaryAttribute, GlossaryHome, GlossarySuggestions,
                              manage_atom_content, manage_atomsgroup_content,
-                             manage_attribute_content, custom_upload_file)
+                             manage_attribute_content, custom_upload_file,
+                             GlossaryTerm)
 
 
 urlpatterns = [
@@ -44,6 +45,8 @@ urlpatterns = [
          GlossaryAtom.as_view(), name='glossary_atom'),
 
     # glossary paths with version
+    path('<vers_id>/terms/<str:slug_title>',
+         GlossaryTerm.as_view(), name='glossary_term_wver'),
     path('<vers_id>/attribute/',
          GlossaryAttribute.as_view(), name='glossary_attributes_wver'),
     path('<vers_id>/attribute/<str:name>',

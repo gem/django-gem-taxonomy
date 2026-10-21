@@ -23,6 +23,11 @@ from django.views import View
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.db import models
+from django.db.models import Case, When, Value, IntegerField, Exists, OuterRef, Q
+from django.core.paginator import Paginator
+from django.contrib.contenttypes.models import ContentType
+
 from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -34,10 +39,48 @@ from .models import (Version, Param, Atom, AtomsGroup, Attribute,
 from .glossary_forms import (AttributeForm, AtomsGroupForm, AtomForm, ParamForm,
                              ContentFormSet)
 
-from django.http import JsonResponse
-from django.db import models
-from django.db.models import Case, When, Value, IntegerField, Exists, OuterRef
-from django.core.paginator import Paginator
+class GlossaryTerm(View):
+    def get(self, request, vers_id, slug_title):
+        template = 'django-gem-taxonomy/glossary/terms.html'
+        obj = None
+        other_vers = None
+
+        vers = Version.objects.get(vers=vers_id)
+
+        attribute_type = ContentType.objects.get_for_model(Attribute)
+        atoms_group_type = ContentType.objects.get_for_model(AtomsGroup)
+        atom_type = ContentType.objects.get_for_model(Atom)
+        param_type = ContentType.objects.get_for_model(Param)
+        vers_rel_cont_type = ContentType.objects.get_for_model(VersRelatedContent)
+
+        attribute_ids = Attribute.objects.filter(
+            vers=vers, slug_title=slug_title).values_list('id', flat=True)
+        atoms_group_ids = AtomsGroup.objects.filter(
+            vers=vers, slug_title=slug_title).values_list('id', flat=True)
+        atom_ids = Atom.objects.filter(
+            vers=vers, slug_title=slug_title).values_list('id', flat=True)
+        param_ids = Param.objects.filter(
+            vers=vers, slug_title=slug_title).values_list('id', flat=True)
+        vers_rel_cont_ids = VersRelatedContent.objects.filter(
+            vers=vers, slug_title=slug_title).values_list('id', flat=True)
+
+        contents = Content.objects.filter(
+            (Q(content_type=attribute_type) & Q(object_id__in=attribute_ids)) |
+            (Q(content_type=atoms_group_type) & Q(object_id__in=atoms_group_ids)) |
+            (Q(content_type=atom_type) & Q(object_id__in=atom_ids)) |
+            (Q(content_type=param_type) & Q(object_id__in=param_ids)) |
+            (Q(content_type=vers_rel_cont_type) & Q(object_id__in=vers_rel_cont_ids))
+        ).prefetch_related('content_object')
+
+        # others_objs = Attribute.objects.filter(slug_title=slug_title).exclude(vers=vers).order_by('vers')
+        # other_vers = [atoms_group.vers for atoms_group in others_objs]
+        content = contents.first()
+        term_title = content.content_object.title
+        return render(request, template, {'term_title': term_title,
+                                          'content': content,
+                                          'vers': vers,
+                                          'other_vers': other_vers
+                                          })
 
 class GlossaryAttribute(View):
     def get(self, request, vers_id=None, name=None):
@@ -73,7 +116,6 @@ class GlossaryAttribute(View):
                                           'vers': vers,
                                           'other_vers': other_vers
                                           })
-
 
 def manage_attribute_content(request, vers_id, name):
     # If pk is provided, we are in UPDATE mode, otherwise INSERT mode
@@ -158,10 +200,6 @@ class GlossaryHome(View):
                 first_char = item['title'][0]
                 if first_char.isalpha() or first_char.isdigit():
                     all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
-            if item['name']:
-                first_char = item['name'][0]
-                if first_char.isalpha() or first_char.isdigit():
-                    all_letters.add(first_char.upper() if first_char.isalpha() else first_char)
 
         numeric_letters = sorted([l for l in all_letters if str(l).isdigit()])
         alpha_letters = sorted([l for l in all_letters if str(l).isalpha()])
@@ -181,8 +219,7 @@ class GlossaryHome(View):
         if letter and len(letter) == 1:
             filtered_items = []
             for item in display_items:
-                if (item['title'] and item['title'][0].upper() == letter) or \
-                   (item['name'] and item['name'][0].upper() == letter):
+                if (item['title'] and item['title'][0].upper() == letter):
                     filtered_items.append(item)
             display_items = filtered_items
 
