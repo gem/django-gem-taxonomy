@@ -46,13 +46,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
     </div>
     <br>
     <div id="app" style="margin: auto;">
-      <table class="atom" style="width: 100%;">
-        <tr>
-          <td>
-            {{ content.content|safe }}
-          </td>
-        </tr>
-      </table>
+        {{ content.content|safe }}
     </div>
     {% if other_vers %}
     <br>

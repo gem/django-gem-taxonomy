@@ -76,6 +76,11 @@ class GlossaryTerm(View):
         # other_vers = [atoms_group.vers for atoms_group in others_objs]
         content = contents.first()
         term_title = content.content_object.title
+        if content.content_type == atom_type:
+            term_title += ' [%s]' % content.content_object.name
+        elif content.content_type == param_type:
+            term_title += ' [%s:%s]' % (content.content_object.atom.name, content.content_object.name)
+
         return render(request, template, {'term_title': term_title,
                                           'content': content,
                                           'vers': vers,
