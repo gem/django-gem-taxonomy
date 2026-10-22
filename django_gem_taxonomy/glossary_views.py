@@ -76,16 +76,30 @@ class GlossaryTerm(View):
         # other_vers = [atoms_group.vers for atoms_group in others_objs]
         content = contents.first()
         term_title = content.content_object.title
-        if content.content_type == atom_type:
-            term_title += ' [%s]' % content.content_object.name
-        elif content.content_type == param_type:
-            term_title += ' [%s:%s]' % (content.content_object.atom.name, content.content_object.name)
+        slug_title = content.content_object.slug_title
+        content_type = content.content_type.model
 
-        return render(request, template, {'term_title': term_title,
-                                          'content': content,
-                                          'vers': vers,
-                                          'other_vers': other_vers
-                                          })
+        if content.content_type == atom_type:
+            term_name = content.content_object.name
+            term_title += ' [%s]' % term_name
+        elif content.content_type == param_type:
+            term_name = '%s:%s' % (content.content_object.atom.name, content.content_object.name)
+            term_title += ' [%s]' % term_name
+        elif content.content_type == vers_rel_cont_type:
+            term_name = None
+        else:
+            term_name = content.content_object.name
+            term_title += ' [%s]' % term_name
+
+        return render(request, template, {
+            'term_title': term_title,
+            'term_name': term_name,
+            'slug_title': slug_title,
+            'content_type': content_type,
+            'content': content,
+            'vers': vers,
+            'other_vers': other_vers
+        })
 
 class GlossaryAttribute(View):
     def get(self, request, vers_id=None, name=None):
@@ -177,6 +191,7 @@ class GlossaryHome(View):
             item = {
                 'title': el.content_object.title,
                 'name': el.content_object.name,
+                'slug_title': el.content_object.slug_title,
                 'vers': el.content_object.vers.vers,
                 'type': None,
                 'attribute': None
@@ -308,7 +323,7 @@ class GlossarySuggestions(View):
                     'type': 'title',
                     'text': obj.title or obj.name,
                     'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
-                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.name}"
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/terms/{obj.slug_title}"
                 })
 
             # Attributes search
@@ -323,7 +338,7 @@ class GlossarySuggestions(View):
                     'type': 'title',
                     'text': obj.title or obj.name,
                     'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
-                    'url': f"/taxonomy/glossary/{obj.vers.vers}/attribute/{obj.name}"
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/terms/{obj.slug_title}"
                 })
 
             # AtomsGroup search
@@ -338,7 +353,7 @@ class GlossarySuggestions(View):
                     'type': 'title',
                     'text': obj.title or obj.name,
                     'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
-                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atoms_group/{obj.name}"
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/terms/{obj.slug_title}"
                 })
 
             # Param search
@@ -353,7 +368,7 @@ class GlossarySuggestions(View):
                     'type': 'title',
                     'text': obj.title or obj.name,
                     'label': f'{obj.title or obj.name} (v. {obj.vers.vers})',
-                    'url': f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
+                    'url': f"/taxonomy/glossary/{obj.vers.vers}/terms/{obj.slug_title}"
                 })
 
             content_results = Content.objects.filter(
