@@ -1,0 +1,88 @@
+<!--
+Copyright (c) 2024-2026 GEM Foundation
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "site_base.html" %}
+{% load i18n other_vers %}
+
+{% block title %}Taxonomy Glossary - (Vers. {{ vers.vers }}) - {{ term_title }}{% endblock title %}
+{% block extra_head %}
+    {{ block.super }}
+    {% if oqp_version_maj == '1' %}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+    {% else %}
+    <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
+    {% endif %}
+    <link href="{{ STATIC_URL }}css/handsontable.full.min.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}css/jQuery-UI-Bootstrap-0.2.5.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/absolute_center_spinner.css" />
+    <link href="{{ STATIC_URL }}css/sol.css" rel="stylesheet"/>
+    <link href="{{ STATIC_URL }}ipt/css/bootstrap-tagsinput.css" rel="stylesheet"/>
+    <script src="{{ STATIC_URL }}taxonomy/js/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}taxonomy/css/taxonomy_help.css"/>
+{% endblock extra_head %}
+
+{% block body %}
+    {% block oq_body_heading %}
+    <div id="oq-body-heading">
+      <h1>{% trans "TAXONOMY GLOSSARY (Vers." %} {{ vers.vers }})</h1>
+      <h2>{% trans term_title %}</h2>
+      <br />
+    </div>
+    {% endblock oq_body_heading %}
+    <div id="oq-body-heading">
+    </div>
+    <br>
+    <div id="app" style="margin: auto;">
+        {{ content.content|safe }}
+    </div>
+    {% if other_vers %}
+    <br>
+    <div id="app" style="margin: auto;">
+      <table class="atom" style="width: 100%;">
+        <tr>
+          <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
+            <p>
+              <span style="font-weight: bold;">Other versions: </span>
+              {% for ver in other_vers %}
+              <a href="{% other_vers vers_id=ver.vers %}">{{ ver.vers }}</a>{% if not forloop.last %}, {% endif %}                       {% endfor %}
+            </p>
+        </tr>
+      </table>
+    </div>
+    {% endif %}
+    {% if content_type != "versrelatedcontent" %}
+    <br>
+    <div id="app" style="margin: auto;">
+      <table class="atom" style="width: 100%;">
+        <tr>
+          <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
+            <p>
+              <span style="font-weight: bold;">Structure: </span>
+	      {% if content_type == "param" %}
+	      <a href="../../../structure/{{ vers.vers }}/atom/{% if term_name %}{{ term_name }}{% endif %}">/structure/{{ vers.vers }}/atom/{% if term_name %}{{ term_name }}{% endif %}</a>
+              {% else %}
+	      <a href="../../../structure/{{ vers.vers }}/{% trans content_type %}/{% if term_name %}{{ term_name }}{% endif %}">/structure/{{ vers.vers }}/{% trans content_type %}/{% if term_name %}{{ term_name }}{% endif %}</a>
+              {% endif %}
+            </p>
+        </tr>
+      </table>
+    </div>
+    {% endif %}
+{% endblock body %}
+
+{% block extra_script %}
+    {{block.super}}
+{% endblock extra_script %}
