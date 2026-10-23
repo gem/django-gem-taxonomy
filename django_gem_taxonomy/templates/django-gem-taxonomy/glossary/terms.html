@@ -63,7 +63,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </table>
     </div>
     {% endif %}
-    {% if content_type != "param" and content_type != "versrelatedcontent" %}
+    {% if content_type != "versrelatedcontent" %}
     <br>
     <div id="app" style="margin: auto;">
       <table class="atom" style="width: 100%;">
@@ -71,7 +71,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
           <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
             <p>
               <span style="font-weight: bold;">Structure: </span>
+	      {% if content_type == "param" %}
+	      <a href="../../../structure/{{ vers.vers }}/atom/{% if term_name %}{{ term_name }}{% endif %}">/structure/{{ vers.vers }}/atom/{% if term_name %}{{ term_name }}{% endif %}</a>
+              {% else %}
 	      <a href="../../../structure/{{ vers.vers }}/{% trans content_type %}/{% if term_name %}{{ term_name }}{% endif %}">/structure/{{ vers.vers }}/{% trans content_type %}/{% if term_name %}{{ term_name }}{% endif %}</a>
+              {% endif %}
             </p>
         </tr>
       </table>

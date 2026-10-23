@@ -265,7 +265,6 @@ class GlossaryHome(View):
 
         return render(request, template, context)
 
-
 class GlossarySuggestions(View):
     def get(self, request):
         query = request.GET.get('q', '').strip()
@@ -282,25 +281,38 @@ class GlossarySuggestions(View):
             defa_vers = Version.objects.get(is_default=True)
             selected_versions = [str(defa_vers.vers)]
 
-        # check content atom
-        has_content = Content.objects.filter(
-            content_type__model='atom',
-            object_id=OuterRef('pk')
-        ).exclude(content='').exclude(content__isnull=True)
+        atom_type = ContentType.objects.get_for_model(Atom)
+        attribute_type = ContentType.objects.get_for_model(Attribute)
+        atoms_group_type = ContentType.objects.get_for_model(AtomsGroup)
+        param_type = ContentType.objects.get_for_model(Param)
+
+        atom_ids = Content.objects.filter(
+            content_type=atom_type
+        ).exclude(content='').exclude(content__isnull=True).values_list('object_id', flat=True)
+
+        attribute_ids = Content.objects.filter(
+            content_type=attribute_type
+        ).exclude(content='').exclude(content__isnull=True).values_list('object_id', flat=True)
+
+        atoms_group_ids = Content.objects.filter(
+            content_type=atoms_group_type
+        ).exclude(content='').exclude(content__isnull=True).values_list('object_id', flat=True)
+
+        param_ids = Content.objects.filter(
+            content_type=param_type
+        ).exclude(content='').exclude(content__isnull=True).values_list('object_id', flat=True)
 
         atom_results = Atom.objects.filter(
             models.Q(name__icontains=query),
-            vers__vers__in=selected_versions
+            vers__vers__in=selected_versions,
+            id__in=atom_ids
         ).annotate(
-            has_content=Exists(has_content),    
             relevance=Case(
                 When(name__iexact=query, then=Value(0)),
                 When(name__istartswith=query, then=Value(1)),
                 default=Value(2),
                 output_field=IntegerField(),
             )
-        ).filter(
-           has_content=True
         ).order_by('relevance', 'name')[:10]
 
         for atom in atom_results:
@@ -308,14 +320,15 @@ class GlossarySuggestions(View):
                 'type': 'atom',
                 'text': atom.name,
                 'label': f'{atom.name} (v. {atom.vers.vers})',
-                'url': f"/taxonomy/glossary/{atom.vers.vers}/atom/{atom.name}"
-            })    
+                'url': f"/taxonomy/glossary/{atom.vers.vers}/terms/{atom.slug_title}"
+            })
 
         if query_len > 3:
             # Atom search (title)
             atom_title_results = Atom.objects.filter(
                 models.Q(title__icontains=query),
-                vers__vers__in=selected_versions
+                vers__vers__in=selected_versions,
+                id__in=atom_ids
             )[:5]
 
             for obj in atom_title_results:
@@ -330,7 +343,8 @@ class GlossarySuggestions(View):
             attr_results = Attribute.objects.filter(
                 models.Q(title__icontains=query) |
                 models.Q(name__icontains=query),
-                vers__vers__in=selected_versions
+                vers__vers__in=selected_versions,
+                id__in=attribute_ids
             )[:5]
 
             for obj in attr_results:
@@ -345,7 +359,8 @@ class GlossarySuggestions(View):
             group_results = AtomsGroup.objects.filter(
                 models.Q(title__icontains=query) |
                 models.Q(name__icontains=query),
-                vers__vers__in=selected_versions
+                vers__vers__in=selected_versions,
+                id__in=atoms_group_ids
             )[:5]
 
             for obj in group_results:
@@ -360,7 +375,8 @@ class GlossarySuggestions(View):
             param_results = Param.objects.filter(
                 models.Q(title__icontains=query) |
                 models.Q(name__icontains=query),
-                vers__vers__in=selected_versions
+                vers__vers__in=selected_versions,
+                id__in=param_ids
             )[:5]
 
             for obj in param_results:
@@ -371,6 +387,7 @@ class GlossarySuggestions(View):
                     'url': f"/taxonomy/glossary/{obj.vers.vers}/terms/{obj.slug_title}"
                 })
 
+            # CONTENT search
             content_results = Content.objects.filter(
                 models.Q(content__icontains=query)
             )[:20]
@@ -396,15 +413,10 @@ class GlossarySuggestions(View):
                         else:
                             preview = ''
 
+                        slug_title = getattr(obj, 'slug_title', None)
                         url = None
-                        if isinstance(obj, Atom):
-                            url = f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.name}"
-                        elif isinstance(obj, Attribute):
-                            url = f"/taxonomy/glossary/{obj.vers.vers}/attribute/{obj.name}"
-                        elif isinstance(obj, AtomsGroup):
-                            url = f"/taxonomy/glossary/{obj.vers.vers}/atoms_group/{obj.name}"
-                        elif isinstance(obj, Param):
-                            url = f"/taxonomy/glossary/{obj.vers.vers}/atom/{obj.atom.name}:{obj.name}"
+                        if slug_title:
+                            url = f"/taxonomy/glossary/{obj.vers.vers}/terms/{slug_title}"
 
                         if url:
                             suggestions.append({
