@@ -42,12 +42,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <br />
     </div>
     {% endblock oq_body_heading %}
+
     <div id="oq-body-heading">
     </div>
     <br>
     <div id="app" style="margin: auto;">
         {{ content.content|safe }}
     </div>
+
     {% if other_vers %}
     <br>
     <div id="app" style="margin: auto;">
@@ -63,6 +65,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </table>
     </div>
     {% endif %}
+
     {% if content_type != "versrelatedcontent" %}
     <br>
     <div id="app" style="margin: auto;">
@@ -81,6 +84,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </table>
     </div>
     {% endif %}
+
 {% endblock body %}
 
 {% block extra_script %}

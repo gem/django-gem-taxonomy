@@ -74,6 +74,27 @@ class GlossaryTerm(View):
 
         # others_objs = Attribute.objects.filter(slug_title=slug_title).exclude(vers=vers).order_by('vers')
         # other_vers = [atoms_group.vers for atoms_group in others_objs]
+        # other_vers
+        other_vers = set()
+
+        # Atom
+        for o in Atom.objects.filter(slug_title=slug_title).exclude(vers=vers):
+            other_vers.add(o.vers)
+        # Attribute
+        for o in Attribute.objects.filter(slug_title=slug_title).exclude(vers=vers):
+            other_vers.add(o.vers)
+        # AtomsGroup
+        for o in AtomsGroup.objects.filter(slug_title=slug_title).exclude(vers=vers):
+            other_vers.add(o.vers)
+        # Param
+        for o in Param.objects.filter(slug_title=slug_title).exclude(vers=vers):
+            other_vers.add(o.vers)
+        # VersRelatedContent
+        for o in VersRelatedContent.objects.filter(slug_title=slug_title).exclude(vers=vers):
+            other_vers.add(o.vers)
+
+        other_vers = sorted(other_vers, key=lambda v: v.vers)
+
         content = contents.first()
         term_title = content.content_object.title
         slug_title = content.content_object.slug_title
