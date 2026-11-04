@@ -124,7 +124,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                {% elif item.type == 'atoms_group' %}
                    <span class="badge atomsgroup-badge">Atoms Group</span>
                {% endif %}
+                   {% endif %}
+
+           {% if item.is_draft %}
+               <span class="badge draft-badge">Is Draft</span>
            {% endif %}
+
         </h2>
       </div>
       {% endif %}
@@ -251,6 +256,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                     let bgColor = '#f0f0f0';
                     let textColor = '#888';
 
+                    let dr_emoji = '';
+                    let dr_typeLabel = 'Atom';
+                    let dr_bgColor = '#fef3e2';
+                    let dr_textColor = '#e67e22';
+
                     if (item.type === 'title') {
                         emoji = '';
                         typeLabel = 'Title';
@@ -271,6 +281,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
                         typeLabel = 'Atom';
                         bgColor = '#fef3e2';
                         textColor = '#e67e22';
+                    }
+
+                    if (item.is_draft) {
+                        dr_emoji = '';
+                        dr_typeLabel = 'Draft';
+                        dr_bgColor = '#fef3e2';
+                        dr_textColor = '#e67e22';
                     }
 
                     html += `

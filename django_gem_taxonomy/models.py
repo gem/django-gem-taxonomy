@@ -216,6 +216,7 @@ class Param(SluggedTitleModel):
 
 class Content(models.Model):
     content = CKEditor5Field('Content')
+    is_draft = models.BooleanField(default=False)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     # - object_id: memorize the primary key (ID) of linked object
     object_id = models.PositiveIntegerField()

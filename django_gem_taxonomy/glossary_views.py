@@ -218,6 +218,7 @@ class GlossaryHome(View):
                 'attribute': None
             }
 
+            item['is_draft'] = el.is_draft
             if isinstance(el.content_object, Atom):
                 item['type'] = 'atom'
                 item['attribute'] = getattr(el.content_object, 'attribute', None)

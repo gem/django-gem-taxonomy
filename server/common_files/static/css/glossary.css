@@ -66,6 +66,12 @@
 .badge.version-badge:hover a {
     color: white;
 }
+/*
+.badge.draft-badge {
+    background-color: #e67e22;
+    color: black;
+}
+*/
 .list-result {
     line-height: 0.8;
     gap: 8px;
