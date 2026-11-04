@@ -99,19 +99,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       {% if item.name|slice:":1" != '_' %}
       <div class="col-md-4">
         <h2 class="list-result">
-           {% if item.type == 'param' %}
-               <a href="{{item.vers}}/atom/{{item.name}}">
-                 {{item.title}} [{{item.name}}]
-               </a>
-	   {% elif item.type == 'vers_related_content' %}
-               <a href="{{item.vers}}/vers_related_content/{{item.name}}">
-                 {{item.title}}
-               </a>
-           {% else %}
-               <a href="{{item.vers}}/{{item.type}}/{{item.name}}">
-                 {{item.title}} [{{item.name}}]
-               </a>
-           {% endif %}
+           <a href="{{item.vers}}/terms/{{item.slug_title}}">
+             {{item.title}} [{{item.name}}]
+           </a>
+
 	   <span class="badge version-badge">
                {% if item.type == 'param' %}
                    <a href="{{item.vers}}/atom/">

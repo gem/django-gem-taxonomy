@@ -42,12 +42,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <br />
     </div>
     {% endblock oq_body_heading %}
+
     <div id="oq-body-heading">
     </div>
     <br>
     <div id="app" style="margin: auto;">
         {{ content.content|safe }}
     </div>
+
     {% if other_vers %}
     <br>
     <div id="app" style="margin: auto;">
@@ -63,6 +65,26 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       </table>
     </div>
     {% endif %}
+
+    {% if content_type != "versrelatedcontent" %}
+    <br>
+    <div id="app" style="margin: auto;">
+      <table class="atom" style="width: 100%;">
+        <tr>
+          <td style="border: 1px solid #d0d0ff; background-color: #f0f0ff;">
+            <p>
+              <span style="font-weight: bold;">Structure: </span>
+	      {% if content_type == "param" %}
+	      <a href="../../../structure/{{ vers.vers }}/atom/{% if term_name %}{{ term_name }}{% endif %}">/structure/{{ vers.vers }}/atom/{% if term_name %}{{ term_name }}{% endif %}</a>
+              {% else %}
+	      <a href="../../../structure/{{ vers.vers }}/{% trans content_type %}/{% if term_name %}{{ term_name }}{% endif %}">/structure/{{ vers.vers }}/{% trans content_type %}/{% if term_name %}{{ term_name }}{% endif %}</a>
+              {% endif %}
+            </p>
+        </tr>
+      </table>
+    </div>
+    {% endif %}
+
 {% endblock body %}
 
 {% block extra_script %}
