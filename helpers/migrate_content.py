@@ -6,6 +6,11 @@ import django
 from difflib import SequenceMatcher
 # from django.conf import settings
 
+# to dump:
+#   ./server/run.sh dumpdata --indent 4 --natural-foreign --natural-primary --format json_gfk django_gem_taxonomy.content django_gem_taxonomy.versrelatedcontent > dump.json_gfk
+#
+# to restore:
+#  ./server/run.sh loaddata dump.json_gfk
 
 CACHE_FILE = '.migrate_content.cache.json'
 
