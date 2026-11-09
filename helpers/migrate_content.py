@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import re
 import ast
 import json
 import django
@@ -33,7 +34,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.settings')
 django.setup()
 
 from django_gem_taxonomy.models import (Version,
-                                        Attribute, AtomsGroup, Atom, Param, Content)
+                                        Attribute, AtomsGroup, Atom, Param,
+                                        VersRelatedContent, Content)
 
 def delete_content(obj):
     if obj.content.all():
@@ -221,6 +223,18 @@ def main():
                     print(f'{atom_to.name}: {RED}NO MATCH{RESET}')
 
         print()
-                
+
+        VersRelatedContent.objects.filter(vers=vers).delete()
+        for vrcont_from in vrconts_from:
+            vrcont_to = VersRelatedContent.objects.create(
+                vers=vers, name=vrcont_from.name
+            )
+            copy_content(vrcont_from, vrcont_to)
+
+    for cont in Content.objects.all():
+        no_title = re.sub(r'^<h2>.*?</h2>\n?', '', cont.content, flags=re.DOTALL)
+        cont.content = no_title
+        cont.save()
+
 if __name__ == '__main__':
     main()
