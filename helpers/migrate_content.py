@@ -227,7 +227,9 @@ def main():
         VersRelatedContent.objects.filter(vers=vers).delete()
         for vrcont_from in vrconts_from:
             vrcont_to = VersRelatedContent.objects.create(
-                vers=vers, name=vrcont_from.name
+                vers=vers, name=vrcont_from.name,
+                title=vrcont_from.title,
+                slug_title=vrcont_from.slug_title,
             )
             copy_content(vrcont_from, vrcont_to)
 
