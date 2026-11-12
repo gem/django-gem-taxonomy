@@ -110,7 +110,6 @@ class GlossaryTerm(View):
             term_name = None
         else:
             term_name = content.content_object.name
-            term_title += ' [%s]' % term_name
 
         return render(request, template, {
             'term_title': term_title,
