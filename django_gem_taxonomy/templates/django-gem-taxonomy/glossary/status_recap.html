@@ -90,8 +90,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <h3>Attribute / AtomsGroup / Atom / Param</h3>
       <p>
         {% with s=v.hierarchy_summary %}
-        Total: {{ s.total }} - No Content: {{ s.no_content }}
-        - Draft: {{ s.draft }} - Not Draft: {{ s.not_draft }}
+        Total: {{ s.total }} - Final: {{ s.not_draft }}
+        - Draft: {{ s.draft }} - No Content: {{ s.no_content }}
         {% if is_filtered %}- Shown: {{ s.shown }}{% endif %}
         {% endwith %}
       </p>
@@ -109,8 +109,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
       <h3>VersRelatedContent</h3>
       <p>
         {% with s=v.vers_related_summary %}
-        Total: {{ s.total }} - No Content: {{ s.no_content }}
-        - Draft: {{ s.draft }} - Not Draft: {{ s.not_draft }}
+        Total: {{ s.total }} - Final: {{ s.not_draft }}
+        - Draft: {{ s.draft }} - No Content: {{ s.no_content }}
         {% if is_filtered %}- Shown: {{ s.shown }}{% endif %}
         {% endwith %}
       </p>
