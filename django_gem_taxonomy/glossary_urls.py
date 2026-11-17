@@ -20,6 +20,7 @@
 from django.urls import path
 from .glossary_views import (GlossaryAtom, GlossaryAtomsGroup, 
                              GlossaryAttribute, GlossaryHome, GlossarySuggestions,
+                             GlossaryStatusRecap,
                              manage_atom_content, manage_atomsgroup_content,
                              manage_attribute_content,
                              GlossaryTerm, manage_term_content,
@@ -29,6 +30,8 @@ from .glossary_views import (GlossaryAtom, GlossaryAtomsGroup,
 urlpatterns = [
     path('', GlossaryHome.as_view(), name='glossary_home'),
     path('suggestions/', GlossarySuggestions.as_view(), name='glossary_suggestions'),
+    path('status_recap', GlossaryStatusRecap.as_view(),
+         name='glossary_status_recap'),
 
     path('attribute/',
          GlossaryAttribute.as_view(), name='glossary_attributes'),

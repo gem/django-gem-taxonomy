@@ -120,6 +120,132 @@ class GlossaryTerm(View):
             'other_vers': other_vers
         })
 
+class GlossaryStatusRecap(View):
+    """
+    For each version list Attribute, AtomsGroup, Atom and Param objects
+    (following their hierarchy) and VersRelatedContent objects with the
+    status of the associated content.
+
+    Optional GET filters: 'version' (vers id), 'is_draft' and 'no_content'
+    ('true' or 'false', combined in OR).
+    """
+    def get(self, request):
+        template = 'django-gem-taxonomy/glossary/status_recap.html'
+
+        all_versions = Version.objects.all().order_by('vers')
+        filter_vers = request.GET.get('version', '')
+        if filter_vers not in [v.vers for v in all_versions]:
+            filter_vers = ''
+        filter_is_draft = request.GET.get('is_draft', '')
+        if filter_is_draft not in ('true', 'false'):
+            filter_is_draft = ''
+        filter_no_content = request.GET.get('no_content', '')
+        if filter_no_content not in ('true', 'false'):
+            filter_no_content = ''
+        is_filtered = bool(filter_is_draft or filter_no_content)
+
+        # is_draft and no_content filters are combined in OR
+        def is_shown(r):
+            if not is_filtered:
+                return True
+            if filter_is_draft and (
+                    r['is_draft'] is (filter_is_draft == 'true')):
+                return True
+            if filter_no_content and (
+                    r['has_content'] is not (filter_no_content == 'true')):
+                return True
+            return False
+
+        # (content_type_id, object_id) -> is_draft
+        contents = {(ct_id, obj_id): is_draft
+                    for ct_id, obj_id, is_draft in Content.objects.values_list(
+                        'content_type_id', 'object_id', 'is_draft')}
+        ct_ids = {model: ContentType.objects.get_for_model(model).id
+                  for model in (Attribute, AtomsGroup, Atom, Param,
+                                VersRelatedContent)}
+
+        def row(obj, kind, level, name):
+            is_draft = contents.get((ct_ids[type(obj)], obj.id))
+            return {
+                'kind': kind,
+                'level': level,
+                'name': name,
+                'title': obj.title,
+                'slug_title': obj.slug_title,
+                'has_content': is_draft is not None,
+                'is_draft': is_draft,
+            }
+
+        def summary(rows):
+            return {
+                'total': len(rows),
+                'shown': sum(1 for r in rows if is_shown(r)),
+                'no_content': sum(1 for r in rows if not r['has_content']),
+                'draft': sum(1 for r in rows if r['is_draft'] is True),
+                'not_draft': sum(1 for r in rows if r['is_draft'] is False),
+            }
+
+        def atom_rows(atom, level):
+            rows = [row(atom, 'Atom', level, atom.name)]
+            for param in params_by_atom.get(atom.id, []):
+                rows.append(row(param, 'Param', level + 1,
+                                '%s:%s' % (atom.name, param.name)))
+            return rows
+
+        versions = []
+        for vers in all_versions:
+            if filter_vers and vers.vers != filter_vers:
+                continue
+            atoms_by_group = {}
+            orphan_atoms = []
+            for atom in Atom.objects.filter(vers=vers).order_by('prog', 'name'):
+                if atom.group_id is None:
+                    orphan_atoms.append(atom)
+                else:
+                    atoms_by_group.setdefault(atom.group_id, []).append(atom)
+            params_by_atom = {}
+            for param in Param.objects.filter(vers=vers).order_by('prog', 'name'):
+                params_by_atom.setdefault(param.atom_id, []).append(param)
+            groups_by_attr = {}
+            for group in AtomsGroup.objects.filter(vers=vers).order_by('prog', 'name'):
+                groups_by_attr.setdefault(group.attr_id, []).append(group)
+
+            hierarchy = []
+            for attr in Attribute.objects.filter(vers=vers).order_by('prog', 'name'):
+                hierarchy.append(row(attr, 'Attribute', 0, attr.name))
+                for group in groups_by_attr.get(attr.id, []):
+                    hierarchy.append(row(group, 'AtomsGroup', 1, group.name))
+                    for atom in atoms_by_group.get(group.id, []):
+                        hierarchy.extend(atom_rows(atom, 2))
+
+            orphans = []
+            for atom in orphan_atoms:
+                orphans.extend(atom_rows(atom, 0))
+
+            vers_related = [
+                row(vrc, 'VersRelatedContent', 0, vrc.name)
+                for vrc in VersRelatedContent.objects.filter(
+                        vers=vers).order_by('title')]
+
+            versions.append({
+                'vers': vers,
+                'hierarchy': [r for r in hierarchy if is_shown(r)],
+                'orphans': [r for r in orphans if is_shown(r)],
+                'vers_related': [r for r in vers_related if is_shown(r)],
+                'hierarchy_summary': summary(hierarchy + orphans),
+                'vers_related_summary': summary(vers_related),
+            })
+
+        return render(request, template, {
+            'versions': versions,
+            'all_versions': all_versions,
+            'filter_vers': filter_vers,
+            'filter_is_draft': filter_is_draft,
+            'filter_no_content': filter_no_content,
+            'is_filtered': is_filtered,
+        })
+
+
 def manage_term_content(request, vers_id, slug_title):
     vers = get_object_or_404(Version, vers=vers_id)
 

@@ -1,0 +1,20 @@
+<table class="status_recap">
+  <tr>
+    <th>Type</th><th>Name</th><th>Title</th><th>Content</th><th></th>
+  </tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.kind }}</td>
+    <td class="level{{ r.level }}">{% if r.has_content %}<a href="{% url 'taxonomy:glossary_term_wver' vers_id=vers.vers slug_title=r.slug_title %}">{{ r.name }}</a>{% else %}{{ r.name }}{% endif %}</td>
+    <td>{{ r.title }}</td>
+    {% if not r.has_content %}
+    <td class="no_content">No Content</td>
+    {% elif r.is_draft %}
+    <td class="draft">Draft</td>
+    {% else %}
+    <td class="not_draft">Final</td>
+    {% endif %}
+    <td><a href="{% url 'taxonomy:update_term_content' vers_id=vers.vers slug_title=r.slug_title %}">edit</a></td>
+  </tr>
+  {% endfor %}
+</table>
