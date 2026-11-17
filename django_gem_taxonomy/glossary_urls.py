@@ -22,7 +22,7 @@ from .glossary_views import (GlossaryAtom, GlossaryAtomsGroup,
                              GlossaryAttribute, GlossaryHome, GlossarySuggestions,
                              manage_atom_content, manage_atomsgroup_content,
                              manage_attribute_content, custom_upload_file,
-                             GlossaryTerm)
+                             GlossaryTerm, manage_term_content)
 
 
 urlpatterns = [
@@ -47,6 +47,8 @@ urlpatterns = [
     # glossary paths with version
     path('<vers_id>/terms/<str:slug_title>',
          GlossaryTerm.as_view(), name='glossary_term_wver'),
+    path('<vers_id>/terms/<str:slug_title>/edit', manage_term_content,
+         name='update_term_content'),
     path('<vers_id>/attribute/',
          GlossaryAttribute.as_view(), name='glossary_attributes_wver'),
     path('<vers_id>/attribute/<str:name>',

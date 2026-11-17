@@ -19,7 +19,8 @@
 from django import forms
 from django.forms import modelform_factory
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
-from .models import Attribute, AtomsGroup, Atom, Param, Content
+from .models import (Attribute, AtomsGroup, Atom, Param, VersRelatedContent,
+                     Content)
 from django_ckeditor_5.widgets import CKEditor5Widget
 
 def assign_ckeditor(db_field, **kwargs):
@@ -82,3 +83,13 @@ class ParamFormForm(forms.ModelForm):
         if self.instance and getattr(self.instance, 'atom', None):
             self.fields['param_atom'].initial = self.instance.atom.name + ':' + self.instance.name
 ParamForm = modelform_factory(Param, form=ParamFormForm)
+
+class VersRelatedContentFormForm(forms.ModelForm):
+    title = forms.CharField(disabled=True, required=False)
+
+    class Meta:
+        model = VersRelatedContent
+        fields = ['title']
+
+VersRelatedContentForm = modelform_factory(VersRelatedContent,
+                                           form=VersRelatedContentFormForm)

@@ -20,7 +20,7 @@ import re
 import time
 
 from django.views import View
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 
 from django.db import models
@@ -37,7 +37,7 @@ from .models import (Version, Param, Atom, AtomsGroup, Attribute,
                     Content, VersRelatedContent)
 
 from .glossary_forms import (AttributeForm, AtomsGroupForm, AtomForm, ParamForm,
-                             ContentFormSet)
+                             VersRelatedContentForm, ContentFormSet)
 
 class GlossaryTerm(View):
     def get(self, request, vers_id, slug_title):
@@ -120,6 +120,47 @@ class GlossaryTerm(View):
             'vers': vers,
             'other_vers': other_vers
         })
+
+def manage_term_content(request, vers_id, slug_title):
+    vers = get_object_or_404(Version, vers=vers_id)
+
+    # look for the object identified by slug_title in each glossary model
+    obj = None
+    for model, form_class, label in (
+            (Attribute, AttributeForm, 'Attribute'),
+            (AtomsGroup, AtomsGroupForm, 'Atoms Group'),
+            (Atom, AtomForm, 'Atom'),
+            (Param, ParamForm, 'Parametrized Atom'),
+            (VersRelatedContent, VersRelatedContentForm, 'Version Related Content')):
+        obj = model.objects.filter(vers=vers, slug_title=slug_title).first()
+        if obj is not None:
+            break
+    if obj is None:
+        raise Http404('Term not found')
+
+    if request.method == 'POST':
+        form_obj = form_class(request.POST, instance=obj)
+        formset_content = ContentFormSet(request.POST, instance=obj)
+
+        if form_obj.is_valid() and formset_content.is_valid():
+            saved_obj = form_obj.save()
+
+            formset_content.instance = saved_obj
+            formset_content.save()
+
+            return redirect('taxonomy:glossary_term_wver', vers_id=vers_id,
+                            slug_title=saved_obj.slug_title)
+    else:
+        form_obj = form_class(instance=obj)
+        formset_content = ContentFormSet(instance=obj)
+
+    return render(request, 'django-gem-taxonomy/glossary/manage_term.html', {
+        'form_obj': form_obj,
+        'formset_content': formset_content,
+        'term_label': label,
+        'is_update': True
+    })
+
 
 class GlossaryAttribute(View):
     def get(self, request, vers_id=None, name=None):
