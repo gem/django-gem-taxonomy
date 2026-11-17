@@ -261,3 +261,11 @@
     color: #888;
     font-size: 13px;
 }
+.one-line {
+    display: inline-block;
+    max-width: 680px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}

@@ -4,3 +4,5 @@ __pycache__
 /django_gem_taxonomy.egg-info
 /gem_taxonomy_server.sqlite
 /*.whl
+/.migrate_content.cache.json*
+/server/media

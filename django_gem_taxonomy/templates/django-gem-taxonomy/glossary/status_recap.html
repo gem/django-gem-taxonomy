@@ -1,0 +1,125 @@
+<!--
+Copyright (c) 2026 GEM Foundation
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl.html>.
+-->
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block title %}Taxonomy Glossary - Status Recap{% endblock title %}
+{% block extra_head %}
+    {{ block.super }}
+    {% if oqp_version_maj == '1' %}
+    <link href="{{ STATIC_URL }}css/oqplatform_index.css" rel="stylesheet"/>
+    {% else %}
+    <link href="{{ STATIC_URL }}css/oqplatform.css" rel="stylesheet"/>
+    {% endif %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}taxonomy/css/taxonomy_help.css"/>
+    <style>
+      table.status_recap { width: 100%; border-collapse: collapse; }
+      table.status_recap th, table.status_recap td {
+          border: 1px solid #d0d0ff; padding: 2px 6px; text-align: left; }
+      table.status_recap th { background-color: #f0f0ff; }
+      table.status_recap td.level1 { padding-left: 2em; }
+      table.status_recap td.level2 { padding-left: 4em; }
+      table.status_recap td.level3 { padding-left: 6em; }
+      table.status_recap td.no_content { color: #a00000; }
+      table.status_recap td.draft { color: #e67e00; }
+      table.status_recap td.not_draft { color: #008000; }
+      form.status_recap_filters {
+          display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1.5em; }
+      form.status_recap_filters label {
+          display: inline-flex; align-items: center; gap: 0.4em;
+          margin: 0; white-space: nowrap; }
+      form.status_recap_filters select { width: auto; margin: 0; }
+    </style>
+{% endblock extra_head %}
+
+{% block body %}
+    {% block oq_body_heading %}
+    <div id="oq-body-heading">
+      <h1>{% trans "TAXONOMY GLOSSARY - STATUS RECAP" %}</h1>
+      <br />
+    </div>
+    {% endblock oq_body_heading %}
+
+    <div id="app" style="margin: auto;">
+      <form class="status_recap_filters" method="get">
+        <label>{% trans "Version" %}:
+          <select name="version" onchange="this.form.submit()">
+            <option value="">no filter</option>
+            {% for ver in all_versions %}
+            <option value="{{ ver.vers }}"{% if ver.vers == filter_vers %} selected{% endif %}>{{ ver.vers }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>{% trans "Is draft" %}:
+          <select name="is_draft" onchange="this.form.submit()">
+            <option value="">no filter</option>
+            <option value="true"{% if filter_is_draft == "true" %} selected{% endif %}>true</option>
+            <option value="false"{% if filter_is_draft == "false" %} selected{% endif %}>false</option>
+          </select>
+        </label>
+        <label>{% trans "No content" %}:
+          <select name="no_content" onchange="this.form.submit()">
+            <option value="">no filter</option>
+            <option value="true"{% if filter_no_content == "true" %} selected{% endif %}>true</option>
+            <option value="false"{% if filter_no_content == "false" %} selected{% endif %}>false</option>
+          </select>
+        </label>
+        <noscript><button type="submit">{% trans "Filter" %}</button></noscript>
+      </form>
+    </div>
+    <br>
+
+    {% for v in versions %}
+    <div id="app" style="margin: auto;">
+      <h2>{% trans "Version" %} {{ v.vers.vers }}</h2>
+
+      <h3>Attribute / AtomsGroup / Atom / Param</h3>
+      <p>
+        {% with s=v.hierarchy_summary %}
+        Total: {{ s.total }} - Final: {{ s.not_draft }}
+        - Draft: {{ s.draft }} - No Content: {{ s.no_content }}
+        {% if is_filtered %}- Shown: {{ s.shown }}{% endif %}
+        {% endwith %}
+      </p>
+      {% if v.hierarchy %}
+      {% include "django-gem-taxonomy/glossary/status_recap_table.html" with rows=v.hierarchy vers=v.vers %}
+      {% else %}
+      <p>{% trans "No objects match the filters." %}</p>
+      {% endif %}
+
+      {% if v.orphans %}
+      <h4>{% trans "Atoms without Attribute and AtomsGroup" %}</h4>
+      {% include "django-gem-taxonomy/glossary/status_recap_table.html" with rows=v.orphans vers=v.vers %}
+      {% endif %}
+
+      <h3>VersRelatedContent</h3>
+      <p>
+        {% with s=v.vers_related_summary %}
+        Total: {{ s.total }} - Final: {{ s.not_draft }}
+        - Draft: {{ s.draft }} - No Content: {{ s.no_content }}
+        {% if is_filtered %}- Shown: {{ s.shown }}{% endif %}
+        {% endwith %}
+      </p>
+      {% if v.vers_related %}
+      {% include "django-gem-taxonomy/glossary/status_recap_table.html" with rows=v.vers_related vers=v.vers %}
+      {% else %}
+      <p>{% trans "No objects match the filters." %}</p>
+      {% endif %}
+    </div>
+    <br>
+    {% endfor %}
+{% endblock body %}
