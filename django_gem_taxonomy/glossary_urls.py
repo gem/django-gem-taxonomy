@@ -20,14 +20,18 @@
 from django.urls import path
 from .glossary_views import (GlossaryAtom, GlossaryAtomsGroup, 
                              GlossaryAttribute, GlossaryHome, GlossarySuggestions,
+                             GlossaryStatusRecap,
                              manage_atom_content, manage_atomsgroup_content,
-                             manage_attribute_content, custom_upload_file,
-                             GlossaryTerm)
+                             manage_attribute_content,
+                             GlossaryTerm, manage_term_content,
+                             glossary_upload_file)
 
 
 urlpatterns = [
     path('', GlossaryHome.as_view(), name='glossary_home'),
     path('suggestions/', GlossarySuggestions.as_view(), name='glossary_suggestions'),
+    path('status_recap', GlossaryStatusRecap.as_view(),
+         name='glossary_status_recap'),
 
     path('attribute/',
          GlossaryAttribute.as_view(), name='glossary_attributes'),
@@ -47,26 +51,29 @@ urlpatterns = [
     # glossary paths with version
     path('<vers_id>/terms/<str:slug_title>',
          GlossaryTerm.as_view(), name='glossary_term_wver'),
+    path('<vers_id>/terms/<str:slug_title>/edit', manage_term_content,
+         name='update_term_content'),
     path('<vers_id>/attribute/',
          GlossaryAttribute.as_view(), name='glossary_attributes_wver'),
     path('<vers_id>/attribute/<str:name>',
          GlossaryAttribute.as_view(), name='glossary_attribute_wver'),
-    path('<vers_id>/attribute/<str:name>/edit/', manage_attribute_content,
+    path('<vers_id>/attribute/<str:name>/edit', manage_attribute_content,
          name='update_attribute_content'),
 
     path('<vers_id>/atoms_group/',
          GlossaryAtomsGroup.as_view(), name='glossary_atomsgroups_wver'),
     path('<vers_id>/atoms_group/<str:name>',
          GlossaryAtomsGroup.as_view(), name='glossary_atomsgroup_wver'),
-    path('<vers_id>/atoms_group/<str:name>/edit/', manage_atomsgroup_content,
+    path('<vers_id>/atoms_group/<str:name>/edit', manage_atomsgroup_content,
          name='update_atomsgroup_content'),
 
     path('<vers_id>/atom/',
          GlossaryAtom.as_view(), name='glossary_atoms_wver'),
     path('<vers_id>/atom/<str:name>',
          GlossaryAtom.as_view(), name='glossary_atom_wver'),
-    path('<vers_id>/atom/<str:name>/edit/', manage_atom_content,
+    path('<vers_id>/atom/<str:name>/edit', manage_atom_content,
          name='update_atom_content'),
 
-    path('ckeditor5/image_upload/', custom_upload_file, name='custom_upload_file'),
+    path('ckeditor5/image_upload/glossary/<vers_id>/', glossary_upload_file,
+         name='glossary_upload_file_wver'),
  ]

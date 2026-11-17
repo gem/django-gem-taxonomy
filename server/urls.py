@@ -28,6 +28,7 @@ urlpatterns = [
     path('engine/license', TemplateView.as_view(template_name='homepage.html'), name="license"),
 
     path('taxonomy/', include('django_gem_taxonomy.urls')),
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
 ]
 
 if settings.DEBUG:
