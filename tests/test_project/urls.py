@@ -21,4 +21,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('taxonomy/', include('django_gem_taxonomy.urls')),
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
 ]

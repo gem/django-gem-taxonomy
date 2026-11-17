@@ -18,26 +18,58 @@
 
 from django import forms
 from django.forms import modelform_factory
+from django.forms.renderers import get_default_renderer
+from django.urls import reverse
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
 from .models import (Attribute, AtomsGroup, Atom, Param, VersRelatedContent,
                      Content)
 from django_ckeditor_5.widgets import CKEditor5Widget
 
-def assign_ckeditor(db_field, **kwargs):
-    if db_field.name == 'content':
-        kwargs['widget'] = CKEditor5Widget(
+
+class VersionedCKEditor5Widget(CKEditor5Widget):
+    """CKEditor5 widget with a per-instance image upload url."""
+
+    def __init__(self, upload_url, **kwargs):
+        self.upload_url = upload_url
+        super().__init__(**kwargs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        # CKEditor5Widget.render() always sets 'upload_url' to the global
+        # upload view (CK_EDITOR_5_UPLOAD_FILE_VIEW_NAME or django_ckeditor_5
+        # 'ck_editor_5_upload_file'): override it just before the template
+        # is rendered
+        if renderer is None:
+            renderer = get_default_renderer()
+        upload_url = self.upload_url
+
+        class UploadUrlRenderer:
+            def render(self, template_name, context, request=None):
+                context['upload_url'] = upload_url
+                return renderer.render(template_name, context, request=request)
+
+        return super().render(name, value, attrs=attrs,
+                              renderer=UploadUrlRenderer())
+
+
+class VersionedContentForm(forms.ModelForm):
+    """Content form where images are uploaded in a per-version folder."""
+
+    class Meta:
+        model = Content
+        fields = ['content']
+
+    def __init__(self, *args, vers_id, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['content'].widget = VersionedCKEditor5Widget(
+            upload_url=reverse('taxonomy:glossary_upload_file_wver',
+                               kwargs={'vers_id': vers_id}),
             attrs={'class': 'django_ckeditor_5'},
             config_name='extends'
         )
-    return db_field.formfield(**kwargs)
 
-# Create a generic inline formset for the Note model.
-# - extra=1: Displays one empty field to add a new note.
-# - max_num=1: (Optional) Set this if you want to limit it to exactly one note per object.
-ContentFormSet = generic_inlineformset_factory(Content, fields=('content',),
-                                               formfield_callback=assign_ckeditor,
-                                               extra=1, max_num=1, validate_max=True)
-
+# must be instantiated with form_kwargs={'vers_id': ...}
+VersionedContentFormSet = generic_inlineformset_factory(
+    Content, form=VersionedContentForm, extra=1, max_num=1, validate_max=True)
 
 class AttributeFormForm(forms.ModelForm):
     name = forms.CharField(disabled=True, required=False)

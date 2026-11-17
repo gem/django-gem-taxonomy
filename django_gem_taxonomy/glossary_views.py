@@ -29,7 +29,6 @@ from django.core.paginator import Paginator
 from django.contrib.contenttypes.models import ContentType
 
 from django.core.files.storage import default_storage
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 
@@ -37,7 +36,7 @@ from .models import (Version, Param, Atom, AtomsGroup, Attribute,
                     Content, VersRelatedContent)
 
 from .glossary_forms import (AttributeForm, AtomsGroupForm, AtomForm, ParamForm,
-                             VersRelatedContentForm, ContentFormSet)
+                             VersRelatedContentForm, VersionedContentFormSet)
 
 class GlossaryTerm(View):
     def get(self, request, vers_id, slug_title):
@@ -140,7 +139,8 @@ def manage_term_content(request, vers_id, slug_title):
 
     if request.method == 'POST':
         form_obj = form_class(request.POST, instance=obj)
-        formset_content = ContentFormSet(request.POST, instance=obj)
+        formset_content = VersionedContentFormSet(
+            request.POST, instance=obj, form_kwargs={'vers_id': vers.vers})
 
         if form_obj.is_valid() and formset_content.is_valid():
             saved_obj = form_obj.save()
@@ -152,7 +152,8 @@ def manage_term_content(request, vers_id, slug_title):
                             slug_title=saved_obj.slug_title)
     else:
         form_obj = form_class(instance=obj)
-        formset_content = ContentFormSet(instance=obj)
+        formset_content = VersionedContentFormSet(
+            instance=obj, form_kwargs={'vers_id': vers.vers})
 
     return render(request, 'django-gem-taxonomy/glossary/manage_term.html', {
         'form_obj': form_obj,
@@ -204,7 +205,8 @@ def manage_attribute_content(request, vers_id, name):
     if request.method == 'POST':
         form_obj = AttributeForm(request.POST, instance=obj)
         # Pass the article instance into the generic formset
-        formset_content = ContentFormSet(request.POST, instance=obj)
+        formset_content = VersionedContentFormSet(
+            request.POST, instance=obj, form_kwargs={'vers_id': vers_id})
 
         if form_obj.is_valid() and formset_content.is_valid():
             # 1. Save the main article first so it has a valid primary key (ID)
@@ -218,7 +220,8 @@ def manage_attribute_content(request, vers_id, name):
             return redirect('taxonomy:glossary_attribute_wver', vers_id=vers_id, name=name)
     else:
         form_obj = AttributeForm(instance=obj)
-        formset_content = ContentFormSet(instance=obj)
+        formset_content = VersionedContentFormSet(
+            instance=obj, form_kwargs={'vers_id': vers_id})
 
     return render(request, 'django-gem-taxonomy/glossary/manage_attribute.html', {
         'form_obj': form_obj,
@@ -536,7 +539,8 @@ def manage_atomsgroup_content(request, vers_id, name):
     if request.method == 'POST':
         form_obj = AtomsGroupForm(request.POST, instance=obj)
         # Pass the article instance into the generic formset
-        formset_content = ContentFormSet(request.POST, instance=obj)
+        formset_content = VersionedContentFormSet(
+            request.POST, instance=obj, form_kwargs={'vers_id': vers_id})
 
         if form_obj.is_valid() and formset_content.is_valid():
             # 1. Save the main article first so it has a valid primary key (ID)
@@ -550,7 +554,8 @@ def manage_atomsgroup_content(request, vers_id, name):
             return redirect('taxonomy:glossary_atomsgroup_wver', vers_id=vers_id, name=name)
     else:
         form_obj = AtomsGroupForm(instance=obj)
-        formset_content = ContentFormSet(instance=obj)
+        formset_content = VersionedContentFormSet(
+            instance=obj, form_kwargs={'vers_id': vers_id})
 
     return render(request, 'django-gem-taxonomy/glossary/manage_atomsgroup.html', {
         'form_obj': form_obj,
@@ -631,7 +636,8 @@ def manage_atom_content(request, vers_id, name):
 
     if request.method == 'POST':
         if ':' in name:
-            formset_content = ContentFormSet(request.POST, instance=obj)
+            formset_content = VersionedContentFormSet(
+                request.POST, instance=obj, form_kwargs={'vers_id': vers_id})
             form_obj = ParamForm(request.POST, instance=obj)
             if form_obj.is_valid() and formset_content.is_valid():
                 # 1. Save the main article first so it has a valid primary key (ID)
@@ -647,7 +653,8 @@ def manage_atom_content(request, vers_id, name):
         else:
             form_obj = AtomForm(request.POST, instance=obj)
             # Pass the article instance into the generic formset
-            formset_content = ContentFormSet(request.POST, instance=obj)
+            formset_content = VersionedContentFormSet(
+                request.POST, instance=obj, form_kwargs={'vers_id': vers_id})
 
             if form_obj.is_valid() and formset_content.is_valid():
                 # 1. Save the main article first so it has a valid primary key (ID)
@@ -662,10 +669,12 @@ def manage_atom_content(request, vers_id, name):
     else:
         if ':' in name:
             form_obj = ParamForm(instance=obj)
-            formset_content = ContentFormSet(instance=obj)
+            formset_content = VersionedContentFormSet(
+                instance=obj, form_kwargs={'vers_id': vers_id})
         else:
             form_obj = AtomForm(instance=obj)
-            formset_content = ContentFormSet(instance=obj)
+            formset_content = VersionedContentFormSet(
+                instance=obj, form_kwargs={'vers_id': vers_id})
 
     if ':' in name:
         return render(request, 'django-gem-taxonomy/glossary/manage_param.html', {
@@ -689,59 +698,31 @@ def clean_folder_name(name):
     return cleaned
 
 
-@csrf_exempt
 @require_POST
-def custom_upload_file(request):
+def glossary_upload_file(request, vers_id):
     """
-    Custom view for handling image uploads from CKEditor 5.
+    Image upload from CKEditor 5 of the glossary edit pages, images
+    are stored in a folder dedicated to the version.
     """
-    print("=" * 50)
-    print("📤 CUSTOM UPLOAD VIEW")
-    print(f"POST data: {request.POST}")
-    print(f"GET data: {request.GET}")
-    print(f"FILES: {request.FILES}")
-    print("=" * 50)
+    vers = get_object_or_404(Version, vers=vers_id)
 
-    if request.FILES.get("upload"):
-        uploaded_file = request.FILES["upload"]
+    uploaded_file = request.FILES.get("upload")
+    if not uploaded_file:
+        return JsonResponse({"error": {"message": "No file uploaded."}}, status=400)
 
-        content_type = uploaded_file.content_type
-        if not content_type.startswith('image/'):
-            return JsonResponse({"error": {"message": "The file must be an image."}}, status=400)
+    if not uploaded_file.content_type.startswith('image/'):
+        return JsonResponse({"error": {"message": "The file must be an image."}}, status=400)
 
-        version_name = request.POST.get('category', '').strip()
-        print(f"📂 Category from POST: '{version_name}'")
+    name, ext = os.path.splitext(uploaded_file.name)
+    safe_name = f"{name}_{int(time.time())}{ext}"
 
-        if not version_name:
-            version_name = request.GET.get('category', '').strip()
-            print(f"📂 Category from GET: '{version_name}'")
+    upload_path = os.path.join("uploads", "glossary",
+                               clean_folder_name(vers.vers), safe_name)
+    file_path = default_storage.save(upload_path, uploaded_file)
 
-        if not version_name:
-            version_name = 'default'
-            print("⚠️ No category found, using 'default'")
-        else:
-            print(f"✅ Using category: '{version_name}'")
-
-        version_folder = clean_folder_name(version_name)
-        print(f"📁 Category folder: '{version_folder}'")
-
-        name, ext = os.path.splitext(uploaded_file.name)
-        safe_name = f"{name}_{int(time.time())}{ext}"
-
-        upload_path = os.path.join("uploads", "version", version_folder, safe_name)
-        print(f"📁 Full path: '{upload_path}'")
-
-        file_path = default_storage.save(upload_path, uploaded_file)
-        file_url = default_storage.url(file_path)
-
-        print(f"✅ File saved at: {file_url}")
-        print("=" * 50)
-
-        return JsonResponse({
-            "url": file_url,
-            "uploaded": True,
-            "fileName": safe_name,
-            "category": version_name
-        })
-
-    return JsonResponse({"error": {"message": "No file uploaded."}}, status=400)
+    return JsonResponse({
+        "url": default_storage.url(file_path),
+        "uploaded": True,
+        "fileName": os.path.basename(file_path),
+        "version": vers.vers
+    })

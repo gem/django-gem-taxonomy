@@ -42,6 +42,7 @@ USE_TZ = True
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
@@ -144,8 +145,6 @@ CKEDITOR_5_UPLOAD_PATH = 'uploads/'
 # Secure limit files
 CKEDITOR_5_ALLOWED_FILE_TYPES = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
 CKEDITOR_5_MAX_FILE_SIZE = 20 * 1024 * 1024  # 5MB
-
-CK_EDITOR_5_UPLOAD_FILE_VIEW_NAME = "taxonomy:custom_upload_file"
 
 TEMPLATES = [
     {
